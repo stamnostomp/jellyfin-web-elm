@@ -20,6 +20,7 @@ type alias Model =
     , serverConfig : ServerConfig
     , mediaDetailModel : MediaDetail.Model
     , serverSettingsModel : ServerSettings.Model
+    , isUserMenuOpen : Bool -- Track if user menu is open
     }
 
 init : ( Model, Cmd Msg )
@@ -38,6 +39,7 @@ init =
       , serverConfig = defaultServerConfig
       , mediaDetailModel = mediaDetailModel
       , serverSettingsModel = serverSettingsModel
+      , isUserMenuOpen = False -- Initialize as closed
       }
     , Cmd.batch
         [ Cmd.map MediaDetailMsg mediaDetailCmd
@@ -114,6 +116,8 @@ type Msg
     | MediaDetailMsg MediaDetail.Msg
     | ServerSettingsMsg ServerSettings.Msg
     | UpdateServerConfig ServerConfig
+    | ToggleUserMenu -- New message for handling user menu toggle
+    | UserMenuAction String -- New message for user menu actions
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -203,6 +207,13 @@ update msg model =
         UpdateServerConfig newConfig ->
             ( { model | serverConfig = newConfig }, Cmd.none )
 
+        ToggleUserMenu ->
+            ( { model | isUserMenuOpen = not model.isUserMenuOpen }, Cmd.none )
+
+        UserMenuAction action ->
+            -- Handle user menu actions (placeholder for now)
+            ( { model | isUserMenuOpen = False }, Cmd.none )
+
 
 -- SUBSCRIPTIONS
 
@@ -252,10 +263,69 @@ viewHeader model =
                     model.serverSettingsModel
                     ServerSettingsMsg
                     UpdateServerConfig
-                , button (Theme.button Theme.Primary)
-                    [ text "Sign In" ]
+                , viewUserProfile model -- Replace Sign In button with user profile
                 ]
             ]
+        ]
+
+-- New function for rendering the user profile avatar and dropdown
+viewUserProfile : Model -> Html Msg
+viewUserProfile model =
+    div [ class "relative" ]
+        [ button
+            [ class "w-10 h-10 rounded-full bg-primary flex items-center justify-center text-text-primary hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary-light"
+            , onClick ToggleUserMenu
+            ]
+            [ text "A" ]  -- "A" for Admin/Avatar - could be replaced with user's initial
+        , if model.isUserMenuOpen then
+            viewUserMenu
+          else
+            text ""
+        ]
+
+-- User dropdown menu
+viewUserMenu : Html Msg
+viewUserMenu =
+    div
+        [ class "absolute right-0 mt-2 w-56 bg-surface rounded-md shadow-lg py-1 z-50 border border-background-light" ]
+        [ viewUserMenuHeader
+        , viewUserMenuItem "Profile" "User profile and settings" "profile"
+        , viewUserMenuItem "Display Preferences" "Customize your experience" "display"
+        , div [ class "border-t border-background-light my-1" ] []
+        , viewUserMenuItem "Manage Libraries" "Organize your media collection" "libraries"
+        , viewUserMenuItem "Manage Users" "Add or edit user access" "users"
+        , viewUserMenuItem "Server Dashboard" "System status and settings" "dashboard"
+        , div [ class "border-t border-background-light my-1" ] []
+        , viewUserMenuItem "Sign Out" "Exit your account" "signout"
+        ]
+
+-- User menu header with user info
+viewUserMenuHeader : Html Msg
+viewUserMenuHeader =
+    div [ class "px-4 py-3 border-b border-background-light" ]
+        [ div [ class "flex items-center space-x-3" ]
+            [ div [ class "w-10 h-10 rounded-full bg-primary flex items-center justify-center text-text-primary" ]
+                [ text "A" ]
+            , div []
+                [ p (Theme.text Theme.Body ++ [ class "font-medium" ])
+                    [ text "Administrator" ]
+                , p (Theme.text Theme.Caption)
+                    [ text "admin@jellyfin.org" ]
+                ]
+            ]
+        ]
+
+-- Individual menu item
+viewUserMenuItem : String -> String -> String -> Html Msg
+viewUserMenuItem label description action =
+    div
+        [ class "px-4 py-2 hover:bg-background-light cursor-pointer"
+        , onClick (UserMenuAction action)
+        ]
+        [ p (Theme.text Theme.Body ++ [ class "font-medium" ])
+            [ text label ]
+        , p (Theme.text Theme.Caption)
+            [ text description ]
         ]
 
 viewContent : Model -> Html Msg
