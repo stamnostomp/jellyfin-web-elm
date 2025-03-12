@@ -3,6 +3,19 @@ elm-stuff
 # elm-repl generated files
 repl-temp-*
 
-/pubilc/main.js
+# Compiled Elm output
+/public/main.js
+/public/output.css
 
+# Node modules if you're using npm
+node_modules/
+
+# Dependency lock files
 *.lock
+
+# Editor and OS specific files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
