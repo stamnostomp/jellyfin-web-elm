@@ -31,7 +31,7 @@ init =
         ( serverSettingsModel, serverSettingsCmd ) =
             ServerSettings.init
     in
-    ( { categories = mockCategories
+    ( { categories = mockCategories ++ mockLibraryCategories
       , searchQuery = ""
       , selectedCategory = Nothing
       , isLoading = False
@@ -50,20 +50,20 @@ init =
 
 mockCategories : List Category
 mockCategories =
-    [ { id = "recently-added"
+    [ { id = "continue-watching"
+      , name = "Continue Watching"
+      , items =
+          [ { id = "show2", title = "Chronicles of the Void", type_ = TVShow, imageUrl = "show2.jpg", year = 2021, rating = 8.7 }
+          , { id = "movie4", title = "Nebula's Edge", type_ = Movie, imageUrl = "movie4.jpg", year = 2024, rating = 7.5 }
+          ]
+      }
+    , { id = "recently-added"
       , name = "Recently Added"
       , items =
           [ { id = "movie1", title = "The Quantum Protocol", type_ = Movie, imageUrl = "movie1.jpg", year = 2023, rating = 8.5 }
           , { id = "movie2", title = "Echoes of Tomorrow", type_ = Movie, imageUrl = "movie2.jpg", year = 2024, rating = 7.8 }
           , { id = "show1", title = "Digital Horizons", type_ = TVShow, imageUrl = "show1.jpg", year = 2023, rating = 9.2 }
           , { id = "movie3", title = "Stellar Odyssey", type_ = Movie, imageUrl = "movie3.jpg", year = 2022, rating = 6.9 }
-          ]
-      }
-    , { id = "continue-watching"
-      , name = "Continue Watching"
-      , items =
-          [ { id = "show2", title = "Chronicles of the Void", type_ = TVShow, imageUrl = "show2.jpg", year = 2021, rating = 8.7 }
-          , { id = "movie4", title = "Nebula's Edge", type_ = Movie, imageUrl = "movie4.jpg", year = 2024, rating = 7.5 }
           ]
       }
     , { id = "recommended"
@@ -73,6 +73,29 @@ mockCategories =
           , { id = "show3", title = "Temporal Divide", type_ = TVShow, imageUrl = "show3.jpg", year = 2022, rating = 8.4 }
           , { id = "movie6", title = "Parallel Essence", type_ = Movie, imageUrl = "movie6.jpg", year = 2024, rating = 7.2 }
           , { id = "show4", title = "Quantum Nexus", type_ = TVShow, imageUrl = "show4.jpg", year = 2021, rating = 8.9 }
+          ]
+      }
+    ]
+
+-- New mock library categories to replace sidebar navigation
+mockLibraryCategories : List Category
+mockLibraryCategories =
+    [ { id = "movie-library"
+      , name = "Movies"
+      , items =
+          [ { id = "movie7", title = "Cosmic Paradigm", type_ = Movie, imageUrl = "movie7.jpg", year = 2023, rating = 8.3 }
+          , { id = "movie8", title = "Neural Connection", type_ = Movie, imageUrl = "movie8.jpg", year = 2024, rating = 7.9 }
+          , { id = "movie9", title = "Synthetic Dreams", type_ = Movie, imageUrl = "movie9.jpg", year = 2022, rating = 8.1 }
+          , { id = "movie10", title = "Digital Frontier", type_ = Movie, imageUrl = "movie10.jpg", year = 2023, rating = 7.6 }
+          ]
+      }
+    , { id = "tv-library"
+      , name = "TV Shows"
+      , items =
+          [ { id = "show5", title = "Ethereal Connection", type_ = TVShow, imageUrl = "show5.jpg", year = 2022, rating = 8.8 }
+          , { id = "show6", title = "Parallel Futures", type_ = TVShow, imageUrl = "show6.jpg", year = 2023, rating = 9.0 }
+          , { id = "show7", title = "Quantum Horizon", type_ = TVShow, imageUrl = "show7.jpg", year = 2024, rating = 8.2 }
+          , { id = "show8", title = "Neural Network", type_ = TVShow, imageUrl = "show8.jpg", year = 2021, rating = 7.7 }
           ]
       }
     ]
@@ -183,8 +206,6 @@ update msg model =
 
 -- SUBSCRIPTIONS
 
--- SUBSCRIPTIONS
-
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.map MediaDetailMsg (MediaDetail.subscriptions model.mediaDetailModel)
@@ -196,14 +217,11 @@ view : Model -> Html Msg
 view model =
     div [ class "flex flex-col min-h-screen bg-background" ]
         [ viewHeader model
-        , div [ class "flex flex-1 overflow-hidden" ]
-            [ viewSidebar
-            , div [ class "flex-1 overflow-y-auto p-6" ]
-                [ if model.isLoading then
-                    viewLoading
-                  else
-                    viewContent model
-                ]
+        , div [ class "flex-1 overflow-y-auto pt-6 pb-16" ]
+            [ if model.isLoading then
+                viewLoading
+              else
+                viewContent model
             ]
         , Html.map MediaDetailMsg (MediaDetail.view model.mediaDetailModel)
         ]
@@ -211,7 +229,7 @@ view model =
 viewHeader : Model -> Html Msg
 viewHeader model =
     header [ class "bg-surface border-b border-background-light p-4" ]
-        [ div [ class "container mx-auto flex items-center justify-between" ]
+        [ div [ class "px-2 md:px-4 max-w-screen-2xl mx-auto flex items-center justify-between" ]
             [ div [ class "flex items-center space-x-4" ]
                 [ h1 (Theme.text Theme.Heading2)
                     [ text "Jellyfin" ]
@@ -240,63 +258,21 @@ viewHeader model =
             ]
         ]
 
-viewSidebar : Html Msg
-viewSidebar =
-    nav [ class "w-64 bg-surface border-r border-background-light p-4 hidden md:block" ]
-        [ div [ class "space-y-6" ]
-            [ div []
-                [ h3 (Theme.text Theme.Heading3)
-                    [ text "Libraries" ]
-                , ul [ class "mt-2 space-y-2" ]
-                    [ viewNavItem "Movies" (Just "movie-library")
-                    , viewNavItem "TV Shows" (Just "tv-library")
-                    , viewNavItem "Music" (Just "music-library")
-                    ]
-                ]
-            , div []
-                [ h3 (Theme.text Theme.Heading3)
-                    [ text "Collections" ]
-                , ul [ class "mt-2 space-y-2" ]
-                    [ viewNavItem "Favorites" (Just "favorites")
-                    , viewNavItem "Watchlist" (Just "watchlist")
-                    ]
-                ]
-            , div []
-                [ h3 (Theme.text Theme.Heading3)
-                    [ text "Other" ]
-                , ul [ class "mt-2 space-y-2" ]
-                    [ viewNavItem "Live TV" (Just "live-tv")
-                    , viewNavItem "People" (Just "people")
-                    ]
-                ]
-            ]
-        ]
-
-viewNavItem : String -> Maybe String -> Html Msg
-viewNavItem label maybeCategoryId =
-    li []
-        [ a
-            ([ class "block py-2 px-4 rounded hover:bg-background-light text-text-primary" ]
-             ++ (case maybeCategoryId of
-                    Just categoryId ->
-                        [ onClick (SelectCategory categoryId) ]
-                    Nothing ->
-                        []
-                )
-            )
-            [ text label ]
-        ]
-
 viewContent : Model -> Html Msg
 viewContent model =
-    div [ class "space-y-8" ]
+    div [ class "px-4 md:px-6 lg:px-8 max-w-screen-2xl mx-auto space-y-10 mb-8" ]
         (case model.selectedCategory of
             Just categoryId ->
                 -- View a specific category in detail
                 case findCategory categoryId model.categories of
                     Just category ->
-                        [ h2 (Theme.text Theme.Heading2)
-                            [ text category.name ]
+                        [ div [ class "flex items-center mb-6 mt-2" ]
+                            [ button
+                                (Theme.button Theme.Ghost ++ [ onClick ClearCategory, class "mr-2" ])
+                                [ text "← Back" ]
+                            , h2 (Theme.text Theme.Heading2)
+                                [ text category.name ]
+                            ]
                         , div [ class "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6" ]
                             (List.map viewMediaItemLarge category.items)
                         ]
@@ -305,22 +281,31 @@ viewContent model =
 
             Nothing ->
                 -- View all categories
-                List.map (viewCategory model.searchQuery) model.categories
+                List.map (viewCategory model.searchQuery) (filterCategories model.searchQuery model.categories)
         )
+
+-- Filter categories based on search query
+filterCategories : String -> List Category -> List Category
+filterCategories query categories =
+    if String.isEmpty query then
+        categories
+    else
+        categories
+            |> List.map (\category ->
+                { category |
+                    items = List.filter
+                        (\item -> String.contains (String.toLower query) (String.toLower item.title))
+                        category.items
+                }
+            )
+            |> List.filter (\category -> not (List.isEmpty category.items))
 
 viewCategory : String -> Category -> Html Msg
 viewCategory searchQuery category =
-    let
-        filteredItems =
-            if String.isEmpty searchQuery then
-                category.items
-            else
-                List.filter (\item -> String.contains (String.toLower searchQuery) (String.toLower item.title)) category.items
-    in
-    if List.isEmpty filteredItems then
+    if List.isEmpty category.items then
         text ""
     else
-        div [ class "space-y-4" ]
+        div [ class "space-y-3" ]
             [ div [ class "flex justify-between items-center" ]
                 [ h2 (Theme.text Theme.Heading2)
                     [ text category.name ]
@@ -329,7 +314,7 @@ viewCategory searchQuery category =
                     [ text "See All" ]
                 ]
             , div [ class "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4" ]
-                (List.map viewMediaItem filteredItems)
+                (List.map viewMediaItem category.items)
             ]
 
 viewMediaItem : MediaItem -> Html Msg
