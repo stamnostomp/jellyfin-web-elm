@@ -63,8 +63,8 @@ module.exports = {
         accent: '#d7875f', // Orange for accents
       },
       fontFamily: {
-        mono: ['JetBrains Mono', 'Fira Code', ...defaultTheme.fontFamily.mono],
-        sans: ['Inter var', ...defaultTheme.fontFamily.sans],
+        mono: ['IBM Plex Mono', ...defaultTheme.fontFamily.mono],
+        sans: ['IBM Plex Sans', ...defaultTheme.fontFamily.sans],
       },
       // Add subtle background patterns inspired by code editors
       backgroundImage: {

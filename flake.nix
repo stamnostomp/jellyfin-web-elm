@@ -16,6 +16,7 @@
         outputDir = "./public";
         outputJs = "${outputDir}/main.js";
         outputCss = "${outputDir}/output.css";
+        fontsDir = "${outputDir}/fonts";
 
         # Helper function to build the Elm application
         buildElmApp = pkgs.writeShellScriptBin "build-elm" ''
@@ -23,6 +24,14 @@
           mkdir -p ${outputDir}
           ${pkgs.elmPackages.elm}/bin/elm make ${srcDir}/Main.elm --output=${outputJs} --optimize
           echo "Elm application built successfully!"
+        '';
+
+        # Helper function to install IBM Plex fonts
+        installFonts = pkgs.writeShellScriptBin "install-fonts" ''
+          set -e
+          mkdir -p ${fontsDir}
+          cp -r ${pkgs.ibm-plex}/share/fonts/opentype/* ${fontsDir}/
+          echo "IBM Plex fonts installed successfully!"
         '';
 
         # Helper function to setup Tailwind CSS
@@ -77,6 +86,7 @@
           set -e
           ${buildElmApp}/bin/build-elm
           ${buildTailwind}/bin/build-tailwind
+          ${installFonts}/bin/install-fonts
           echo "Build completed successfully! Open ${outputDir}/index.html in your browser."
         '';
 
@@ -96,6 +106,7 @@
             buildInputs = [
               pkgs.elmPackages.elm
               pkgs.nodePackages.tailwindcss
+              pkgs.ibm-plex
             ];
             buildPhase = ''
               mkdir -p ${outputDir}
@@ -129,6 +140,10 @@
 
               # Build Tailwind
               ${pkgs.nodePackages.tailwindcss}/bin/tailwindcss -i ./src/css/input.css -o ${outputCss} --minify
+
+              # Install IBM Plex fonts
+              mkdir -p ${fontsDir}
+              cp -r ${pkgs.ibm-plex}/share/fonts/opentype/* ${fontsDir}/
             '';
             installPhase = ''
               mkdir -p $out/public
@@ -173,10 +188,12 @@
             nodePackages.tailwindcss
             python3  # For the simple HTTP server
             nodejs
+            ibm-plex
             buildElmApp
             buildTailwind
             watchTailwind
             setupTailwind
+            installFonts
             buildAll
             devServer
           ];
@@ -188,8 +205,9 @@
             echo "  - setup-tailwind : Set up Tailwind CSS configuration files"
             echo "  - build-elm      : Build the Elm application"
             echo "  - build-tailwind : Build Tailwind CSS"
+            echo "  - install-fonts  : Install IBM Plex fonts"
             echo "  - watch-tailwind : Watch for CSS changes and rebuild"
-            echo "  - build-all      : Build both Elm and Tailwind"
+            echo "  - build-all      : Build both Elm and Tailwind and install fonts"
             echo "  - dev-server     : Start a development server on port 8000"
             echo "  - elm reactor    : Start Elm's built-in development server"
             echo ""
@@ -218,6 +236,10 @@
           watch = {
             type = "app";
             program = "${watchTailwind}/bin/watch-tailwind";
+          };
+          fonts = {
+            type = "app";
+            program = "${installFonts}/bin/install-fonts";
           };
         };
       }
