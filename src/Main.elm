@@ -1,9 +1,10 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, div, h1, h2, h3, p, text, button, pre, code, span)
+import Html exposing (Html, div, h1, h2, h3, p, text, button, pre, code, span, nav, a)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
+import JellyfinUI
 import Theme
 
 
@@ -23,15 +24,34 @@ main =
 -- MODEL
 
 
+type Page
+    = ThemeDemoPage
+    | JellyfinPage
+
+
 type alias Model =
+    { currentPage : Page
+    , themeDemoModel : ThemeDemoModel
+    , jellyfinModel : JellyfinUI.Model
+    }
+
+
+type alias ThemeDemoModel =
     { count : Int
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { count = 0 }
-    , Cmd.none
+    let
+        ( jellyfinModel, jellyfinCmd ) =
+            JellyfinUI.init
+    in
+    ( { currentPage = JellyfinPage
+      , themeDemoModel = { count = 0 }
+      , jellyfinModel = jellyfinModel
+      }
+    , Cmd.map JellyfinMsg jellyfinCmd
     )
 
 
@@ -39,6 +59,12 @@ init _ =
 
 
 type Msg
+    = NavigateTo Page
+    | ThemeDemoMsg ThemeDemoMsg
+    | JellyfinMsg JellyfinUI.Msg
+
+
+type ThemeDemoMsg
     = Increment
     | Decrement
 
@@ -46,19 +72,41 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        NavigateTo page ->
+            ( { model | currentPage = page }, Cmd.none )
+
+        ThemeDemoMsg themeDemoMsg ->
+            ( { model | themeDemoModel = updateThemeDemo themeDemoMsg model.themeDemoModel }, Cmd.none )
+
+        JellyfinMsg jellyfinMsg ->
+            let
+                ( updatedJellyfinModel, jellyfinCmd ) =
+                    JellyfinUI.update jellyfinMsg model.jellyfinModel
+            in
+            ( { model | jellyfinModel = updatedJellyfinModel }, Cmd.map JellyfinMsg jellyfinCmd )
+
+
+updateThemeDemo : ThemeDemoMsg -> ThemeDemoModel -> ThemeDemoModel
+updateThemeDemo msg model =
+    case msg of
         Increment ->
-            ( { model | count = model.count + 1 }, Cmd.none )
+            { model | count = model.count + 1 }
 
         Decrement ->
-            ( { model | count = model.count - 1 }, Cmd.none )
+            { model | count = model.count - 1 }
 
 
 -- SUBSCRIPTIONS
 
 
 subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.none
+subscriptions model =
+    case model.currentPage of
+        JellyfinPage ->
+            Sub.map JellyfinMsg (JellyfinUI.subscriptions model.jellyfinModel)
+
+        _ ->
+            Sub.none
 
 
 -- VIEW
@@ -66,6 +114,51 @@ subscriptions _ =
 
 view : Model -> Html Msg
 view model =
+    div [ class "min-h-screen bg-background" ]
+        [ viewNavigation model.currentPage
+        , viewPage model
+        ]
+
+
+viewNavigation : Page -> Html Msg
+viewNavigation currentPage =
+    nav [ class "bg-surface border-b border-background-light p-4" ]
+        [ div [ class "container mx-auto flex space-x-4" ]
+            [ navLink "Jellyfin UI" JellyfinPage (currentPage == JellyfinPage)
+            , navLink "Theme Demo" ThemeDemoPage (currentPage == ThemeDemoPage)
+            ]
+        ]
+
+
+navLink : String -> Page -> Bool -> Html Msg
+navLink label page isActive =
+    let
+        baseClasses = "px-4 py-2 rounded transition-colors duration-200"
+        classes =
+            if isActive then
+                baseClasses ++ " bg-primary text-text-primary"
+            else
+                baseClasses ++ " hover:bg-background-light text-text-secondary"
+    in
+    a
+        [ class classes
+        , onClick (NavigateTo page)
+        ]
+        [ text label ]
+
+
+viewPage : Model -> Html Msg
+viewPage model =
+    case model.currentPage of
+        ThemeDemoPage ->
+            viewThemeDemo model.themeDemoModel
+
+        JellyfinPage ->
+            Html.map JellyfinMsg (JellyfinUI.view model.jellyfinModel)
+
+
+viewThemeDemo : ThemeDemoModel -> Html Msg
+viewThemeDemo model =
     div Theme.container
         [ div [ class "w-full max-w-4xl space-y-6" ]
             [ h1 Theme.title
@@ -79,10 +172,10 @@ view model =
                     [ p (Theme.text Theme.Heading2) [ text (String.fromInt model.count) ]
                     , div [ class "flex space-x-4 mt-4" ]
                         [ button
-                            (Theme.button Theme.Primary ++ [ onClick Decrement ])
+                            (Theme.button Theme.Primary ++ [ onClick (ThemeDemoMsg Decrement) ])
                             [ text "-" ]
                         , button
-                            (Theme.button Theme.Secondary ++ [ onClick Increment ])
+                            (Theme.button Theme.Secondary ++ [ onClick (ThemeDemoMsg Increment) ])
                             [ text "+" ]
                         ]
                     ]
