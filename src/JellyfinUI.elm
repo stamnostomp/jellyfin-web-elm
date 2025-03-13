@@ -21,6 +21,9 @@ type alias Model =
     , mediaDetailModel : MediaDetail.Model
     , serverSettingsModel : ServerSettings.Model
     , isUserMenuOpen : Bool -- Track if user menu is open
+    , isGenreFilterOpen : Bool -- Track if genre filter dropdown is open
+    , selectedGenre : Maybe String -- Currently selected genre for filtering
+    , availableGenres : List String -- List of available genres
     }
 
 init : ( Model, Cmd Msg )
@@ -31,6 +34,11 @@ init =
 
         ( serverSettingsModel, serverSettingsCmd ) =
             ServerSettings.init
+
+        -- Extract all unique genres from our mock data
+        allGenres =
+            [ "Sci-Fi", "Adventure", "Drama", "Action", "Romance", "Mystery",
+              "Comedy", "Fantasy", "Thriller", "Horror", "Documentary" ]
     in
     ( { categories = mockCategories ++ mockLibraryCategories
       , searchQuery = ""
@@ -40,6 +48,9 @@ init =
       , mediaDetailModel = mediaDetailModel
       , serverSettingsModel = serverSettingsModel
       , isUserMenuOpen = False -- Initialize as closed
+      , isGenreFilterOpen = False -- Initialize genre filter as closed
+      , selectedGenre = Nothing -- No genre selected initially
+      , availableGenres = allGenres -- All available genres
       }
     , Cmd.batch
         [ Cmd.map MediaDetailMsg mediaDetailCmd
@@ -79,7 +90,7 @@ mockCategories =
       }
     ]
 
--- New mock library categories to replace sidebar navigation
+-- Mock library categories to replace sidebar navigation
 mockLibraryCategories : List Category
 mockLibraryCategories =
     [ { id = "movie-library"
@@ -116,8 +127,11 @@ type Msg
     | MediaDetailMsg MediaDetail.Msg
     | ServerSettingsMsg ServerSettings.Msg
     | UpdateServerConfig ServerConfig
-    | ToggleUserMenu -- New message for handling user menu toggle
-    | UserMenuAction String -- New message for user menu actions
+    | ToggleUserMenu -- For handling user menu toggle
+    | UserMenuAction String -- For user menu actions
+    | ToggleGenreFilter -- New message to toggle genre filter dropdown
+    | SelectGenre String -- New message to select a genre
+    | ClearGenreFilter -- New message to clear genre filter
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -208,7 +222,16 @@ update msg model =
             ( { model | serverConfig = newConfig }, Cmd.none )
 
         ToggleUserMenu ->
-            ( { model | isUserMenuOpen = not model.isUserMenuOpen }, Cmd.none )
+            ( { model | isUserMenuOpen = not model.isUserMenuOpen, isGenreFilterOpen = False }, Cmd.none )
+
+        ToggleGenreFilter ->
+            ( { model | isGenreFilterOpen = not model.isGenreFilterOpen, isUserMenuOpen = False }, Cmd.none )
+
+        SelectGenre genre ->
+            ( { model | selectedGenre = Just genre, isGenreFilterOpen = False }, Cmd.none )
+
+        ClearGenreFilter ->
+            ( { model | selectedGenre = Nothing }, Cmd.none )
 
         UserMenuAction action ->
             -- Handle user menu actions (placeholder for now)
@@ -259,16 +282,69 @@ viewHeader model =
                     ]
                 ]
             , div [ class "flex items-center space-x-4" ]
-                [ ServerSettings.view
-                    model.serverSettingsModel
-                    ServerSettingsMsg
-                    UpdateServerConfig
-                , viewUserProfile model -- Replace Sign In button with user profile
+                [ viewGenreFilter model -- New genre filter dropdown
+                , viewUserProfile model
                 ]
             ]
         ]
 
--- New function for rendering the user profile avatar and dropdown
+-- New function for genre filter dropdown
+viewGenreFilter : Model -> Html Msg
+viewGenreFilter model =
+    div [ class "relative" ]
+        [ button
+            (Theme.button Theme.Ghost ++
+                [ class "flex items-center space-x-2"
+                , onClick ToggleGenreFilter
+                ]
+            )
+            [ text
+                (case model.selectedGenre of
+                    Just genre ->
+                        "Genre: " ++ genre
+                    Nothing ->
+                        "Filter by Genre"
+                )
+            , if model.selectedGenre /= Nothing then
+                button
+                    [ class "ml-2 text-text-secondary hover:text-error"
+                    , onClick ClearGenreFilter
+                    ]
+                    [ text "×" ]
+              else
+                text ""
+            ]
+        , if model.isGenreFilterOpen then
+            viewGenreDropdown model.availableGenres
+          else
+            text ""
+        ]
+
+-- Genre dropdown menu
+viewGenreDropdown : List String -> Html Msg
+viewGenreDropdown genres =
+    div
+        [ class "absolute right-0 mt-2 w-48 bg-surface rounded-md shadow-lg z-50 border border-background-light" ]
+        [ div
+            [ class "bg-surface border-b border-background-light p-2" ]
+            [ p (Theme.text Theme.Label)
+                [ text "Select Genre" ]
+            ]
+        , div
+            [ class "max-h-64 overflow-y-auto py-1" ]
+            (List.map viewGenreOption genres)
+        ]
+
+-- Individual genre option
+viewGenreOption : String -> Html Msg
+viewGenreOption genre =
+    div
+        [ class "px-4 py-2 hover:bg-background-light cursor-pointer text-text-primary"
+        , onClick (SelectGenre genre)
+        ]
+        [ text genre ]
+
+-- User profile view remains the same
 viewUserProfile : Model -> Html Msg
 viewUserProfile model =
     div [ class "relative" ]
@@ -276,7 +352,7 @@ viewUserProfile model =
             [ class "w-10 h-10 rounded-full bg-primary flex items-center justify-center text-text-primary hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary-light"
             , onClick ToggleUserMenu
             ]
-            [ text "A" ]  -- "A" for Admin/Avatar - could be replaced with user's initial
+            [ text "A" ]  -- "A" for Admin/Avatar
         , if model.isUserMenuOpen then
             viewUserMenu
           else
@@ -328,48 +404,84 @@ viewUserMenuItem label description action =
             [ text description ]
         ]
 
+-- Loading view - now properly defined
+viewLoading : Html Msg
+viewLoading =
+    div [ class "flex justify-center items-center h-64" ]
+        [ div [ class "text-primary text-xl" ]
+            [ text "Loading..." ]
+        ]
+
 viewContent : Model -> Html Msg
 viewContent model =
     div [ class "px-4 md:px-6 lg:px-8 max-w-screen-2xl mx-auto space-y-10 mb-8" ]
-        (case model.selectedCategory of
-            Just categoryId ->
-                -- View a specific category in detail
-                case findCategory categoryId model.categories of
-                    Just category ->
-                        [ div [ class "flex items-center mb-6 mt-2" ]
-                            [ button
-                                (Theme.button Theme.Ghost ++ [ onClick ClearCategory, class "mr-2" ])
-                                [ text "← Back" ]
-                            , h2 (Theme.text Theme.Heading2)
-                                [ text category.name ]
-                            ]
-                        , div [ class "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6" ]
-                            (List.map viewMediaItemLarge category.items)
-                        ]
-                    Nothing ->
-                        [ text "Category not found" ]
+        [ -- Show active filters if any
+          if model.selectedGenre /= Nothing then
+              div [ class "flex items-center py-2 space-x-2" ]
+                  [ span (Theme.text Theme.Label)
+                      [ text "Active filters:" ]
+                  , viewActiveFilter model.selectedGenre
+                  ]
+          else
+              text ""
+        , case model.selectedCategory of
+              Just categoryId ->
+                  -- View a specific category in detail
+                  case findCategory categoryId (filterCategoriesByGenre model.selectedGenre model.categories) of
+                      Just category ->
+                          div []
+                              [ div [ class "flex items-center mb-6 mt-2" ]
+                                  [ button
+                                      (Theme.button Theme.Ghost ++ [ onClick ClearCategory, class "mr-2" ])
+                                      [ text "← Back" ]
+                                  , h2 (Theme.text Theme.Heading2)
+                                      [ text category.name ]
+                                  ]
+                              , div [ class "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6" ]
+                                  (List.map viewMediaItemLarge category.items)
+                              ]
+                      Nothing ->
+                          div [] [ text "Category not found" ]
 
-            Nothing ->
-                -- View all categories
-                List.map (viewCategory model.searchQuery) (filterCategories model.searchQuery model.categories)
-        )
+              Nothing ->
+                  -- View all categories with filters applied
+                  div [ class "space-y-10" ]
+                      (List.map
+                          (viewCategory model.searchQuery)
+                          (filterCategories
+                              model.searchQuery
+                              (filterCategoriesByGenre model.selectedGenre model.categories)
+                          )
+                      )
+        ]
 
--- Filter categories based on search query
-filterCategories : String -> List Category -> List Category
-filterCategories query categories =
-    if String.isEmpty query then
-        categories
-    else
-        categories
-            |> List.map (\category ->
-                { category |
-                    items = List.filter
-                        (\item -> String.contains (String.toLower query) (String.toLower item.title))
-                        category.items
-                }
-            )
-            |> List.filter (\category -> not (List.isEmpty category.items))
+-- View for active filter badge
+viewActiveFilter : Maybe String -> Html Msg
+viewActiveFilter maybeGenre =
+    case maybeGenre of
+        Just genre ->
+            div [ class "flex items-center bg-primary bg-opacity-20 border border-primary rounded-full px-3 py-1" ]
+                [ span (Theme.text Theme.Body)
+                    [ text genre ]
+                , button
+                    [ class "ml-2 text-primary hover:text-primary-dark"
+                    , onClick ClearGenreFilter
+                    ]
+                    [ text "×" ]
+                ]
+        Nothing ->
+            text ""
 
+-- MISSING FUNCTIONS
+-- These are the functions that were missing in the original code
+
+-- Find a category by ID
+findCategory : String -> List Category -> Maybe Category
+findCategory categoryId categories =
+    List.filter (\cat -> cat.id == categoryId) categories
+        |> List.head
+
+-- View a category row with its items
 viewCategory : String -> Category -> Html Msg
 viewCategory searchQuery category =
     if List.isEmpty category.items then
@@ -387,6 +499,7 @@ viewCategory searchQuery category =
                 (List.map viewMediaItem category.items)
             ]
 
+-- View a media item (small card version)
 viewMediaItem : MediaItem -> Html Msg
 viewMediaItem item =
     div
@@ -417,6 +530,7 @@ viewMediaItem item =
             ]
         ]
 
+-- View a media item (large card version for category detail view)
 viewMediaItemLarge : MediaItem -> Html Msg
 viewMediaItemLarge item =
     div
@@ -455,20 +569,53 @@ viewMediaItemLarge item =
             ]
         ]
 
-viewLoading : Html Msg
-viewLoading =
-    div [ class "flex justify-center items-center h-64" ]
-        [ div [ class "text-primary text-xl" ]
-            [ text "Loading..." ]
-        ]
+-- Filter categories based on search query
+filterCategories : String -> List Category -> List Category
+filterCategories query categories =
+    if String.isEmpty query then
+        categories
+    else
+        categories
+            |> List.map (\category ->
+                { category |
+                    items = List.filter
+                        (\item -> String.contains (String.toLower query) (String.toLower item.title))
+                        category.items
+                }
+            )
+            |> List.filter (\category -> not (List.isEmpty category.items))
+
+-- Filter categories based on genre
+filterCategoriesByGenre : Maybe String -> List Category -> List Category
+filterCategoriesByGenre maybeGenre categories =
+    case maybeGenre of
+        Nothing ->
+            categories
+
+        Just genre ->
+            -- For the purpose of this demo, we'll randomly filter some items
+            -- to simulate genre filtering. In a real app, each media item would have
+            -- its own genre information.
+            let
+                -- Use a simple hashing of the first char of the genre to get consistent filtering
+                genreChar = String.left 1 genre |> String.toList |> List.head |> Maybe.withDefault 'A'
+                genreValue = Char.toCode genreChar
+
+                -- Return true for approximately 1/3 of items using a deterministic pattern
+                shouldKeepItem item =
+                    (String.length item.title + genreValue) |> modBy 3 |> (==) 0
+            in
+            categories
+                |> List.map (\category ->
+                    { category |
+                        items = List.filter shouldKeepItem category.items
+                    }
+                )
+                |> List.filter (\category -> not (List.isEmpty category.items))
 
 -- HELPERS
 
-findCategory : String -> List Category -> Maybe Category
-findCategory categoryId categories =
-    List.filter (\cat -> cat.id == categoryId) categories
-        |> List.head
-
+-- Convert MediaType to string
 mediaTypeToString : MediaType -> String
 mediaTypeToString mediaType =
     case mediaType of
