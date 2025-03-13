@@ -24,6 +24,8 @@ type alias Model =
     , isGenreFilterOpen : Bool -- Track if genre filter dropdown is open
     , selectedGenre : Maybe String -- Currently selected genre for filtering
     , availableGenres : List String -- List of available genres
+    , isTypeFilterOpen : Bool -- Track if type filter dropdown is open
+    , selectedType : Maybe MediaType -- Currently selected media type for filtering
     }
 
 init : ( Model, Cmd Msg )
@@ -51,6 +53,8 @@ init =
       , isGenreFilterOpen = False -- Initialize genre filter as closed
       , selectedGenre = Nothing -- No genre selected initially
       , availableGenres = allGenres -- All available genres
+      , isTypeFilterOpen = False -- Initialize type filter as closed
+      , selectedType = Nothing -- No type selected initially
       }
     , Cmd.batch
         [ Cmd.map MediaDetailMsg mediaDetailCmd
@@ -132,6 +136,9 @@ type Msg
     | ToggleGenreFilter -- New message to toggle genre filter dropdown
     | SelectGenre String -- New message to select a genre
     | ClearGenreFilter -- New message to clear genre filter
+    | ToggleTypeFilter -- Toggle type filter dropdown
+    | SelectType MediaType -- Select a media type
+    | ClearTypeFilter -- Clear type filter
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -222,16 +229,25 @@ update msg model =
             ( { model | serverConfig = newConfig }, Cmd.none )
 
         ToggleUserMenu ->
-            ( { model | isUserMenuOpen = not model.isUserMenuOpen, isGenreFilterOpen = False }, Cmd.none )
+            ( { model | isUserMenuOpen = not model.isUserMenuOpen, isGenreFilterOpen = False, isTypeFilterOpen = False }, Cmd.none )
 
         ToggleGenreFilter ->
-            ( { model | isGenreFilterOpen = not model.isGenreFilterOpen, isUserMenuOpen = False }, Cmd.none )
+            ( { model | isGenreFilterOpen = not model.isGenreFilterOpen, isUserMenuOpen = False, isTypeFilterOpen = False }, Cmd.none )
 
         SelectGenre genre ->
             ( { model | selectedGenre = Just genre, isGenreFilterOpen = False }, Cmd.none )
 
         ClearGenreFilter ->
             ( { model | selectedGenre = Nothing }, Cmd.none )
+
+        ToggleTypeFilter ->
+            ( { model | isTypeFilterOpen = not model.isTypeFilterOpen, isUserMenuOpen = False, isGenreFilterOpen = False }, Cmd.none )
+
+        SelectType mediaType ->
+            ( { model | selectedType = Just mediaType, isTypeFilterOpen = False }, Cmd.none )
+
+        ClearTypeFilter ->
+            ( { model | selectedType = Nothing }, Cmd.none )
 
         UserMenuAction action ->
             -- Handle user menu actions (placeholder for now)
@@ -282,13 +298,72 @@ viewHeader model =
                     ]
                 ]
             , div [ class "flex items-center space-x-4" ]
-                [ viewGenreFilter model -- New genre filter dropdown
+                [ viewTypeFilter model -- New type filter dropdown
+                , viewGenreFilter model -- Genre filter dropdown
                 , viewUserProfile model
                 ]
             ]
         ]
 
--- New function for genre filter dropdown
+-- New function for type filter dropdown
+viewTypeFilter : Model -> Html Msg
+viewTypeFilter model =
+    div [ class "relative" ]
+        [ button
+            (Theme.button Theme.Ghost ++
+                [ class "flex items-center space-x-2"
+                , onClick ToggleTypeFilter
+                ]
+            )
+            [ text
+                (case model.selectedType of
+                    Just mediaType ->
+                        "Type: " ++ mediaTypeToString mediaType
+                    Nothing ->
+                        "Filter by Type"
+                )
+            , if model.selectedType /= Nothing then
+                button
+                    [ class "ml-2 text-text-secondary hover:text-error"
+                    , onClick ClearTypeFilter
+                    ]
+                    [ text "×" ]
+              else
+                text ""
+            ]
+        , if model.isTypeFilterOpen then
+            viewTypeDropdown
+          else
+            text ""
+        ]
+
+-- Type dropdown menu
+viewTypeDropdown : Html Msg
+viewTypeDropdown =
+    div
+        [ class "absolute right-0 mt-2 w-48 bg-surface rounded-md shadow-lg z-50 border border-background-light" ]
+        [ div
+            [ class "bg-surface border-b border-background-light p-2" ]
+            [ p (Theme.text Theme.Label)
+                [ text "Select Media Type" ]
+            ]
+        , div
+            [ class "py-1" ]
+            [ viewTypeOption Movie
+            , viewTypeOption TVShow
+            ]
+        ]
+
+-- Individual type option
+viewTypeOption : MediaType -> Html Msg
+viewTypeOption mediaType =
+    div
+        [ class "px-4 py-2 hover:bg-background-light cursor-pointer text-text-primary"
+        , onClick (SelectType mediaType)
+        ]
+        [ text (mediaTypeToString mediaType) ]
+
+-- Genre filter dropdown (existing function)
 viewGenreFilter : Model -> Html Msg
 viewGenreFilter model =
     div [ class "relative" ]
@@ -367,6 +442,7 @@ viewUserMenu =
         [ viewUserMenuHeader
         , viewUserMenuItem "Profile" "User profile and settings" "profile"
         , viewUserMenuItem "Display Preferences" "Customize your experience" "display"
+        , viewUserMenuItem "Watch Party" "Whatch with a group" "watchParty"
         , div [ class "border-t border-background-light my-1" ] []
         , viewUserMenuItem "Manage Libraries" "Organize your media collection" "libraries"
         , viewUserMenuItem "Manage Users" "Add or edit user access" "users"
@@ -416,18 +492,19 @@ viewContent : Model -> Html Msg
 viewContent model =
     div [ class "px-4 md:px-6 lg:px-8 max-w-screen-2xl mx-auto space-y-10 mb-8" ]
         [ -- Show active filters if any
-          if model.selectedGenre /= Nothing then
-              div [ class "flex items-center py-2 space-x-2" ]
+          if model.selectedGenre /= Nothing || model.selectedType /= Nothing then
+              div [ class "flex items-center py-2 space-x-2 flex-wrap" ]
                   [ span (Theme.text Theme.Label)
                       [ text "Active filters:" ]
                   , viewActiveFilter model.selectedGenre
+                  , viewActiveTypeFilter model.selectedType
                   ]
           else
               text ""
         , case model.selectedCategory of
               Just categoryId ->
                   -- View a specific category in detail
-                  case findCategory categoryId (filterCategoriesByGenre model.selectedGenre model.categories) of
+                  case findCategory categoryId (filterCategoriesByType model.selectedType (filterCategoriesByGenre model.selectedGenre model.categories)) of
                       Just category ->
                           div []
                               [ div [ class "flex items-center mb-6 mt-2" ]
@@ -450,7 +527,9 @@ viewContent model =
                           (viewCategory model.searchQuery)
                           (filterCategories
                               model.searchQuery
-                              (filterCategoriesByGenre model.selectedGenre model.categories)
+                              (filterCategoriesByType model.selectedType
+                                  (filterCategoriesByGenre model.selectedGenre model.categories)
+                              )
                           )
                       )
         ]
@@ -472,8 +551,22 @@ viewActiveFilter maybeGenre =
         Nothing ->
             text ""
 
--- MISSING FUNCTIONS
--- These are the functions that were missing in the original code
+-- View for active type filter badge
+viewActiveTypeFilter : Maybe MediaType -> Html Msg
+viewActiveTypeFilter maybeType =
+    case maybeType of
+        Just mediaType ->
+            div [ class "flex items-center bg-secondary bg-opacity-20 border border-secondary rounded-full px-3 py-1" ]
+                [ span (Theme.text Theme.Body)
+                    [ text (mediaTypeToString mediaType) ]
+                , button
+                    [ class "ml-2 text-secondary hover:text-secondary-dark"
+                    , onClick ClearTypeFilter
+                    ]
+                    [ text "×" ]
+                ]
+        Nothing ->
+            text ""
 
 -- Find a category by ID
 findCategory : String -> List Category -> Maybe Category
@@ -609,6 +702,22 @@ filterCategoriesByGenre maybeGenre categories =
                 |> List.map (\category ->
                     { category |
                         items = List.filter shouldKeepItem category.items
+                    }
+                )
+                |> List.filter (\category -> not (List.isEmpty category.items))
+
+-- Add new filter function for media type
+filterCategoriesByType : Maybe MediaType -> List Category -> List Category
+filterCategoriesByType maybeType categories =
+    case maybeType of
+        Nothing ->
+            categories
+
+        Just mediaType ->
+            categories
+                |> List.map (\category ->
+                    { category |
+                        items = List.filter (\item -> item.type_ == mediaType) category.items
                     }
                 )
                 |> List.filter (\category -> not (List.isEmpty category.items))
