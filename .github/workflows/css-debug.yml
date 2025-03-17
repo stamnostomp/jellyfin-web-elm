@@ -1,0 +1,341 @@
+name: CSS Debug Build
+
+on:
+  workflow_dispatch:
+
+# Explicitly set permissions
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Elm and Tailwind
+        run: |
+          npm install -g elm
+          npm install -D tailwindcss
+          npm install -D postcss autoprefixer
+          npm list -g
+
+      - name: Project Structure
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Repository content:"
+          ls -la
+
+      - name: Create directories and copy files
+        run: |
+          mkdir -p public
+          mkdir -p src/css
+          cp -r src/. src-backup/  # Backup original sources
+
+          # Create a simple Elm file for testing if needed
+          if [ ! -f "src/Main.elm" ]; then
+            echo "Creating simple Main.elm file"
+            mkdir -p src
+            cat > src/Main.elm << 'EOL'
+module Main exposing (main)
+
+import Browser
+import Html exposing (Html, div, h1, p, text)
+import Html.Attributes exposing (class)
+
+main : Program () Model Msg
+main =
+    Browser.element
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , view = view
+        }
+
+type alias Model =
+    { message : String
+    }
+
+init : () -> ( Model, Cmd Msg )
+init _ =
+    ( { message = "Hello from Elm!" }, Cmd.none )
+
+type Msg
+    = NoOp
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update _ model =
+    ( model, Cmd.none )
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Sub.none
+
+view : Model -> Html Msg
+view model =
+    div [ class "container mx-auto p-4" ]
+        [ h1 [ class "text-3xl font-bold text-primary mb-4" ] [ text "Jellyfin Web Elm" ]
+        , div [ class "bg-surface p-6 rounded-lg" ]
+            [ p [ class "mb-4" ] [ text model.message ]
+            , p [ class "text-warning" ] [ text "If you can see this text in orange/yellow, Tailwind CSS is working!" ]
+            ]
+        ]
+EOL
+          fi
+
+      - name: Create package.json
+        run: |
+          cat > package.json << 'EOL'
+{
+  "name": "jellyfin-web-elm",
+  "version": "1.0.0",
+  "description": "Jellyfin Web Elm",
+  "scripts": {
+    "build:elm": "elm make src/Main.elm --output=public/main.js --optimize",
+    "build:css": "tailwindcss -i ./src/css/input.css -o ./public/output.css --minify",
+    "build": "npm run build:elm && npm run build:css"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.3"
+  }
+}
+EOL
+
+      - name: Create Tailwind config
+        run: |
+          cat > tailwind.config.js << 'EOL'
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './public/index.html',
+    './src/**/*.elm'
+  ],
+  theme: {
+    extend: {
+      colors: {
+        // Everbush Vim theme colors
+        primary: {
+          light: '#7fa8cc', // Lighter blue
+          DEFAULT: '#5f87af', // Blue-ish
+          dark: '#4a6d8c', // Darker blue
+        },
+        secondary: {
+          light: '#e0a0a0', // Lighter pink
+          DEFAULT: '#d78787', // Soft red/pink
+          dark: '#af6c6c', // Darker pink
+        },
+        // UI colors based on Everbush
+        background: {
+          light: '#303030', // Selection color
+          DEFAULT: '#1c1c1c', // Dark background
+          dark: '#141414', // Even darker
+        },
+        surface: {
+          light: '#303030', // Selection color
+          DEFAULT: '#262626', // Line highlight color
+          dark: '#1c1c1c', // Background color
+        },
+        text: {
+          primary: '#d0d0d0', // Light text
+          secondary: '#a0a0a0', // Slightly dimmer text
+          disabled: '#5f5f5f', // Muted text
+        },
+        warning: {
+          light: '#e0e0a0', // Lighter yellow
+          DEFAULT: '#d7d787', // Soft yellow
+          dark: '#acac6c', // Darker yellow
+        }
+      }
+    }
+  },
+  plugins: []
+}
+EOL
+          cat tailwind.config.js
+
+      - name: Create CSS input
+        run: |
+          cat > src/css/input.css << 'EOL'
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Add some basic styles to verify CSS is working */
+@layer base {
+  body {
+    @apply bg-background text-text-primary;
+  }
+
+  h1 {
+    @apply text-3xl font-bold text-primary mb-4;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold text-secondary mb-2;
+  }
+}
+EOL
+          cat src/css/input.css
+
+      - name: Verify Elm files
+        run: |
+          echo "Main.elm exists?"
+          if [ -f "src/Main.elm" ]; then echo "YES"; else echo "NO"; fi
+          echo "Content of src directory:"
+          ls -la src/
+
+      - name: Build Elm
+        run: |
+          elm make src/Main.elm --output=public/main.js || echo "Elm build failed"
+          echo "Elm build result:"
+          ls -la public/ || echo "public directory not found after Elm build"
+          if [ -f "public/main.js" ]; then
+            echo "Main.js was successfully created"
+            du -h public/main.js
+          else
+            echo "ERROR: Main.js was not created!"
+          fi
+
+      - name: Build Tailwind with debug
+        run: |
+          echo "Building Tailwind CSS..."
+          # Show Tailwind version
+          npx tailwindcss --help
+
+          # Build with verbose output
+          npx tailwindcss -i ./src/css/input.css -o ./public/output.css --minify -v
+
+          echo "Tailwind build result:"
+          ls -la public/ || echo "public directory not found after Tailwind build"
+
+          if [ -f "public/output.css" ]; then
+            echo "output.css was successfully created"
+            du -h public/output.css
+            echo "First 20 lines of output.css:"
+            head -n 20 public/output.css
+          else
+            echo "ERROR: output.css was not created!"
+          fi
+
+      - name: Create HTML
+        run: |
+          cat > public/index.html << 'EOL'
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elm with Everbush Theme - Debug</title>
+    <link href="./output.css" rel="stylesheet">
+    <script src="./main.js"></script>
+    <style>
+      /* Fallback styles in case Tailwind doesn't load */
+      .fallback-active {
+        color: red;
+        font-weight: bold;
+        background-color: #ffdddd;
+        padding: 10px;
+        border: 2px solid red;
+        margin-top: 20px;
+      }
+      /* This style should be overridden by Tailwind if it loads */
+      .text-primary {
+        color: red !important;
+      }
+      /* This will only be visible if Tailwind is not loaded */
+      #tailwind-fallback {
+        display: block;
+      }
+      /* Tailwind will hide this if loaded */
+      body.tailwind-loaded #tailwind-fallback {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="elm-app"></div>
+
+    <div id="tailwind-fallback" class="fallback-active">
+      <h2>CSS LOADING ERROR</h2>
+      <p>The Tailwind CSS file didn't load properly. You should be seeing this in red if Tailwind CSS failed to load.</p>
+    </div>
+
+    <div style="padding: 20px; margin-top: 20px; border: 1px solid #ccc;">
+      <h2>Debug Information</h2>
+      <p>Page loaded at: <span id="timestamp"></span></p>
+      <p>Elm loaded: <span id="elm-status">Checking...</span></p>
+      <p>CSS file: <a href="./output.css" target="_blank">View CSS</a></p>
+      <p>JS file: <a href="./main.js" target="_blank">View JS</a></p>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Set timestamp
+        document.getElementById('timestamp').textContent = new Date().toISOString();
+
+        // Check if Tailwind CSS loaded
+        setTimeout(function() {
+          // Get computed style of a test element
+          var testEl = document.querySelector('h2');
+          if (testEl) {
+            var style = window.getComputedStyle(testEl);
+            // If it's not red, Tailwind probably loaded
+            if (style.color !== 'rgb(255, 0, 0)') {
+              document.body.classList.add('tailwind-loaded');
+            }
+          }
+        }, 500);
+
+        // Check if Elm loaded
+        setTimeout(function() {
+          try {
+            if (typeof Elm !== 'undefined' && Elm.Main) {
+              console.log('Elm found, initializing app');
+              document.getElementById('elm-status').textContent = 'Yes';
+              var app = Elm.Main.init({
+                node: document.getElementById('elm-app')
+              });
+            } else {
+              console.error('Elm not found or Elm.Main not available');
+              document.getElementById('elm-status').textContent = 'No';
+              document.getElementById('elm-app').innerHTML = '<div style="padding: 20px; color: red;">Elm application failed to load</div>';
+            }
+          } catch (e) {
+            console.error('Error initializing Elm app:', e);
+            document.getElementById('elm-status').textContent = 'Error: ' + e.message;
+            document.getElementById('elm-app').innerHTML = '<div style="padding: 20px; color: red;">Error: ' + e.message + '</div>';
+          }
+        }, 500);
+      });
+    </script>
+  </body>
+</html>
+EOL
+
+      - name: Add .nojekyll
+        run: touch public/.nojekyll
+
+      - name: Final directory structure
+        run: |
+          echo "Final public directory content:"
+          ls -la public/
+          echo "File sizes:"
+          du -h public/*
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: public
+          branch: gh-pages
+          clean: true
