@@ -1,0 +1,66 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: # Manual trigger option
+
+permissions:
+  contents: write # Needed for github-pages-deploy-action
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v22
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build with Nix
+        run: |
+          nix run .#build
+          # Ensure index.html exists
+          if [ ! -f "public/index.html" ]; then
+            cat > public/index.html << EOF
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elm with Everbush Theme</title>
+    <link href="output.css" rel="stylesheet">
+    <script src="main.js"></script>
+  </head>
+  <body class="bg-background min-h-screen">
+    <div id="elm-app"></div>
+    <script>
+      var app = Elm.Main.init({
+        node: document.getElementById('elm-app')
+      });
+    </script>
+  </body>
+</html>
+EOF
+          fi
+
+          # Create a .nojekyll file to prevent GitHub Pages from using Jekyll
+          touch public/.nojekyll
+
+          # List the contents of the public directory for debugging
+          ls -la public/
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: public
+          branch: gh-pages
