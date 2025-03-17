@@ -51,32 +51,10 @@ jobs:
           ls -la public/ || echo "public directory not found after Elm build"
 
       - name: Create Tailwind config
-        run: |
-          if [ ! -f "tailwind.config.js" ]; then
-            echo "Creating new tailwind.config.js"
-            cat > tailwind.config.js << 'EOF'
-module.exports = {
-  content: [
-    './public/index.html',
-    './src/**/*.elm'
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
-EOF
-          else
-            echo "Using existing tailwind.config.js"
-          fi
+        run: echo 'module.exports = { content: ["./public/index.html", "./src/**/*.elm"], theme: { extend: {} }, plugins: [] }' > tailwind.config.js
 
       - name: Create CSS input
-        run: |
-          cat > src/css/input.css << 'EOF'
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-EOF
+        run: echo '@tailwind base; @tailwind components; @tailwind utilities;' > src/css/input.css
 
       - name: Build Tailwind
         run: |
@@ -86,8 +64,7 @@ EOF
 
       - name: Create HTML
         run: |
-          cat > public/index.html << 'EOF'
-<!DOCTYPE html>
+          echo '<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8">
@@ -99,20 +76,20 @@ EOF
   <body>
     <div id="elm-app"></div>
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener("DOMContentLoaded", function() {
         try {
-          if (typeof Elm !== 'undefined' && Elm.Main) {
-            console.log('Elm found, initializing app');
+          if (typeof Elm !== "undefined" && Elm.Main) {
+            console.log("Elm found, initializing app");
             var app = Elm.Main.init({
-              node: document.getElementById('elm-app')
+              node: document.getElementById("elm-app")
             });
           } else {
-            console.error('Elm not found or Elm.Main not available');
-            document.getElementById('elm-app').innerHTML = '<div style="padding: 20px; color: red;">Elm application failed to load</div>';
+            console.error("Elm not found or Elm.Main not available");
+            document.getElementById("elm-app").innerHTML = "<div style=\"padding: 20px; color: red;\">Elm application failed to load</div>";
           }
         } catch (e) {
-          console.error('Error initializing Elm app:', e);
-          document.getElementById('elm-app').innerHTML = '<div style="padding: 20px; color: red;">Error: ' + e.message + '</div>';
+          console.error("Error initializing Elm app:", e);
+          document.getElementById("elm-app").innerHTML = "<div style=\"padding: 20px; color: red;\">Error: " + e.message + "</div>";
         }
       });
     </script>
@@ -121,16 +98,15 @@ EOF
       <p>Page loaded at: <span id="timestamp"></span></p>
       <p>Elm loaded: <span id="elm-status">Checking...</span></p>
       <script>
-        document.getElementById('timestamp').textContent = new Date().toISOString();
+        document.getElementById("timestamp").textContent = new Date().toISOString();
         setTimeout(function() {
-          document.getElementById('elm-status').textContent =
-            (typeof Elm !== 'undefined') ? 'Yes' : 'No';
+          document.getElementById("elm-status").textContent =
+            (typeof Elm !== "undefined") ? "Yes" : "No";
         }, 500);
       </script>
     </div>
   </body>
-</html>
-EOF
+</html>' > public/index.html
 
       - name: Final directory structure
         run: |
