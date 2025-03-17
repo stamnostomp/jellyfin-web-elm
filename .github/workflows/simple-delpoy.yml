@@ -1,7 +1,7 @@
-name: Simple Pages Deploy
+name: Deploy Static Page
 
 on:
-  workflow_dispatch: # Manual trigger only
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -13,17 +13,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Create simple page
+      - name: Setup simple page
         run: |
           mkdir -p public
-          echo '<!DOCTYPE html>
+          cat > public/index.html << 'EOL'
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <title>Jellyfin Web Elm - Test Page</title>
   <style>
-    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-    .card { background: #f5f5f5; border-radius: 8px; padding: 20px; margin: 20px 0; }
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #1c1c1c; color: #d0d0d0; }
+    .card { background: #262626; border-radius: 8px; padding: 20px; margin: 20px 0; border: 1px solid #303030; }
+    h1 { color: #5f87af; }
   </style>
 </head>
 <body>
@@ -37,10 +39,11 @@ jobs:
     document.getElementById("time").textContent = new Date().toLocaleString();
   </script>
 </body>
-</html>' > public/index.html
+</html>
+EOL
           touch public/.nojekyll
 
-      - name: Deploy
+      - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: public
