@@ -6,6 +6,7 @@ repl-temp-*
 # Compiled Elm output
 /public/main.js
 /public/output.css
+/public/fonts/*
 
 # Node modules if you're using npm
 node_modules/
