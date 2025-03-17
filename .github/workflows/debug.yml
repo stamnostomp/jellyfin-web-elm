@@ -51,10 +51,24 @@ jobs:
           ls -la public/ || echo "public directory not found after Elm build"
 
       - name: Create Tailwind config
-        run: echo 'module.exports = { content: ["./public/index.html", "./src/**/*.elm"], theme: { extend: {} }, plugins: [] }' > tailwind.config.js
+        run: |
+          # Create tailwind config file line by line
+          echo "module.exports = {" > tailwind.config.js
+          echo "  content: ['./public/index.html', './src/**/*.elm']," >> tailwind.config.js
+          echo "  theme: { extend: {} }," >> tailwind.config.js
+          echo "  plugins: []" >> tailwind.config.js
+          echo "}" >> tailwind.config.js
+          # Show created config
+          cat tailwind.config.js
 
       - name: Create CSS input
-        run: echo '@tailwind base; @tailwind components; @tailwind utilities;' > src/css/input.css
+        run: |
+          # Create CSS input file
+          echo "@tailwind base;" > src/css/input.css
+          echo "@tailwind components;" >> src/css/input.css
+          echo "@tailwind utilities;" >> src/css/input.css
+          # Show created CSS
+          cat src/css/input.css
 
       - name: Build Tailwind
         run: |
@@ -64,49 +78,50 @@ jobs:
 
       - name: Create HTML
         run: |
-          echo '<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elm with Everbush Theme - Debug</title>
-    <link href="output.css" rel="stylesheet">
-    <script src="main.js"></script>
-  </head>
-  <body>
-    <div id="elm-app"></div>
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        try {
-          if (typeof Elm !== "undefined" && Elm.Main) {
-            console.log("Elm found, initializing app");
-            var app = Elm.Main.init({
-              node: document.getElementById("elm-app")
-            });
-          } else {
-            console.error("Elm not found or Elm.Main not available");
-            document.getElementById("elm-app").innerHTML = "<div style=\"padding: 20px; color: red;\">Elm application failed to load</div>";
-          }
-        } catch (e) {
-          console.error("Error initializing Elm app:", e);
-          document.getElementById("elm-app").innerHTML = "<div style=\"padding: 20px; color: red;\">Error: " + e.message + "</div>";
-        }
-      });
-    </script>
-    <div style="padding: 20px; margin-top: 20px; border: 1px solid #ccc;">
-      <h2>Debug Information</h2>
-      <p>Page loaded at: <span id="timestamp"></span></p>
-      <p>Elm loaded: <span id="elm-status">Checking...</span></p>
-      <script>
-        document.getElementById("timestamp").textContent = new Date().toISOString();
-        setTimeout(function() {
-          document.getElementById("elm-status").textContent =
-            (typeof Elm !== "undefined") ? "Yes" : "No";
-        }, 500);
-      </script>
-    </div>
-  </body>
-</html>' > public/index.html
+          # Create basic HTML file
+          echo "<!DOCTYPE html>" > public/index.html
+          echo "<html>" >> public/index.html
+          echo "  <head>" >> public/index.html
+          echo "    <meta charset=\"UTF-8\">" >> public/index.html
+          echo "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" >> public/index.html
+          echo "    <title>Elm with Everbush Theme - Debug</title>" >> public/index.html
+          echo "    <link href=\"output.css\" rel=\"stylesheet\">" >> public/index.html
+          echo "    <script src=\"main.js\"></script>" >> public/index.html
+          echo "  </head>" >> public/index.html
+          echo "  <body>" >> public/index.html
+          echo "    <div id=\"elm-app\"></div>" >> public/index.html
+          echo "    <script>" >> public/index.html
+          echo "      document.addEventListener('DOMContentLoaded', function() {" >> public/index.html
+          echo "        try {" >> public/index.html
+          echo "          if (typeof Elm !== 'undefined' && Elm.Main) {" >> public/index.html
+          echo "            console.log('Elm found, initializing app');" >> public/index.html
+          echo "            var app = Elm.Main.init({" >> public/index.html
+          echo "              node: document.getElementById('elm-app')" >> public/index.html
+          echo "            });" >> public/index.html
+          echo "          } else {" >> public/index.html
+          echo "            console.error('Elm not found or Elm.Main not available');" >> public/index.html
+          echo "            document.getElementById('elm-app').innerHTML = '<div style=\"padding: 20px; color: red;\">Elm application failed to load</div>';" >> public/index.html
+          echo "          }" >> public/index.html
+          echo "        } catch (e) {" >> public/index.html
+          echo "          console.error('Error initializing Elm app:', e);" >> public/index.html
+          echo "          document.getElementById('elm-app').innerHTML = '<div style=\"padding: 20px; color: red;\">Error: ' + e.message + '</div>';" >> public/index.html
+          echo "        }" >> public/index.html
+          echo "      });" >> public/index.html
+          echo "    </script>" >> public/index.html
+          echo "    <div style=\"padding: 20px; margin-top: 20px; border: 1px solid #ccc;\">" >> public/index.html
+          echo "      <h2>Debug Information</h2>" >> public/index.html
+          echo "      <p>Page loaded at: <span id=\"timestamp\"></span></p>" >> public/index.html
+          echo "      <p>Elm loaded: <span id=\"elm-status\">Checking...</span></p>" >> public/index.html
+          echo "      <script>" >> public/index.html
+          echo "        document.getElementById('timestamp').textContent = new Date().toISOString();" >> public/index.html
+          echo "        setTimeout(function() {" >> public/index.html
+          echo "          document.getElementById('elm-status').textContent = " >> public/index.html
+          echo "            (typeof Elm !== 'undefined') ? 'Yes' : 'No';" >> public/index.html
+          echo "        }, 500);" >> public/index.html
+          echo "      </script>" >> public/index.html
+          echo "    </div>" >> public/index.html
+          echo "  </body>" >> public/index.html
+          echo "</html>" >> public/index.html
 
       - name: Final directory structure
         run: |
