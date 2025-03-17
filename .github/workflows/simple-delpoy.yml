@@ -1,0 +1,47 @@
+name: Simple Pages Deploy
+
+on:
+  workflow_dispatch: # Manual trigger only
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Create simple page
+        run: |
+          mkdir -p public
+          echo '<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Jellyfin Web Elm - Test Page</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    .card { background: #f5f5f5; border-radius: 8px; padding: 20px; margin: 20px 0; }
+  </style>
+</head>
+<body>
+  <h1>Jellyfin Web Elm</h1>
+  <div class="card">
+    <h2>Test Page</h2>
+    <p>This is a test page to verify GitHub Pages deployment is working correctly.</p>
+    <p>Current time: <span id="time"></span></p>
+  </div>
+  <script>
+    document.getElementById("time").textContent = new Date().toLocaleString();
+  </script>
+</body>
+</html>' > public/index.html
+          touch public/.nojekyll
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: public
+          branch: gh-pages
