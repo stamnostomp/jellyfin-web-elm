@@ -1,5 +1,6 @@
 module JellyfinUI exposing (Model, Msg, init, update, view, subscriptions)
 
+import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -26,6 +27,7 @@ type alias Model =
     , availableGenres : List String -- List of available genres
     , isTypeFilterOpen : Bool -- Track if type filter dropdown is open
     , selectedType : Maybe MediaType -- Currently selected media type for filtering
+    , categoryTranslation : Dict String Float  -- Stores X-translation for each category
     }
 
 init : ( Model, Cmd Msg )
@@ -55,6 +57,7 @@ init =
       , availableGenres = allGenres -- All available genres
       , isTypeFilterOpen = False -- Initialize type filter as closed
       , selectedType = Nothing -- No type selected initially
+      , categoryTranslation = Dict.empty -- Initialize with empty translations dictionary
       }
     , Cmd.batch
         [ Cmd.map MediaDetailMsg mediaDetailCmd
@@ -139,6 +142,8 @@ type Msg
     | ToggleTypeFilter -- Toggle type filter dropdown
     | SelectType MediaType -- Select a media type
     | ClearTypeFilter -- Clear type filter
+    | ScrollCategory String Int -- categoryId, direction (+1 for right, -1 for left)
+    | NoOp
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -253,6 +258,36 @@ update msg model =
             -- Handle user menu actions (placeholder for now)
             ( { model | isUserMenuOpen = False }, Cmd.none )
 
+        ScrollCategory categoryId direction ->
+            let
+                -- Get current translation or default to 0
+                currentTranslation =
+                    Dict.get categoryId model.categoryTranslation
+                        |> Maybe.withDefault 0
+
+                -- Calculate how much to scroll per click (e.g., 300px)
+                scrollAmount = 300
+
+                -- Calculate new translation
+                newTranslation =
+                    if direction > 0 then
+                        -- Scrolling right (more negative translation)
+                        currentTranslation - scrollAmount
+                    else
+                        -- Scrolling left (more positive translation, but max at 0)
+                        Basics.min 0 (currentTranslation + scrollAmount)
+
+                -- Update the dictionary with new translation
+                updatedTranslations =
+                    Dict.insert categoryId newTranslation model.categoryTranslation
+            in
+            ( { model | categoryTranslation = updatedTranslations }
+            , Cmd.none
+            )
+
+        NoOp ->
+            -- Do nothing
+            ( model, Cmd.none )
 
 -- SUBSCRIPTIONS
 
@@ -524,7 +559,7 @@ viewContent model =
                   -- View all categories with filters applied
                   div [ class "space-y-10" ]
                       (List.map
-                          (viewCategory model.searchQuery)
+                          (viewCategory model)
                           (filterCategories
                               model.searchQuery
                               (filterCategoriesByType model.selectedType
@@ -574,22 +609,56 @@ findCategory categoryId categories =
     List.filter (\cat -> cat.id == categoryId) categories
         |> List.head
 
--- View a category row with its items
-viewCategory : String -> Category -> Html Msg
-viewCategory searchQuery category =
+-- View a category row with its items and scroll arrows
+viewCategory : Model -> Category -> Html Msg
+viewCategory model category =
     if List.isEmpty category.items then
         text ""
     else
+        let
+            -- Get the current translation for this category or default to 0
+            currentTranslation =
+                Dict.get category.id model.categoryTranslation
+                    |> Maybe.withDefault 0
+        in
         div [ class "space-y-3" ]
             [ div [ class "flex justify-between items-center" ]
                 [ h2 (Theme.text Theme.Heading2)
                     [ text category.name ]
-                , button
-                    (Theme.button Theme.Ghost ++ [ onClick (SelectCategory category.id) ])
-                    [ text "See All" ]
+                , div [ class "flex items-center space-x-2" ]
+                    [ button
+                        (Theme.button Theme.Ghost ++
+                            [ onClick (ScrollCategory category.id 1)  -- Scroll left
+                            , class "flex items-center justify-center w-8 h-8"
+                            ]
+                        )
+                        [ text "←" ]
+                    , button
+                        (Theme.button Theme.Ghost ++
+                            [ onClick (ScrollCategory category.id -1)  -- Scroll right
+                            , class "flex items-center justify-center w-8 h-8"
+                            ]
+                        )
+                        [ text "→" ]
+                    , button
+                        (Theme.button Theme.Ghost ++ [ onClick (SelectCategory category.id) ])
+                        [ text "See All" ]
+                    ]
                 ]
-            , div [ class "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4" ]
-                (List.map viewMediaItem category.items)
+            , div [ class "relative overflow-hidden" ]
+                [ div
+                    [ class "flex"
+                    , style "transform" ("translateX(" ++ String.fromFloat currentTranslation ++ "px)")
+                    , style "transition" "transform 0.4s ease"
+                    ]
+                    (List.map
+                        (\item ->
+                            div [ class "flex-shrink-0 w-48 md:w-56 lg:w-64 mr-4" ]
+                                [ viewMediaItem item ]
+                        )
+                        category.items
+                    )
+                ]
             ]
 
 -- View a media item (small card version)
