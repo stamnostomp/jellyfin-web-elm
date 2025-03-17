@@ -25,11 +25,11 @@ jobs:
         run: |
           echo "Current directory:"
           pwd
-          echo "\nRepository content:"
+          echo "Repository content:"
           ls -la
-          echo "\nSource directory:"
+          echo "Source directory:"
           ls -la src || echo "src directory not found"
-          echo "\nPublic directory (before build):"
+          echo "Public directory (before build):"
           ls -la public || echo "public directory not found"
 
       - name: Create directories
@@ -41,20 +41,20 @@ jobs:
         run: |
           echo "Main.elm exists?"
           if [ -f "src/Main.elm" ]; then echo "YES"; else echo "NO"; fi
-          echo "\nContent of src directory:"
+          echo "Content of src directory:"
           ls -la src/
 
       - name: Build Elm
         run: |
           elm make src/Main.elm --output=public/main.js || echo "Elm build failed"
-          echo "\nElm build result:"
+          echo "Elm build result:"
           ls -la public/ || echo "public directory not found after Elm build"
 
       - name: Create Tailwind config
         run: |
           if [ ! -f "tailwind.config.js" ]; then
             echo "Creating new tailwind.config.js"
-            cat > tailwind.config.js << EOF
+            cat > tailwind.config.js << 'EOF'
 module.exports = {
   content: [
     './public/index.html',
@@ -72,7 +72,7 @@ EOF
 
       - name: Create CSS input
         run: |
-          cat > src/css/input.css << EOF
+          cat > src/css/input.css << 'EOF'
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -81,12 +81,12 @@ EOF
       - name: Build Tailwind
         run: |
           npx tailwindcss -i ./src/css/input.css -o ./public/output.css --minify || echo "Tailwind build failed"
-          echo "\nTailwind build result:"
+          echo "Tailwind build result:"
           ls -la public/
 
       - name: Create HTML
         run: |
-          cat > public/index.html << EOF
+          cat > public/index.html << 'EOF'
 <!DOCTYPE html>
 <html>
   <head>
@@ -136,7 +136,7 @@ EOF
         run: |
           echo "Final public directory content:"
           ls -la public/
-          echo "\nFile sizes:"
+          echo "File sizes:"
           du -h public/*
 
       - name: Deploy to GitHub Pages
