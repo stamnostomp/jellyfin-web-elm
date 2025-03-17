@@ -265,17 +265,43 @@ update msg model =
                     Dict.get categoryId model.categoryTranslation
                         |> Maybe.withDefault 0
 
-                -- Calculate how much to scroll per click (e.g., 300px)
-                scrollAmount = 300
+                -- Calculate scroll amount per click
+                scrollAmount = 300.0
 
-                -- Calculate new translation
+                -- Get the category to determine item count
+                maybeCategory = findCategory categoryId model.categories
+
+                -- Calculate a maximum negative scroll distance based on item count
+                maxScroll =
+                    case maybeCategory of
+                        Just category ->
+                            -- Calculate based on number of items, card width, and container width
+                            -- (Negative because we're translating left)
+                            let
+                                itemCount = List.length category.items |> toFloat
+                                itemWidth = 280.0 -- Approximate width including margins
+                                visibleItems = 4.0 -- Approximate number of visible items
+                                containerWidth = visibleItems * itemWidth
+                                contentWidth = itemCount * itemWidth
+                                maxNegativeScroll = negate (contentWidth - containerWidth)
+                            in
+                            if itemCount <= visibleItems then
+                                -- Don't allow scrolling if all items fit
+                                0.0
+                            else
+                                -- Allow scrolling but limit to prevent empty space
+                                Basics.max maxNegativeScroll -9999.0
+                        Nothing ->
+                            0.0
+
+                -- Calculate new translation with bounds checking
                 newTranslation =
                     if direction > 0 then
-                        -- Scrolling right (more negative translation)
-                        currentTranslation - scrollAmount
+                        -- Scrolling right (more negative translation) with lower bound
+                        Basics.max maxScroll (currentTranslation - scrollAmount)
                     else
-                        -- Scrolling left (more positive translation, but max at 0)
-                        Basics.min 0 (currentTranslation + scrollAmount)
+                        -- Scrolling left (more positive translation) with upper bound of 0
+                        Basics.min 0.0 (currentTranslation + scrollAmount)
 
                 -- Update the dictionary with new translation
                 updatedTranslations =
@@ -620,43 +646,75 @@ viewCategory model category =
             currentTranslation =
                 Dict.get category.id model.categoryTranslation
                     |> Maybe.withDefault 0
+
+            -- Calculate scroll limits
+            itemCount = List.length category.items |> toFloat
+            itemWidth = 280.0 -- Approximate width including margins
+            visibleItems = 4.0 -- Approximate number of visible items
+            contentWidth = itemCount * itemWidth
+            containerWidth = visibleItems * itemWidth
+            maxNegativeScroll = negate (contentWidth - containerWidth)
+
+            -- Determine if we're at scroll limits
+            isAtStart = currentTranslation >= 0.0
+            isAtEnd = currentTranslation <= maxNegativeScroll || itemCount <= visibleItems
+
+            -- Button styles based on scroll position
+            leftButtonStyle =
+                if isAtStart then
+                    Theme.button Theme.Ghost ++
+                        [ onClick NoOp
+                        , class "flex items-center justify-center w-8 h-8 opacity-50 cursor-not-allowed"
+                        ]
+                else
+                    Theme.button Theme.Ghost ++
+                        [ onClick (ScrollCategory category.id 1)  -- Scroll left
+                        , class "flex items-center justify-center w-8 h-8"
+                        ]
+
+            rightButtonStyle =
+                if isAtEnd then
+                    Theme.button Theme.Ghost ++
+                        [ onClick NoOp
+                        , class "flex items-center justify-center w-8 h-8 opacity-50 cursor-not-allowed"
+                        ]
+                else
+                    Theme.button Theme.Ghost ++
+                        [ onClick (ScrollCategory category.id -1)  -- Scroll right
+                        , class "flex items-center justify-center w-8 h-8"
+                        ]
         in
         div [ class "space-y-3" ]
             [ div [ class "flex justify-between items-center" ]
                 [ h2 (Theme.text Theme.Heading2)
                     [ text category.name ]
                 , div [ class "flex items-center space-x-2" ]
-                    [ button
-                        (Theme.button Theme.Ghost ++
-                            [ onClick (ScrollCategory category.id 1)  -- Scroll left
-                            , class "flex items-center justify-center w-8 h-8"
-                            ]
-                        )
-                        [ text "←" ]
-                    , button
-                        (Theme.button Theme.Ghost ++
-                            [ onClick (ScrollCategory category.id -1)  -- Scroll right
-                            , class "flex items-center justify-center w-8 h-8"
-                            ]
-                        )
-                        [ text "→" ]
+                    [ button leftButtonStyle [ text "←" ]
+                    , button rightButtonStyle [ text "→" ]
                     , button
                         (Theme.button Theme.Ghost ++ [ onClick (SelectCategory category.id) ])
                         [ text "See All" ]
                     ]
                 ]
-            , div [ class "relative overflow-hidden" ]
+            , div [ class "relative overflow-hidden px-2" ]
                 [ div
                     [ class "flex"
                     , style "transform" ("translateX(" ++ String.fromFloat currentTranslation ++ "px)")
                     , style "transition" "transform 0.4s ease"
                     ]
-                    (List.map
-                        (\item ->
-                            div [ class "flex-shrink-0 w-48 md:w-56 lg:w-64 mr-4" ]
-                                [ viewMediaItem item ]
-                        )
-                        category.items
+                    (if List.isEmpty category.items then
+                        [ div [ class "w-full text-center p-12" ]
+                            [ p (Theme.text Theme.Body)
+                                [ text "No items in this category" ]
+                            ]
+                        ]
+                     else
+                        List.map
+                            (\item ->
+                                div [ class "flex-shrink-0 w-56 md:w-64 lg:w-72 px-2" ]
+                                    [ viewMediaItem item ]
+                            )
+                            category.items
                     )
                 ]
             ]
@@ -665,23 +723,27 @@ viewCategory model category =
 viewMediaItem : MediaItem -> Html Msg
 viewMediaItem item =
     div
-        [ class "bg-surface border border-background-light rounded-md overflow-hidden transition-all duration-200 hover:shadow-lg hover:border-primary cursor-pointer"
+        [ class "bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-200 hover:shadow-lg hover:border-primary cursor-pointer h-full"
         , onClick (SelectMediaItem item.id)
         ]
         [ div [ class "relative pt-[150%]" ] -- Aspect ratio 2:3 for posters
             [ div
-                [ class "absolute inset-0 bg-background-light"
-                , style "background-image" "linear-gradient(rgba(28, 28, 28, 0.2), rgba(28, 28, 28, 0.8))"
+                [ class "absolute inset-0 bg-surface-light flex flex-col justify-end"
+                , style "background-image" "linear-gradient(rgba(40, 40, 40, 0.2), rgba(30, 30, 30, 0.8))"
                 ]
-                []
-            , div [ class "absolute bottom-0 left-0 right-0 p-3" ]
-                [ p (Theme.text Theme.Body ++ [ class "font-semibold truncate" ])
-                    [ text item.title ]
-                , div [ class "flex justify-between items-center mt-1" ]
-                    [ span (Theme.text Theme.Caption)
-                        [ text (String.fromInt item.year) ]
-                    , span (Theme.text Theme.Caption ++ [ class "flex items-center" ])
-                        [ text (String.fromFloat item.rating) ]
+                [ div [ class "absolute inset-0 flex items-center justify-center" ]
+                    [ div [ class "text-2xl text-primary-light opacity-70" ]
+                        [ text "🎬" ]  -- Movie icon placeholder where an image would be
+                    ]
+                , div [ class "relative z-10 p-3" ]
+                    [ p (Theme.text Theme.Body ++ [ class "font-semibold truncate" ])
+                        [ text item.title ]
+                    , div [ class "flex justify-between items-center mt-1" ]
+                        [ span (Theme.text Theme.Caption)
+                            [ text (String.fromInt item.year) ]
+                        , span (Theme.text Theme.Caption ++ [ class "text-warning flex items-center" ])
+                            [ text ("★ " ++ String.fromFloat item.rating) ]
+                        ]
                     ]
                 ]
             , button
@@ -696,22 +758,24 @@ viewMediaItem item =
 viewMediaItemLarge : MediaItem -> Html Msg
 viewMediaItemLarge item =
     div
-        [ class "flex flex-col bg-surface border border-background-light rounded-md overflow-hidden transition-all duration-200 hover:shadow-lg hover:border-primary"
+        [ class "flex flex-col bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-200 hover:shadow-lg hover:border-primary h-full"
         , onClick (SelectMediaItem item.id)
         ]
         [ div [ class "relative pt-[150%]" ] -- Aspect ratio 2:3 for posters
             [ div
-                [ class "absolute inset-0 bg-background-light"
-                , style "background-image" "linear-gradient(rgba(28, 28, 28, 0.2), rgba(28, 28, 28, 0.8))"
+                [ class "absolute inset-0 bg-surface-light flex items-center justify-center"
+                , style "background-image" "linear-gradient(rgba(40, 40, 40, 0.2), rgba(30, 30, 30, 0.8))"
                 ]
-                []
-            , button
-                [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary bg-opacity-80 hover:bg-opacity-100 rounded-full p-4 transition-all duration-200"
-                , onClick (PlayMedia item.id)
+                [ div [ class "text-4xl text-primary-light opacity-70" ]
+                    [ text "🎬" ]  -- Movie icon placeholder where an image would be
+                , button
+                    [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary bg-opacity-80 hover:bg-opacity-100 rounded-full p-4 transition-all duration-200"
+                    , onClick (PlayMedia item.id)
+                    ]
+                    [ text "▶" ]
                 ]
-                [ text "▶" ]
             ]
-        , div [ class "p-4" ]
+        , div [ class "p-4 flex-grow" ]
             [ h3 (Theme.text Theme.Heading3 ++ [ class "truncate" ])
                 [ text item.title ]
             , div [ class "flex justify-between items-center mt-2" ]
