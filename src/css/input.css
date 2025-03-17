@@ -139,4 +139,22 @@
   .smooth-transition {
     transition: transform 0.4s ease;
   }
+
+  /* Add subtle scale values for hover effects */
+  .scale-102 {
+    transform: scale(1.02);
+  }
+
+  .scale-103 {
+    transform: scale(1.03);
+  }
+
+  .scale-105 {
+    transform: scale(1.05);
+  }
+
+  /* Add brightness utility if not already in Tailwind */
+  .brightness-110 {
+    filter: brightness(1.1);
+  }
 }

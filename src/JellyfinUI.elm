@@ -696,7 +696,7 @@ viewCategory model category =
                         [ text "See All" ]
                     ]
                 ]
-            , div [ class "relative overflow-hidden px-2" ]
+            , div [ class "relative overflow-visible px-2 py-6" ]
                 [ div
                     [ class "flex"
                     , style "transform" ("translateX(" ++ String.fromFloat currentTranslation ++ "px)")
@@ -711,7 +711,7 @@ viewCategory model category =
                      else
                         List.map
                             (\item ->
-                                div [ class "flex-shrink-0 w-56 md:w-64 lg:w-72 px-2" ]
+                                div [ class "flex-shrink-0 w-56 md:w-64 lg:w-72 px-2 py-4" ]
                                     [ viewMediaItem item ]
                             )
                             category.items
@@ -723,12 +723,12 @@ viewCategory model category =
 viewMediaItem : MediaItem -> Html Msg
 viewMediaItem item =
     div
-        [ class "bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-200 hover:shadow-lg hover:border-primary cursor-pointer h-full"
+        [ class "bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary cursor-pointer h-full hover:scale-103 hover:z-10 group"
         , onClick (SelectMediaItem item.id)
         ]
         [ div [ class "relative pt-[150%]" ] -- Aspect ratio 2:3 for posters
             [ div
-                [ class "absolute inset-0 bg-surface-light flex flex-col justify-end"
+                [ class "absolute inset-0 bg-surface-light flex flex-col justify-end transition-all duration-300 group-hover:brightness-110"
                 , style "background-image" "linear-gradient(rgba(40, 40, 40, 0.2), rgba(30, 30, 30, 0.8))"
                 ]
                 [ div [ class "absolute inset-0 flex items-center justify-center" ]
@@ -736,7 +736,7 @@ viewMediaItem item =
                         [ text "🎬" ]  -- Movie icon placeholder where an image would be
                     ]
                 , div [ class "relative z-10 p-3" ]
-                    [ p (Theme.text Theme.Body ++ [ class "font-semibold truncate" ])
+                    [ p (Theme.text Theme.Body ++ [ class "font-semibold truncate group-hover:text-primary transition-colors duration-300" ])
                         [ text item.title ]
                     , div [ class "flex justify-between items-center mt-1" ]
                         [ span (Theme.text Theme.Caption)
@@ -747,8 +747,9 @@ viewMediaItem item =
                     ]
                 ]
             , button
-                [ class "absolute top-2 right-2 bg-primary rounded-full p-1 opacity-0 hover:opacity-100 transition-opacity"
+                [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300"
                 , onClick (PlayMedia item.id)
+                , style "font-size" "1.5rem"
                 ]
                 [ text "▶" ]
             ]
@@ -758,25 +759,26 @@ viewMediaItem item =
 viewMediaItemLarge : MediaItem -> Html Msg
 viewMediaItemLarge item =
     div
-        [ class "flex flex-col bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-200 hover:shadow-lg hover:border-primary h-full"
+        [ class "flex flex-col bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary hover:scale-103 hover:z-10 group h-full"
         , onClick (SelectMediaItem item.id)
         ]
         [ div [ class "relative pt-[150%]" ] -- Aspect ratio 2:3 for posters
             [ div
-                [ class "absolute inset-0 bg-surface-light flex items-center justify-center"
+                [ class "absolute inset-0 bg-surface-light flex items-center justify-center transition-all duration-300 group-hover:brightness-110"
                 , style "background-image" "linear-gradient(rgba(40, 40, 40, 0.2), rgba(30, 30, 30, 0.8))"
                 ]
                 [ div [ class "text-4xl text-primary-light opacity-70" ]
                     [ text "🎬" ]  -- Movie icon placeholder where an image would be
-                , button
-                    [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary bg-opacity-80 hover:bg-opacity-100 rounded-full p-4 transition-all duration-200"
-                    , onClick (PlayMedia item.id)
-                    ]
-                    [ text "▶" ]
                 ]
+            , button
+                [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300"
+                , onClick (PlayMedia item.id)
+                , style "font-size" "2rem"
+                ]
+                [ text "▶" ]
             ]
-        , div [ class "p-4 flex-grow" ]
-            [ h3 (Theme.text Theme.Heading3 ++ [ class "truncate" ])
+        , div [ class "p-4 flex-grow transition-colors duration-300 group-hover:bg-surface-light" ]
+            [ h3 (Theme.text Theme.Heading3 ++ [ class "truncate group-hover:text-primary transition-colors duration-300" ])
                 [ text item.title ]
             , div [ class "flex justify-between items-center mt-2" ]
                 [ div [ class "flex items-center space-x-2" ]
