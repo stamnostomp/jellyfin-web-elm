@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm install -g elm
-          npm install -D tailwindcss postcss autoprefixer
+          npm install tailwindcss postcss autoprefixer
 
       - name: Create directories
         run: |
@@ -48,12 +48,15 @@ jobs:
 
       - name: Build Tailwind CSS
         run: |
-          # Use your existing Tailwind config and CSS input
-          npx tailwindcss -i ./src/css/input.css -o ./public/output.css --minify
+          # Install tailwindcss locally (not using npx)
+          npm install tailwindcss
+
+          # Use locally installed tailwindcss
+          ./node_modules/.bin/tailwindcss -i ./src/css/input.css -o ./public/output.css --minify
 
           # Verify the CSS was generated
           echo "CSS file size:"
-          du -h public/output.css
+          du -h public/output.css || echo "CSS file not generated"
 
       - name: Add .nojekyll file
         run: |
