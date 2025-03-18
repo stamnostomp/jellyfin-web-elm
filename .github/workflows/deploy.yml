@@ -16,58 +16,28 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install dependencies
-        run: |
-          npm install -g elm
-          # Create a basic package.json if it doesn't exist
-          if [ ! -f "package.json" ]; then
-            npm init -y
-          fi
-          # Install tailwindcss as a regular dependency
-          npm install tailwindcss postcss autoprefixer
+      - name: Install Elm
+        run: npm install -g elm
 
       - name: Create directories
-        run: |
-          mkdir -p public
-          mkdir -p public/fonts
-
-      - name: Install IBM Plex fonts
-        run: |
-          mkdir -p temp-fonts
-          curl -L https://github.com/IBM/plex/releases/download/v6.3.0/Web.zip -o ibm-plex.zip
-          unzip -q ibm-plex.zip -d temp-fonts
-          mkdir -p public/fonts
-          cp -r temp-fonts/Web/*/fonts/* public/fonts/
-          rm -rf temp-fonts ibm-plex.zip
+        run: mkdir -p public
 
       - name: Build Elm
-        run: |
-          elm make src/Main.elm --output=public/main.js --optimize
+        run: elm make src/Main.elm --output=public/main.js --optimize
 
-      - name: Setup Tailwind CSS build script
+      - name: Install and Build Tailwind CSS
         run: |
-          # Add tailwind build script to package.json
-          npm pkg set scripts.build:css="tailwindcss -i ./src/css/input.css -o ./public/output.css --minify"
-          # List the scripts to confirm
-          npm run | grep build
+          # Install tailwindcss globally
+          npm install -g tailwindcss
 
-      - name: Build Tailwind CSS
-        run: |
-          # Run the tailwind build script
-          npm run build:css
-
-          # Verify the CSS was generated
-          echo "CSS file size:"
-          du -h public/output.css || echo "CSS file not generated"
+          # Run tailwindcss with npx
+          npx tailwindcss -i ./src/css/input.css -o ./public/output.css --minify
 
       - name: Add .nojekyll file
-        run: |
-          touch public/.nojekyll
+        run: touch public/.nojekyll
 
       - name: Final directory structure
-        run: |
-          echo "Final public directory content:"
-          ls -la public/
+        run: ls -la public/
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
