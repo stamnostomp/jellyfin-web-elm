@@ -76,6 +76,7 @@ jobs:
               cp -f ./tailwind.config.js ./tailwind.config.js.bak || echo "No existing config"
               # Copy our known working config
               cat > tailwind.config.js << 'EOL'
+cat > tailwind.config.js << 'EOL'
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -84,25 +85,10 @@ module.exports = {
   ],
   theme: {
     extend: {
-      colors: {
-        primary: {
-          light: '#7fa8cc',
-          DEFAULT: '#5f87af',
-          dark: '#4a6d8c',
-        },
-        secondary: {
-          DEFAULT: '#d78787',
-        },
-        background: {
-          DEFAULT: '#1c1c1c',
-        },
-        text: {
-          primary: '#d0d0d0',
-        },
-      }
+      // your theme configuration
     }
   },
-  plugins: [],
+  plugins: []
 }
 EOL
             fi
