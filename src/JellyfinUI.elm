@@ -328,9 +328,8 @@ view : Model -> Html Msg
 view model =
     div [ class "flex flex-col min-h-screen bg-background" ]
         [ viewHeader model
-        , div [ class "flex-1 overflow-y-auto pt-24 pb-8" ] -- Drastically increased to pt-24 for very obvious spacing
-            [ div [ class "mx-auto w-full max-w-screen-2xl border-t-2 border-primary opacity-25 mb-6" ] [] -- Added visible separator
-            , if model.isLoading then
+        , div [ class "flex-1 overflow-y-auto pt-10 pb-8" ] -- Reduced to a more reasonable padding
+            [ if model.isLoading then
                 viewLoading
               else
                 viewContent model
@@ -750,7 +749,7 @@ viewMediaItem item =
             , div
                 [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
                 ]
-                [ div
+                [ button
                     [ class "bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110"
                     , style "box-shadow" "0 0 20px 8px rgba(95, 135, 175, 0.6)"
                     , onClick (PlayMedia item.id)
@@ -779,7 +778,7 @@ viewMediaItemLarge item =
             , div
                 [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
                 ]
-                [ div
+                [ button
                     [ class "bg-primary text-white rounded-full w-20 h-20 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110"
                     , style "box-shadow" "0 0 30px 10px rgba(95, 135, 175, 0.7)"
                     , onClick (PlayMedia item.id)
