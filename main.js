@@ -6864,7 +6864,7 @@ var $author$project$JellyfinUI$viewMediaItem = function (item) {
 						_List_fromArray(
 							[
 								A2(
-								$elm$html$Html$div,
+								$elm$html$Html$button,
 								_List_fromArray(
 									[
 										$elm$html$Html$Attributes$class('bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110'),
@@ -7105,7 +7105,7 @@ var $author$project$JellyfinUI$viewMediaItemLarge = function (item) {
 						_List_fromArray(
 							[
 								A2(
-								$elm$html$Html$div,
+								$elm$html$Html$button,
 								_List_fromArray(
 									[
 										$elm$html$Html$Attributes$class('bg-primary text-white rounded-full w-20 h-20 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110'),
@@ -7836,17 +7836,10 @@ var $author$project$JellyfinUI$view = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('flex-1 overflow-y-auto pt-24 pb-8')
+						$elm$html$Html$Attributes$class('flex-1 overflow-y-auto pt-10 pb-8')
 					]),
 				_List_fromArray(
 					[
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('mx-auto w-full max-w-screen-2xl border-t-2 border-primary opacity-25 mb-6')
-							]),
-						_List_Nil),
 						model.am ? $author$project$JellyfinUI$viewLoading : $author$project$JellyfinUI$viewContent(model)
 					])),
 				A2(
