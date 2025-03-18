@@ -1,86 +1,67 @@
-name: Deploy to GitHub Pages
+name: Deploy Jellyfin Web Elm
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch: # Manual trigger option
-
-permissions:
-  contents: write # Needed for github-pages-deploy-action
+  workflow_dispatch: # Manual trigger
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@v22
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          nix_path: nixpkgs=channel:nixos-unstable
-          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          node-version: '18'
 
-      - name: Build with Nix
+      - name: Install dependencies
         run: |
-          # Try to build with Nix, but continue on error
-          nix run .#build || true
+          npm install -g elm
+          npm install -D tailwindcss postcss autoprefixer
 
-          # Ensure index.html exists at the root of public directory
-          if [ ! -f "public/index.html" ]; then
-            cat > public/index.html << EOF
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elm with Everbush Theme</title>
-    <link href="output.css" rel="stylesheet">
-    <script src="main.js"></script>
-  </head>
-  <body class="bg-background min-h-screen">
-    <div id="elm-app"></div>
-    <script>
-      var app = Elm.Main.init({
-        node: document.getElementById('elm-app')
-      });
-    </script>
-  </body>
-</html>
-EOF
-          fi
+      - name: Create directories
+        run: |
+          mkdir -p public
+          mkdir -p public/fonts
 
-          # If the build failed or files are in a subdirectory, run a manual build
-          if [ ! -f "public/main.js" ] || [ ! -f "public/output.css" ]; then
-            echo "Nix build incomplete. Falling back to manual build..."
+      - name: Install IBM Plex fonts
+        run: |
+          # Create a temp directory for the IBM Plex fonts
+          mkdir -p temp-fonts
 
-            # Install elm and tailwindcss if needed
-            if ! command -v elm &> /dev/null; then
-              npm install -g elm
-            fi
-            if ! command -v npx &> /dev/null; then
-              npm install -g npx
-            fi
-            if ! command -v tailwindcss &> /dev/null; then
-              npm install -D tailwindcss
-            fi
+          # Download IBM Plex
+          curl -L https://github.com/IBM/plex/releases/download/v6.3.0/Web.zip -o ibm-plex.zip
+          unzip -q ibm-plex.zip -d temp-fonts
 
-            # Build Elm
-            elm make src/Main.elm --output=public/main.js --optimize
+          # Copy the required font files
+          mkdir -p public/fonts
+          cp -r temp-fonts/Web/*/fonts/* public/fonts/
 
-            # Build Tailwind
-            npx tailwindcss -i ./src/css/input.css -o ./public/output.css --minify
-          fi
+          # Clean up
+          rm -rf temp-fonts ibm-plex.zip
 
-          # Create a .nojekyll file to prevent GitHub Pages from using Jekyll
+      - name: Build Elm
+        run: |
+          elm make src/Main.elm --output=public/main.js --optimize
+
+      - name: Build Tailwind CSS
+        run: |
+          # Use your existing Tailwind config and CSS input
+          npx tailwindcss -i ./src/css/input.css -o ./public/output.css --minify
+
+          # Verify the CSS was generated
+          echo "CSS file size:"
+          du -h public/output.css
+
+      - name: Add .nojekyll file
+        run: |
           touch public/.nojekyll
 
-          # List the contents of the public directory for debugging
+      - name: Final directory structure
+        run: |
+          echo "Final public directory content:"
           ls -la public/
 
       - name: Deploy to GitHub Pages
@@ -88,99 +69,4 @@ EOF
         with:
           folder: public
           branch: gh-pages
-          clean: true # Remove any files from previous deployments
-          clean-exclude: |
-            .nojekyll
-name: Deploy to GitHub Pages
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch: # Manual trigger option
-
-permissions:
-  contents: write # Needed for github-pages-deploy-action
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Install Nix
-        uses: cachix/install-nix-action@v22
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-          github_access_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build with Nix
-        run: |
-          # Try to build with Nix, but continue on error
-          nix run .#build || true
-
-          # Ensure index.html exists at the root of public directory
-          if [ ! -f "public/index.html" ]; then
-            cat > public/index.html << EOF
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elm with Everbush Theme</title>
-    <link href="output.css" rel="stylesheet">
-    <script src="main.js"></script>
-  </head>
-  <body class="bg-background min-h-screen">
-    <div id="elm-app"></div>
-    <script>
-      var app = Elm.Main.init({
-        node: document.getElementById('elm-app')
-      });
-    </script>
-  </body>
-</html>
-EOF
-          fi
-
-          # If the build failed or files are in a subdirectory, run a manual build
-          if [ ! -f "public/main.js" ] || [ ! -f "public/output.css" ]; then
-            echo "Nix build incomplete. Falling back to manual build..."
-
-            # Install elm and tailwindcss if needed
-            if ! command -v elm &> /dev/null; then
-              npm install -g elm
-            fi
-            if ! command -v npx &> /dev/null; then
-              npm install -g npx
-            fi
-            if ! command -v tailwindcss &> /dev/null; then
-              npm install -D tailwindcss
-            fi
-
-            # Build Elm
-            elm make src/Main.elm --output=public/main.js --optimize
-
-            # Build Tailwind
-            npx tailwindcss -i ./src/css/input.css -o ./public/output.css --minify
-          fi
-
-          # Create a .nojekyll file to prevent GitHub Pages from using Jekyll
-          touch public/.nojekyll
-
-          # List the contents of the public directory for debugging
-          ls -la public/
-
-      - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: public
-          branch: gh-pages
-          clean: true # Remove any files from previous deployments
-          clean-exclude: |
-            .nojekyll
+          clean: true
