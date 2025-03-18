@@ -1,0 +1,106 @@
+name: Deploy with Nix Flake
+
+on:
+  workflow_dispatch: # Manual trigger
+  push:
+    branches: [ main ] # Optional: automatically deploy on push to main
+
+permissions:
+  contents: write # Needed for GitHub Pages deployment
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v22
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build with Nix Flake
+        run: |
+          echo "Building application using Nix flake..."
+
+          # Build the default package from the flake
+          nix build
+
+          # Create deployment directory
+          mkdir -p deploy
+
+          # Check if the build produced output in the expected location
+          if [ -d "result/public" ]; then
+            echo "Build successful! Copying files from result/public/"
+            cp -r result/public/* deploy/
+          else
+            echo "Checking alternative output path..."
+            if [ -d "result" ] && [ -f "result/main.js" ] && [ -f "result/output.css" ]; then
+              echo "Found files directly in result directory"
+              cp -r result/* deploy/
+            else
+              echo "Build output structure is different than expected"
+              # List the content of the result directory for debugging
+              find result -type f | sort
+
+              # Try running the build-all command from the flake
+              echo "Trying build-all command from flake..."
+              nix run .#build-all
+
+              # Check for public directory in current directory
+              if [ -d "public" ] && [ -f "public/main.js" ] && [ -f "public/output.css" ]; then
+                echo "Found files in public directory after build-all"
+                cp -r public/* deploy/
+              else
+                echo "ERROR: Could not find build output"
+                exit 1
+              fi
+            fi
+          fi
+
+          # Ensure we have the basic files needed
+          if [ ! -f "deploy/index.html" ]; then
+            echo "Creating basic index.html file"
+            cat > deploy/index.html << 'EOL'
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jellyfin Web Elm</title>
+    <link href="output.css" rel="stylesheet">
+    <script src="main.js"></script>
+  </head>
+  <body class="bg-background min-h-screen">
+    <div id="elm-app"></div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof Elm !== 'undefined' && Elm.Main) {
+          var app = Elm.Main.init({
+            node: document.getElementById('elm-app')
+          });
+        } else {
+          console.error("Error: Elm.Main not found");
+        }
+      });
+    </script>
+  </body>
+</html>
+EOL
+          fi
+
+          # Add .nojekyll file to prevent GitHub Pages from using Jekyll
+          touch deploy/.nojekyll
+
+          # List files for debugging
+          echo "Files ready for deployment:"
+          ls -la deploy/
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: deploy
+          branch: gh-pages
+          clean: true
