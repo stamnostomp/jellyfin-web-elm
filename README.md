@@ -1,11 +1,10 @@
 # Jellyfin Web Client - Elm Edition
 
-[![Deploy Jellyfin Web Elm](https://github.com/yourusername/jellyfin-web-elm/actions/workflows/deploy.yml/badge.svg)](https://github.com/stamnostomp/jellyfin-web-elm/actions/workflows/deploy.yml)
-[![Deploy with Nix Flake](https://github.com/yourusername/jellyfin-web-elm/actions/workflows/flake-deploy.yml/badge.svg)](https://github.com/stamnostomp/jellyfin-web-elm/actions/workflows/flake-deploy.yml)
+[![Deploy with Nix Flake](https://github.com/stamnostomp/jellyfin-web-elm/actions/workflows/flake-deploy.yml/badge.svg)](https://github.com/stamnostomp/jellyfin-web-elm/actions/workflows/flake-deploy.yml)
 
 A modern, responsive web client for Jellyfin media server built with Elm and styled using Tailwind CSS with the elegant Everbush theme.
 
-**[✨ Live Demo ✨](https://yourusername.github.io/jellyfin-web-elm/)**
+**[✨ Live Demo ✨](https://stamnostomp.github.io/jellyfin-web-elm/)**
 
 ![Jellyfin Web Elm Screenshot](https://i.imgur.com/64TCq42.png)
 
@@ -38,7 +37,7 @@ A modern, responsive web client for Jellyfin media server built with Elm and sty
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/jellyfin-web-elm.git
+git clone https://github.com/stamnostomp/jellyfin-web-elm.git
 cd jellyfin-web-elm
 
 # Enter the Nix development shell
@@ -55,7 +54,7 @@ dev-server
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/jellyfin-web-elm.git
+git clone https://github.com/stamnostomp/jellyfin-web-elm.git
 cd jellyfin-web-elm
 
 # Install dependencies
