@@ -28,7 +28,7 @@ jobs:
       - name: Install and Build Tailwind CSS
         run: |
           # Install tailwindcss globally
-          npm install -g tailwindcss
+          npm install -D tailwindcss postcss autoprefixer
 
           # Run tailwindcss with npx
           npx tailwindcss -i ./src/css/input.css -o ./public/output.css --minify
