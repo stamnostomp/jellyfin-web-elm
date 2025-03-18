@@ -19,6 +19,11 @@ jobs:
       - name: Install dependencies
         run: |
           npm install -g elm
+          # Create a basic package.json if it doesn't exist
+          if [ ! -f "package.json" ]; then
+            npm init -y
+          fi
+          # Install tailwindcss as a regular dependency
           npm install tailwindcss postcss autoprefixer
 
       - name: Create directories
@@ -28,31 +33,28 @@ jobs:
 
       - name: Install IBM Plex fonts
         run: |
-          # Create a temp directory for the IBM Plex fonts
           mkdir -p temp-fonts
-
-          # Download IBM Plex
           curl -L https://github.com/IBM/plex/releases/download/v6.3.0/Web.zip -o ibm-plex.zip
           unzip -q ibm-plex.zip -d temp-fonts
-
-          # Copy the required font files
           mkdir -p public/fonts
           cp -r temp-fonts/Web/*/fonts/* public/fonts/
-
-          # Clean up
           rm -rf temp-fonts ibm-plex.zip
 
       - name: Build Elm
         run: |
           elm make src/Main.elm --output=public/main.js --optimize
 
+      - name: Setup Tailwind CSS build script
+        run: |
+          # Add tailwind build script to package.json
+          npm pkg set scripts.build:css="tailwindcss -i ./src/css/input.css -o ./public/output.css --minify"
+          # List the scripts to confirm
+          npm run | grep build
+
       - name: Build Tailwind CSS
         run: |
-          # Install tailwindcss locally (not using npx)
-          npm install tailwindcss
-
-          # Use locally installed tailwindcss
-          ./node_modules/.bin/tailwindcss -i ./src/css/input.css -o ./public/output.css --minify
+          # Run the tailwind build script
+          npm run build:css
 
           # Verify the CSS was generated
           echo "CSS file size:"
