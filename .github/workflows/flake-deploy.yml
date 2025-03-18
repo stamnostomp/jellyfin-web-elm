@@ -62,33 +62,15 @@ jobs:
 
           # Ensure we have the basic files needed
           if [ ! -f "deploy/index.html" ]; then
-            echo "Creating basic index.html file"
-            cat > deploy/index.html << 'EOL'
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jellyfin Web Elm</title>
-    <link href="output.css" rel="stylesheet">
-    <script src="main.js"></script>
-  </head>
-  <body class="bg-background min-h-screen">
-    <div id="elm-app"></div>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        if (typeof Elm !== 'undefined' && Elm.Main) {
-          var app = Elm.Main.init({
-            node: document.getElementById('elm-app')
-          });
-        } else {
-          console.error("Error: Elm.Main not found");
-        }
-      });
-    </script>
-  </body>
-</html>
-EOL
+            echo "No index.html found - copying from repository"
+            # Copy from repository if exists
+            if [ -f "public/index.html" ]; then
+              cp public/index.html deploy/
+            else
+              echo "ERROR: Could not find index.html in repository"
+              # Create a very simple file without heredoc syntax to avoid YAML errors
+              echo '<html><head><title>Jellyfin Web Elm</title><link href="output.css" rel="stylesheet"><script src="main.js"></script></head><body><div id="elm-app"></div><script>var app = Elm.Main.init({node: document.getElementById("elm-app")});</script></body></html>' > deploy/index.html
+            fi
           fi
 
           # Add .nojekyll file to prevent GitHub Pages from using Jekyll
