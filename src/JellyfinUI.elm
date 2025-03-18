@@ -748,11 +748,14 @@ viewMediaItem item =
                     ]
                 ]
             , div
-                [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300 cursor-pointer" -- Changed from button to div
-                , onClick (PlayMedia item.id)
+                [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
                 ]
-                [ div [ class "flex items-center justify-center", style "margin-left" "2px" ]
-                    [ Html.i [ class "text-lg font-bold" ] [ text "▶" ]
+                [ div
+                    [ class "bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110"
+                    , style "box-shadow" "0 0 20px 8px rgba(95, 135, 175, 0.6)"
+                    , onClick (PlayMedia item.id)
+                    ]
+                    [ span [ class "text-xl font-bold", style "margin-left" "3px" ] [ text "▶" ]
                     ]
                 ]
             ]
@@ -774,11 +777,14 @@ viewMediaItemLarge item =
                     [ text "🎬" ]  -- Movie icon placeholder where an image would be
                 ]
             , div
-                [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300 cursor-pointer" -- Changed from button to div
-                , onClick (PlayMedia item.id)
+                [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
                 ]
-                [ div [ class "flex items-center justify-center", style "margin-left" "3px" ]
-                    [ Html.i [ class "text-2xl font-bold" ] [ text "▶" ]
+                [ div
+                    [ class "bg-primary text-white rounded-full w-20 h-20 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110"
+                    , style "box-shadow" "0 0 30px 10px rgba(95, 135, 175, 0.7)"
+                    , onClick (PlayMedia item.id)
+                    ]
+                    [ span [ class "text-3xl font-bold", style "margin-left" "4px" ] [ text "▶" ]
                     ]
                 ]
             ]
