@@ -47,14 +47,14 @@ type TextStyle
 -}
 container : List (Attribute msg)
 container =
-    [ class "flex flex-col items-center justify-center min-h-screen p-4 bg-background" ]
+    [ class "flex flex-col items-center justify-center min-h-screen p-2 bg-background" ] -- Reduced padding
 
 
 {-| Card styles with Everbush theme
 -}
 card : List (Attribute msg)
 card =
-    [ class "bg-surface border border-background-light rounded-lg p-6 max-w-md w-full shadow-lg" ]
+    [ class "bg-surface border border-background-light rounded-lg p-3 max-w-md w-full shadow-lg" ] -- Reduced padding
 
 
 {-| Button styles based on variant with Everbush colors
@@ -63,7 +63,7 @@ button : ButtonStyle -> List (Attribute msg)
 button style =
     let
         baseClasses =
-            "font-medium py-2 px-4 rounded transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-opacity-50"
+            "font-medium py-1 px-3 rounded transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-opacity-50 text-sm" -- Reduced padding and added smaller text
     in
     case style of
         Primary ->
@@ -89,14 +89,14 @@ button style =
 -}
 title : List (Attribute msg)
 title =
-    [ class "text-3xl font-bold text-text-primary mb-4 text-glow" ]
+    [ class "text-2xl font-bold text-text-primary mb-2 text-glow" ] -- Reduced text size and margin
 
 
 {-| Text styles for subtitles
 -}
 subtitle : List (Attribute msg)
 subtitle =
-    [ class "text-xl text-secondary mb-4" ]
+    [ class "text-lg text-secondary mb-2" ] -- Reduced text size and margin
 
 
 {-| Text styles based on variant
@@ -105,25 +105,25 @@ text : TextStyle -> List (Attribute msg)
 text style =
     case style of
         Heading1 ->
-            [ class "text-4xl font-bold text-text-primary text-glow" ]
+            [ class "text-3xl font-bold text-text-primary text-glow" ] -- Reduced from 4xl to 3xl
 
         Heading2 ->
-            [ class "text-3xl font-semibold text-text-primary" ]
+            [ class "text-2xl font-semibold text-text-primary" ] -- Reduced from 3xl to 2xl
 
         Heading3 ->
-            [ class "text-2xl font-semibold text-primary" ]
+            [ class "text-xl font-semibold text-primary" ] -- Reduced from 2xl to xl
 
         Body ->
-            [ class "text-base text-text-primary" ]
+            [ class "text-sm text-text-primary" ] -- Reduced from base to sm
 
         Caption ->
-            [ class "text-sm text-text-secondary" ]
+            [ class "text-xs text-text-secondary" ] -- Reduced from sm to xs
 
         Label ->
-            [ class "text-sm font-medium text-info" ]
+            [ class "text-xs font-medium text-info" ] -- Reduced from sm to xs
 
         Code ->
-            [ class "font-mono text-sm text-text-primary bg-background-light px-1 py-0.5 rounded" ]
+            [ class "font-mono text-xs text-text-primary bg-background-light px-1 py-0.5 rounded" ] -- Reduced from sm to xs
 
 
 {-| Code block for syntax-highlighted content

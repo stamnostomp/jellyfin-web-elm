@@ -97,7 +97,7 @@ view model =
 viewLoading : Html Msg
 viewLoading =
     div [ class "fixed inset-0 bg-background-dark bg-opacity-80 flex items-center justify-center z-50" ]
-        [ div [ class "text-primary text-xl" ]
+        [ div [ class "text-primary text-lg" ] -- Reduced text size
             [ text "Loading..." ]
         ]
 
@@ -105,10 +105,10 @@ viewLoading =
 viewError : String -> Html Msg
 viewError errorMsg =
     div [ class "fixed inset-0 bg-background-dark bg-opacity-80 flex items-center justify-center z-50" ]
-        [ div [ class "bg-surface p-6 rounded-lg max-w-lg w-full" ]
+        [ div [ class "bg-surface p-4 rounded-lg max-w-lg w-full" ] -- Reduced padding
             [ h2 (Theme.text Theme.Heading2 ++ [ class "text-error" ])
                 [ text "Error" ]
-            , p (Theme.text Theme.Body ++ [ class "my-4" ])
+            , p (Theme.text Theme.Body ++ [ class "my-3" ]) -- Reduced margin
                 [ text errorMsg ]
             , div [ class "flex justify-end" ]
                 [ button
@@ -121,15 +121,15 @@ viewError errorMsg =
 
 viewMediaDetail : MediaDetail -> Html Msg
 viewMediaDetail detail =
-    div [ class "fixed inset-0 bg-background-dark bg-opacity-80 flex items-center justify-center z-50 p-4 overflow-y-auto" ]
+    div [ class "fixed inset-0 bg-background-dark bg-opacity-80 flex items-center justify-center z-50 p-2 overflow-y-auto" ] -- Reduced padding
         [ div [ class "bg-surface rounded-lg max-w-4xl w-full shadow-lg relative" ]
             [ button
-                [ class "absolute top-4 right-4 text-text-secondary hover:text-text-primary"
+                [ class "absolute top-2 right-2 text-text-secondary hover:text-text-primary" -- Reduced positioning
                 , onClick CloseDetail
                 ]
                 [ text "✕" ]
             , div [ class "md:flex" ]
-                [ div [ class "md:w-1/3 p-6" ]
+                [ div [ class "md:w-1/3 p-3" ] -- Reduced padding
                     [ div [ class "relative pt-[150%] bg-background-light rounded-md" ]
                         [ div
                             [ class "absolute inset-0"
@@ -139,22 +139,22 @@ viewMediaDetail detail =
                         ]
                     , button
                         (Theme.button Theme.Primary ++
-                            [ class "w-full mt-4"
+                            [ class "w-full mt-2" -- Reduced margin-top
                             , onClick (PlayMedia detail.id)
                             ]
                         )
                         [ text "Play" ]
                     , if detail.type_ == TVShow then
                         button
-                            (Theme.button Theme.Ghost ++ [ class "w-full mt-2" ])
+                            (Theme.button Theme.Ghost ++ [ class "w-full mt-1" ]) -- Reduced margin-top
                             [ text "View Episodes" ]
                       else
                         text ""
                     ]
-                , div [ class "md:w-2/3 p-6" ]
+                , div [ class "md:w-2/3 p-3" ] -- Reduced padding
                     [ h1 (Theme.text Theme.Heading1)
                         [ text detail.title ]
-                    , div [ class "flex flex-wrap items-center space-x-2 mt-2" ]
+                    , div [ class "flex flex-wrap items-center space-x-1 mt-1" ] -- Reduced spacing and margin
                         [ span (Theme.text Theme.Caption)
                             [ text (String.fromInt detail.year) ]
                         , span (Theme.text Theme.Caption)
@@ -168,28 +168,28 @@ viewMediaDetail detail =
                         , span (Theme.text Theme.Caption ++ [ class "text-warning" ])
                             [ text ("★ " ++ String.fromFloat detail.rating) ]
                         ]
-                    , div [ class "mt-4" ]
+                    , div [ class "mt-2" ] -- Reduced margin-top
                         [ h3 (Theme.text Theme.Label)
                             [ text "Genres" ]
-                        , div [ class "flex flex-wrap gap-2 mt-1" ]
+                        , div [ class "flex flex-wrap gap-1 mt-1" ] -- Reduced gap and margin
                             (List.map viewGenre detail.genres)
                         ]
-                    , div [ class "mt-4" ]
+                    , div [ class "mt-2" ] -- Reduced margin-top
                         [ h3 (Theme.text Theme.Label)
                             [ text "Overview" ]
-                        , p (Theme.text Theme.Body ++ [ class "mt-1" ])
+                        , p (Theme.text Theme.Body ++ [ class "mt-1" ]) -- Reduced margin-top
                             [ text detail.description ]
                         ]
-                    , div [ class "mt-4" ]
+                    , div [ class "mt-2" ] -- Reduced margin-top
                         [ h3 (Theme.text Theme.Label)
                             [ text "Cast" ]
-                        , div [ class "grid grid-cols-2 gap-2 mt-1" ]
+                        , div [ class "grid grid-cols-2 gap-1 mt-1" ] -- Reduced gap and margin
                             (List.take 6 (List.map viewPerson detail.actors))
                         ]
-                    , div [ class "mt-4" ]
+                    , div [ class "mt-2" ] -- Reduced margin-top
                         [ h3 (Theme.text Theme.Label)
                             [ text "Directors" ]
-                        , div [ class "flex flex-wrap gap-2 mt-1" ]
+                        , div [ class "flex flex-wrap gap-1 mt-1" ] -- Reduced gap and margin
                             (List.map viewPerson detail.directors)
                         ]
                     ]
@@ -200,16 +200,16 @@ viewMediaDetail detail =
 
 viewGenre : String -> Html Msg
 viewGenre genre =
-    span [ class "bg-background-light px-2 py-1 rounded text-text-secondary text-sm" ]
+    span [ class "bg-background-light px-2 py-0.5 rounded text-text-secondary text-xs" ] -- Reduced padding and text size
         [ text genre ]
 
 
 viewPerson : String -> Html Msg
 viewPerson name =
-    div [ class "flex items-center space-x-2" ]
-        [ div [ class "w-6 h-6 rounded-full bg-background-light flex items-center justify-center" ]
+    div [ class "flex items-center space-x-1" ] -- Reduced spacing
+        [ div [ class "w-5 h-5 rounded-full bg-background-light flex items-center justify-center text-xs" ] -- Reduced size and text
             [ text (String.left 1 name) ]
-        , span (Theme.text Theme.Body)
+        , span (Theme.text Theme.Body ++ [ class "text-sm" ]) -- Added text-sm
             [ text name ]
         ]
 

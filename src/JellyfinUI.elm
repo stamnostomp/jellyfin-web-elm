@@ -328,8 +328,9 @@ view : Model -> Html Msg
 view model =
     div [ class "flex flex-col min-h-screen bg-background" ]
         [ viewHeader model
-        , div [ class "flex-1 overflow-y-auto pt-6 pb-16" ]
-            [ if model.isLoading then
+        , div [ class "flex-1 overflow-y-auto pt-24 pb-8" ] -- Drastically increased to pt-24 for very obvious spacing
+            [ div [ class "mx-auto w-full max-w-screen-2xl border-t-2 border-primary opacity-25 mb-6" ] [] -- Added visible separator
+            , if model.isLoading then
                 viewLoading
               else
                 viewContent model
@@ -339,18 +340,18 @@ view model =
 
 viewHeader : Model -> Html Msg
 viewHeader model =
-    header [ class "bg-surface border-b border-background-light p-4" ]
-        [ div [ class "px-2 md:px-4 max-w-screen-2xl mx-auto flex items-center justify-between" ]
-            [ div [ class "flex items-center space-x-4" ]
+    header [ class "bg-surface border-b border-background-light py-2 px-3" ] -- Reduced padding
+        [ div [ class "px-1 md:px-2 max-w-screen-2xl mx-auto flex items-center justify-between" ] -- Reduced horizontal padding
+            [ div [ class "flex items-center space-x-3" ] -- Reduced spacing
                 [ h1 (Theme.text Theme.Heading2)
                     [ text "Jellyfin" ]
                 , span (Theme.text Theme.Caption)
                     [ text "Media Server" ]
                 ]
-            , div [ class "w-full max-w-md mx-4" ]
+            , div [ class "w-full max-w-md mx-2" ] -- Reduced horizontal margin
                 [ div [ class "relative" ]
                     [ input
-                        ([ class "w-full bg-background border border-background-light rounded py-2 px-4 text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+                        ([ class "w-full bg-background border border-background-light rounded py-1 px-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50" -- Reduced padding
                          , placeholder "Search media..."
                          , value model.searchQuery
                          , onInput SearchInput
@@ -358,9 +359,9 @@ viewHeader model =
                         []
                     ]
                 ]
-            , div [ class "flex items-center space-x-4" ]
-                [ viewTypeFilter model -- New type filter dropdown
-                , viewGenreFilter model -- Genre filter dropdown
+            , div [ class "flex items-center space-x-2" ] -- Reduced spacing
+                [ viewTypeFilter model
+                , viewGenreFilter model
                 , viewUserProfile model
                 ]
             ]
@@ -372,7 +373,7 @@ viewTypeFilter model =
     div [ class "relative" ]
         [ button
             (Theme.button Theme.Ghost ++
-                [ class "flex items-center space-x-2"
+                [ class "flex items-center space-x-1 py-1 px-2" -- Reduced padding and spacing
                 , onClick ToggleTypeFilter
                 ]
             )
@@ -385,7 +386,7 @@ viewTypeFilter model =
                 )
             , if model.selectedType /= Nothing then
                 button
-                    [ class "ml-2 text-text-secondary hover:text-error"
+                    [ class "ml-1 text-text-secondary hover:text-error" -- Reduced margin
                     , onClick ClearTypeFilter
                     ]
                     [ text "×" ]
@@ -402,9 +403,9 @@ viewTypeFilter model =
 viewTypeDropdown : Html Msg
 viewTypeDropdown =
     div
-        [ class "absolute right-0 mt-2 w-48 bg-surface rounded-md shadow-lg z-50 border border-background-light" ]
+        [ class "absolute right-0 mt-1 w-48 bg-surface rounded-md shadow-lg z-50 border border-background-light" ] -- Reduced margin-top
         [ div
-            [ class "bg-surface border-b border-background-light p-2" ]
+            [ class "bg-surface border-b border-background-light p-1" ] -- Reduced padding
             [ p (Theme.text Theme.Label)
                 [ text "Select Media Type" ]
             ]
@@ -419,7 +420,7 @@ viewTypeDropdown =
 viewTypeOption : MediaType -> Html Msg
 viewTypeOption mediaType =
     div
-        [ class "px-4 py-2 hover:bg-background-light cursor-pointer text-text-primary"
+        [ class "px-3 py-1 hover:bg-background-light cursor-pointer text-text-primary" -- Reduced padding
         , onClick (SelectType mediaType)
         ]
         [ text (mediaTypeToString mediaType) ]
@@ -430,7 +431,7 @@ viewGenreFilter model =
     div [ class "relative" ]
         [ button
             (Theme.button Theme.Ghost ++
-                [ class "flex items-center space-x-2"
+                [ class "flex items-center space-x-1 py-1 px-2" -- Reduced padding and spacing
                 , onClick ToggleGenreFilter
                 ]
             )
@@ -443,7 +444,7 @@ viewGenreFilter model =
                 )
             , if model.selectedGenre /= Nothing then
                 button
-                    [ class "ml-2 text-text-secondary hover:text-error"
+                    [ class "ml-1 text-text-secondary hover:text-error" -- Reduced margin
                     , onClick ClearGenreFilter
                     ]
                     [ text "×" ]
@@ -460,9 +461,9 @@ viewGenreFilter model =
 viewGenreDropdown : List String -> Html Msg
 viewGenreDropdown genres =
     div
-        [ class "absolute right-0 mt-2 w-48 bg-surface rounded-md shadow-lg z-50 border border-background-light" ]
+        [ class "absolute right-0 mt-1 w-48 bg-surface rounded-md shadow-lg z-50 border border-background-light" ] -- Reduced margin-top
         [ div
-            [ class "bg-surface border-b border-background-light p-2" ]
+            [ class "bg-surface border-b border-background-light p-1" ] -- Reduced padding
             [ p (Theme.text Theme.Label)
                 [ text "Select Genre" ]
             ]
@@ -475,7 +476,7 @@ viewGenreDropdown genres =
 viewGenreOption : String -> Html Msg
 viewGenreOption genre =
     div
-        [ class "px-4 py-2 hover:bg-background-light cursor-pointer text-text-primary"
+        [ class "px-3 py-1 hover:bg-background-light cursor-pointer text-text-primary" -- Reduced padding
         , onClick (SelectGenre genre)
         ]
         [ text genre ]
@@ -485,7 +486,7 @@ viewUserProfile : Model -> Html Msg
 viewUserProfile model =
     div [ class "relative" ]
         [ button
-            [ class "w-10 h-10 rounded-full bg-primary flex items-center justify-center text-text-primary hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary-light"
+            [ class "w-8 h-8 rounded-full bg-primary flex items-center justify-center text-text-primary hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary-light" -- Reduced size
             , onClick ToggleUserMenu
             ]
             [ text "A" ]  -- "A" for Admin/Avatar
@@ -499,7 +500,7 @@ viewUserProfile model =
 viewUserMenu : Html Msg
 viewUserMenu =
     div
-        [ class "absolute right-0 mt-2 w-56 bg-surface rounded-md shadow-lg py-1 z-50 border border-background-light" ]
+        [ class "absolute right-0 mt-1 w-56 bg-surface rounded-md shadow-lg py-1 z-50 border border-background-light" ] -- Reduced margin-top
         [ viewUserMenuHeader
         , viewUserMenuItem "Profile" "User profile and settings" "profile"
         , viewUserMenuItem "Display Preferences" "Customize your experience" "display"
@@ -515,9 +516,9 @@ viewUserMenu =
 -- User menu header with user info
 viewUserMenuHeader : Html Msg
 viewUserMenuHeader =
-    div [ class "px-4 py-3 border-b border-background-light" ]
-        [ div [ class "flex items-center space-x-3" ]
-            [ div [ class "w-10 h-10 rounded-full bg-primary flex items-center justify-center text-text-primary" ]
+    div [ class "px-3 py-2 border-b border-background-light" ] -- Reduced padding
+        [ div [ class "flex items-center space-x-2" ] -- Reduced spacing
+            [ div [ class "w-8 h-8 rounded-full bg-primary flex items-center justify-center text-text-primary" ] -- Reduced size
                 [ text "A" ]
             , div []
                 [ p (Theme.text Theme.Body ++ [ class "font-medium" ])
@@ -532,7 +533,7 @@ viewUserMenuHeader =
 viewUserMenuItem : String -> String -> String -> Html Msg
 viewUserMenuItem label description action =
     div
-        [ class "px-4 py-2 hover:bg-background-light cursor-pointer"
+        [ class "px-3 py-1 hover:bg-background-light cursor-pointer" -- Reduced padding
         , onClick (UserMenuAction action)
         ]
         [ p (Theme.text Theme.Body ++ [ class "font-medium" ])
@@ -544,17 +545,17 @@ viewUserMenuItem label description action =
 -- Loading view - now properly defined
 viewLoading : Html Msg
 viewLoading =
-    div [ class "flex justify-center items-center h-64" ]
+    div [ class "flex justify-center items-center h-48" ] -- Reduced height
         [ div [ class "text-primary text-xl" ]
             [ text "Loading..." ]
         ]
 
 viewContent : Model -> Html Msg
 viewContent model =
-    div [ class "px-4 md:px-6 lg:px-8 max-w-screen-2xl mx-auto space-y-10 mb-8" ]
+    div [ class "px-2 md:px-3 lg:px-4 max-w-screen-2xl mx-auto space-y-4 mb-4" ] -- Reduced all spacing
         [ -- Show active filters if any
           if model.selectedGenre /= Nothing || model.selectedType /= Nothing then
-              div [ class "flex items-center py-2 space-x-2 flex-wrap" ]
+              div [ class "flex items-center py-1 space-x-2 flex-wrap" ] -- Reduced padding
                   [ span (Theme.text Theme.Label)
                       [ text "Active filters:" ]
                   , viewActiveFilter model.selectedGenre
@@ -568,14 +569,14 @@ viewContent model =
                   case findCategory categoryId (filterCategoriesByType model.selectedType (filterCategoriesByGenre model.selectedGenre model.categories)) of
                       Just category ->
                           div []
-                              [ div [ class "flex items-center mb-6 mt-2" ]
+                              [ div [ class "flex items-center mb-3 mt-1" ] -- Reduced margins
                                   [ button
                                       (Theme.button Theme.Ghost ++ [ onClick ClearCategory, class "mr-2" ])
                                       [ text "← Back" ]
-                                  , h2 (Theme.text Theme.Heading2)
+                                  , h2 (Theme.text Theme.Heading2 ++ [ class "font-bold text-primary" ]) -- Added font-bold and text-primary
                                       [ text category.name ]
                                   ]
-                              , div [ class "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6" ]
+                              , div [ class "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6" ] -- Restored original columns and gap
                                   (List.map viewMediaItemLarge category.items)
                               ]
                       Nothing ->
@@ -583,7 +584,7 @@ viewContent model =
 
               Nothing ->
                   -- View all categories with filters applied
-                  div [ class "space-y-10" ]
+                  div [ class "space-y-4" ] -- Reduced spacing between categories
                       (List.map
                           (viewCategory model)
                           (filterCategories
@@ -600,11 +601,11 @@ viewActiveFilter : Maybe String -> Html Msg
 viewActiveFilter maybeGenre =
     case maybeGenre of
         Just genre ->
-            div [ class "flex items-center bg-primary bg-opacity-20 border border-primary rounded-full px-3 py-1" ]
+            div [ class "flex items-center bg-primary bg-opacity-20 border border-primary rounded-full px-2 py-0.5" ] -- Reduced padding
                 [ span (Theme.text Theme.Body)
                     [ text genre ]
                 , button
-                    [ class "ml-2 text-primary hover:text-primary-dark"
+                    [ class "ml-1 text-primary hover:text-primary-dark" -- Reduced margin
                     , onClick ClearGenreFilter
                     ]
                     [ text "×" ]
@@ -617,11 +618,11 @@ viewActiveTypeFilter : Maybe MediaType -> Html Msg
 viewActiveTypeFilter maybeType =
     case maybeType of
         Just mediaType ->
-            div [ class "flex items-center bg-secondary bg-opacity-20 border border-secondary rounded-full px-3 py-1" ]
+            div [ class "flex items-center bg-secondary bg-opacity-20 border border-secondary rounded-full px-2 py-0.5" ] -- Reduced padding
                 [ span (Theme.text Theme.Body)
                     [ text (mediaTypeToString mediaType) ]
                 , button
-                    [ class "ml-2 text-secondary hover:text-secondary-dark"
+                    [ class "ml-1 text-secondary hover:text-secondary-dark" -- Reduced margin
                     , onClick ClearTypeFilter
                     ]
                     [ text "×" ]
@@ -649,8 +650,8 @@ viewCategory model category =
 
             -- Calculate scroll limits
             itemCount = List.length category.items |> toFloat
-            itemWidth = 280.0 -- Approximate width including margins
-            visibleItems = 4.0 -- Approximate number of visible items
+            itemWidth = 280.0 -- Restored original width of items
+            visibleItems = 4.0 -- Restored original number of visible items
             contentWidth = itemCount * itemWidth
             containerWidth = visibleItems * itemWidth
             maxNegativeScroll = negate (contentWidth - containerWidth)
@@ -664,46 +665,46 @@ viewCategory model category =
                 if isAtStart then
                     Theme.button Theme.Ghost ++
                         [ onClick NoOp
-                        , class "flex items-center justify-center w-8 h-8 opacity-50 cursor-not-allowed"
+                        , class "flex items-center justify-center w-6 h-6 opacity-50 cursor-not-allowed" -- Reduced size
                         ]
                 else
                     Theme.button Theme.Ghost ++
                         [ onClick (ScrollCategory category.id 1)  -- Scroll left
-                        , class "flex items-center justify-center w-8 h-8"
+                        , class "flex items-center justify-center w-6 h-6" -- Reduced size
                         ]
 
             rightButtonStyle =
                 if isAtEnd then
                     Theme.button Theme.Ghost ++
                         [ onClick NoOp
-                        , class "flex items-center justify-center w-8 h-8 opacity-50 cursor-not-allowed"
+                        , class "flex items-center justify-center w-6 h-6 opacity-50 cursor-not-allowed" -- Reduced size
                         ]
                 else
                     Theme.button Theme.Ghost ++
                         [ onClick (ScrollCategory category.id -1)  -- Scroll right
-                        , class "flex items-center justify-center w-8 h-8"
+                        , class "flex items-center justify-center w-6 h-6" -- Reduced size
                         ]
         in
-        div [ class "space-y-3" ]
+        div [ class "space-y-1" ] -- Reduced spacing between title and content
             [ div [ class "flex justify-between items-center" ]
-                [ h2 (Theme.text Theme.Heading2)
+                [ h2 (Theme.text Theme.Heading3 ++ [ class "font-bold text-primary" ]) -- Added font-bold and text-primary
                     [ text category.name ]
-                , div [ class "flex items-center space-x-2" ]
+                , div [ class "flex items-center space-x-1" ] -- Reduced spacing
                     [ button leftButtonStyle [ text "←" ]
                     , button rightButtonStyle [ text "→" ]
                     , button
-                        (Theme.button Theme.Ghost ++ [ onClick (SelectCategory category.id) ])
+                        (Theme.button Theme.Ghost ++ [ onClick (SelectCategory category.id), class "py-1 px-2" ]) -- Reduced padding
                         [ text "See All" ]
                     ]
                 ]
-            , div [ class "relative overflow-visible px-2 py-6" ]
+            , div [ class "relative overflow-visible px-1 py-1" ] -- Reduced vertical padding
                 [ div
                     [ class "flex"
                     , style "transform" ("translateX(" ++ String.fromFloat currentTranslation ++ "px)")
                     , style "transition" "transform 0.4s ease"
                     ]
                     (if List.isEmpty category.items then
-                        [ div [ class "w-full text-center p-12" ]
+                        [ div [ class "w-full text-center p-6" ] -- Reduced padding
                             [ p (Theme.text Theme.Body)
                                 [ text "No items in this category" ]
                             ]
@@ -711,7 +712,7 @@ viewCategory model category =
                      else
                         List.map
                             (\item ->
-                                div [ class "flex-shrink-0 w-56 md:w-64 lg:w-72 px-2 py-4" ]
+                                div [ class "flex-shrink-0 w-56 md:w-64 lg:w-72 px-2 py-2" ] -- Reduced vertical padding
                                     [ viewMediaItem item ]
                             )
                             category.items
@@ -723,7 +724,7 @@ viewCategory model category =
 viewMediaItem : MediaItem -> Html Msg
 viewMediaItem item =
     div
-        [ class "bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary cursor-pointer h-full hover:scale-103 hover:z-10 group"
+        [ class "bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary cursor-pointer h-full hover:scale-103 hover:z-10 group" -- Restored border width
         , onClick (SelectMediaItem item.id)
         ]
         [ div [ class "relative pt-[150%]" ] -- Aspect ratio 2:3 for posters
@@ -735,7 +736,7 @@ viewMediaItem item =
                     [ div [ class "text-2xl text-primary-light opacity-70" ]
                         [ text "🎬" ]  -- Movie icon placeholder where an image would be
                     ]
-                , div [ class "relative z-10 p-3" ]
+                , div [ class "relative z-10 p-3" ] -- Restored original padding
                     [ p (Theme.text Theme.Body ++ [ class "font-semibold truncate group-hover:text-primary transition-colors duration-300" ])
                         [ text item.title ]
                     , div [ class "flex justify-between items-center mt-1" ]
@@ -746,12 +747,14 @@ viewMediaItem item =
                         ]
                     ]
                 ]
-            , button
-                [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300"
+            , div
+                [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300 cursor-pointer" -- Changed from button to div
                 , onClick (PlayMedia item.id)
-                , style "font-size" "1.5rem"
                 ]
-                [ text "▶" ]
+                [ div [ class "flex items-center justify-center", style "margin-left" "2px" ]
+                    [ Html.i [ class "text-lg font-bold" ] [ text "▶" ]
+                    ]
+                ]
             ]
         ]
 
@@ -759,7 +762,7 @@ viewMediaItem item =
 viewMediaItemLarge : MediaItem -> Html Msg
 viewMediaItemLarge item =
     div
-        [ class "flex flex-col bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary hover:scale-103 hover:z-10 group h-full"
+        [ class "flex flex-col bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary hover:scale-103 hover:z-10 group h-full" -- Restored border width
         , onClick (SelectMediaItem item.id)
         ]
         [ div [ class "relative pt-[150%]" ] -- Aspect ratio 2:3 for posters
@@ -767,21 +770,23 @@ viewMediaItemLarge item =
                 [ class "absolute inset-0 bg-surface-light flex items-center justify-center transition-all duration-300 group-hover:brightness-110"
                 , style "background-image" "linear-gradient(rgba(40, 40, 40, 0.2), rgba(30, 30, 30, 0.8))"
                 ]
-                [ div [ class "text-4xl text-primary-light opacity-70" ]
+                [ div [ class "text-4xl text-primary-light opacity-70" ] -- Restored font size
                     [ text "🎬" ]  -- Movie icon placeholder where an image would be
                 ]
-            , button
-                [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300"
+            , div
+                [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300 cursor-pointer" -- Changed from button to div
                 , onClick (PlayMedia item.id)
-                , style "font-size" "2rem"
                 ]
-                [ text "▶" ]
+                [ div [ class "flex items-center justify-center", style "margin-left" "3px" ]
+                    [ Html.i [ class "text-2xl font-bold" ] [ text "▶" ]
+                    ]
+                ]
             ]
-        , div [ class "p-4 flex-grow transition-colors duration-300 group-hover:bg-surface-light" ]
-            [ h3 (Theme.text Theme.Heading3 ++ [ class "truncate group-hover:text-primary transition-colors duration-300" ])
+        , div [ class "p-4 flex-grow transition-colors duration-300 group-hover:bg-surface-light" ] -- Restored padding
+            [ h3 (Theme.text Theme.Heading3 ++ [ class "truncate group-hover:text-primary transition-colors duration-300" ]) -- Removed text-sm
                 [ text item.title ]
-            , div [ class "flex justify-between items-center mt-2" ]
-                [ div [ class "flex items-center space-x-2" ]
+            , div [ class "flex justify-between items-center mt-2" ] -- Restored margin
+                [ div [ class "flex items-center space-x-2" ] -- Restored spacing
                     [ span (Theme.text Theme.Caption)
                         [ text (mediaTypeToString item.type_) ]
                     , span (Theme.text Theme.Caption)
@@ -792,7 +797,7 @@ viewMediaItemLarge item =
                         [ text ("★ " ++ String.fromFloat item.rating) ]
                     ]
                 ]
-            , p (Theme.text Theme.Caption ++ [ class "mt-2 line-clamp-2" ])
+            , p (Theme.text Theme.Caption ++ [ class "mt-2 line-clamp-2" ]) -- Restored margin and line count
                 [ text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore." ]
             ]
         ]
