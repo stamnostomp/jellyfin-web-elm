@@ -5883,7 +5883,7 @@ var $author$project$Theme$Heading2 = 1;
 var $author$project$Theme$Primary = 0;
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $author$project$Theme$button = function (style) {
-	var baseClasses = 'font-medium py-2 px-4 rounded transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-opacity-50';
+	var baseClasses = 'font-medium py-1 px-3 rounded transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-opacity-50 text-sm';
 	switch (style) {
 		case 0:
 			return _List_fromArray(
@@ -5941,37 +5941,37 @@ var $author$project$Theme$text = function (style) {
 		case 0:
 			return _List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('text-4xl font-bold text-text-primary text-glow')
+					$elm$html$Html$Attributes$class('text-3xl font-bold text-text-primary text-glow')
 				]);
 		case 1:
 			return _List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('text-3xl font-semibold text-text-primary')
+					$elm$html$Html$Attributes$class('text-2xl font-semibold text-text-primary')
 				]);
 		case 2:
 			return _List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('text-2xl font-semibold text-primary')
+					$elm$html$Html$Attributes$class('text-xl font-semibold text-primary')
 				]);
 		case 3:
 			return _List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('text-base text-text-primary')
+					$elm$html$Html$Attributes$class('text-sm text-text-primary')
 				]);
 		case 4:
 			return _List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('text-sm text-text-secondary')
+					$elm$html$Html$Attributes$class('text-xs text-text-secondary')
 				]);
 		case 5:
 			return _List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('text-sm font-medium text-info')
+					$elm$html$Html$Attributes$class('text-xs font-medium text-info')
 				]);
 		default:
 			return _List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('font-mono text-sm text-text-primary bg-background-light px-1 py-0.5 rounded')
+					$elm$html$Html$Attributes$class('font-mono text-xs text-text-primary bg-background-light px-1 py-0.5 rounded')
 				]);
 	}
 };
@@ -5988,7 +5988,7 @@ var $author$project$MediaDetail$viewError = function (errorMsg) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('bg-surface p-6 rounded-lg max-w-lg w-full')
+						$elm$html$Html$Attributes$class('bg-surface p-4 rounded-lg max-w-lg w-full')
 					]),
 				_List_fromArray(
 					[
@@ -6010,7 +6010,7 @@ var $author$project$MediaDetail$viewError = function (errorMsg) {
 							$author$project$Theme$text(3),
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$class('my-4')
+									$elm$html$Html$Attributes$class('my-3')
 								])),
 						_List_fromArray(
 							[
@@ -6052,7 +6052,7 @@ var $author$project$MediaDetail$viewLoading = A2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('text-primary text-xl')
+					$elm$html$Html$Attributes$class('text-primary text-lg')
 				]),
 			_List_fromArray(
 				[
@@ -6219,7 +6219,7 @@ var $author$project$MediaDetail$viewGenre = function (genre) {
 		$elm$html$Html$span,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('bg-background-light px-2 py-1 rounded text-text-secondary text-sm')
+				$elm$html$Html$Attributes$class('bg-background-light px-2 py-0.5 rounded text-text-secondary text-xs')
 			]),
 		_List_fromArray(
 			[
@@ -6231,7 +6231,7 @@ var $author$project$MediaDetail$viewPerson = function (name) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('flex items-center space-x-2')
+				$elm$html$Html$Attributes$class('flex items-center space-x-1')
 			]),
 		_List_fromArray(
 			[
@@ -6239,7 +6239,7 @@ var $author$project$MediaDetail$viewPerson = function (name) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('w-6 h-6 rounded-full bg-background-light flex items-center justify-center')
+						$elm$html$Html$Attributes$class('w-5 h-5 rounded-full bg-background-light flex items-center justify-center text-xs')
 					]),
 				_List_fromArray(
 					[
@@ -6248,7 +6248,12 @@ var $author$project$MediaDetail$viewPerson = function (name) {
 					])),
 				A2(
 				$elm$html$Html$span,
-				$author$project$Theme$text(3),
+				_Utils_ap(
+					$author$project$Theme$text(3),
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('text-sm')
+						])),
 				_List_fromArray(
 					[
 						$elm$html$Html$text(name)
@@ -6260,7 +6265,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('fixed inset-0 bg-background-dark bg-opacity-80 flex items-center justify-center z-50 p-4 overflow-y-auto')
+				$elm$html$Html$Attributes$class('fixed inset-0 bg-background-dark bg-opacity-80 flex items-center justify-center z-50 p-2 overflow-y-auto')
 			]),
 		_List_fromArray(
 			[
@@ -6276,7 +6281,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 						$elm$html$Html$button,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('absolute top-4 right-4 text-text-secondary hover:text-text-primary'),
+								$elm$html$Html$Attributes$class('absolute top-2 right-2 text-text-secondary hover:text-text-primary'),
 								$elm$html$Html$Events$onClick($author$project$MediaDetail$CloseDetail)
 							]),
 						_List_fromArray(
@@ -6295,7 +6300,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('md:w-1/3 p-6')
+										$elm$html$Html$Attributes$class('md:w-1/3 p-3')
 									]),
 								_List_fromArray(
 									[
@@ -6322,7 +6327,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 											$author$project$Theme$button(0),
 											_List_fromArray(
 												[
-													$elm$html$Html$Attributes$class('w-full mt-4'),
+													$elm$html$Html$Attributes$class('w-full mt-2'),
 													$elm$html$Html$Events$onClick(
 													$author$project$MediaDetail$PlayMedia(detail.ay))
 												])),
@@ -6336,7 +6341,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 											$author$project$Theme$button(5),
 											_List_fromArray(
 												[
-													$elm$html$Html$Attributes$class('w-full mt-2')
+													$elm$html$Html$Attributes$class('w-full mt-1')
 												])),
 										_List_fromArray(
 											[
@@ -6347,7 +6352,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('md:w-2/3 p-6')
+										$elm$html$Html$Attributes$class('md:w-2/3 p-3')
 									]),
 								_List_fromArray(
 									[
@@ -6362,7 +6367,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 										$elm$html$Html$div,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$class('flex flex-wrap items-center space-x-2 mt-2')
+												$elm$html$Html$Attributes$class('flex flex-wrap items-center space-x-1 mt-1')
 											]),
 										_List_fromArray(
 											[
@@ -6422,7 +6427,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 										$elm$html$Html$div,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$class('mt-4')
+												$elm$html$Html$Attributes$class('mt-2')
 											]),
 										_List_fromArray(
 											[
@@ -6437,7 +6442,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 												$elm$html$Html$div,
 												_List_fromArray(
 													[
-														$elm$html$Html$Attributes$class('flex flex-wrap gap-2 mt-1')
+														$elm$html$Html$Attributes$class('flex flex-wrap gap-1 mt-1')
 													]),
 												A2($elm$core$List$map, $author$project$MediaDetail$viewGenre, detail.aO))
 											])),
@@ -6445,7 +6450,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 										$elm$html$Html$div,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$class('mt-4')
+												$elm$html$Html$Attributes$class('mt-2')
 											]),
 										_List_fromArray(
 											[
@@ -6473,7 +6478,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 										$elm$html$Html$div,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$class('mt-4')
+												$elm$html$Html$Attributes$class('mt-2')
 											]),
 										_List_fromArray(
 											[
@@ -6488,7 +6493,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 												$elm$html$Html$div,
 												_List_fromArray(
 													[
-														$elm$html$Html$Attributes$class('grid grid-cols-2 gap-2 mt-1')
+														$elm$html$Html$Attributes$class('grid grid-cols-2 gap-1 mt-1')
 													]),
 												A2(
 													$elm$core$List$take,
@@ -6499,7 +6504,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 										$elm$html$Html$div,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$class('mt-4')
+												$elm$html$Html$Attributes$class('mt-2')
 											]),
 										_List_fromArray(
 											[
@@ -6514,7 +6519,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 												$elm$html$Html$div,
 												_List_fromArray(
 													[
-														$elm$html$Html$Attributes$class('flex flex-wrap gap-2 mt-1')
+														$elm$html$Html$Attributes$class('flex flex-wrap gap-1 mt-1')
 													]),
 												A2($elm$core$List$map, $author$project$MediaDetail$viewPerson, detail.be))
 											]))
@@ -6662,7 +6667,7 @@ var $author$project$JellyfinUI$viewActiveFilter = function (maybeGenre) {
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('flex items-center bg-primary bg-opacity-20 border border-primary rounded-full px-3 py-1')
+					$elm$html$Html$Attributes$class('flex items-center bg-primary bg-opacity-20 border border-primary rounded-full px-2 py-0.5')
 				]),
 			_List_fromArray(
 				[
@@ -6677,7 +6682,7 @@ var $author$project$JellyfinUI$viewActiveFilter = function (maybeGenre) {
 					$elm$html$Html$button,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('ml-2 text-primary hover:text-primary-dark'),
+							$elm$html$Html$Attributes$class('ml-1 text-primary hover:text-primary-dark'),
 							$elm$html$Html$Events$onClick($author$project$JellyfinUI$ClearGenreFilter)
 						]),
 					_List_fromArray(
@@ -6707,7 +6712,7 @@ var $author$project$JellyfinUI$viewActiveTypeFilter = function (maybeType) {
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('flex items-center bg-secondary bg-opacity-20 border border-secondary rounded-full px-3 py-1')
+					$elm$html$Html$Attributes$class('flex items-center bg-secondary bg-opacity-20 border border-secondary rounded-full px-2 py-0.5')
 				]),
 			_List_fromArray(
 				[
@@ -6723,7 +6728,7 @@ var $author$project$JellyfinUI$viewActiveTypeFilter = function (maybeType) {
 					$elm$html$Html$button,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('ml-2 text-secondary hover:text-secondary-dark'),
+							$elm$html$Html$Attributes$class('ml-1 text-secondary hover:text-secondary-dark'),
 							$elm$html$Html$Events$onClick($author$project$JellyfinUI$ClearTypeFilter)
 						]),
 					_List_fromArray(
@@ -6735,6 +6740,7 @@ var $author$project$JellyfinUI$viewActiveTypeFilter = function (maybeType) {
 		return $elm$html$Html$text('');
 	}
 };
+var $author$project$Theme$Heading3 = 2;
 var $author$project$JellyfinUI$NoOp = {$: 19};
 var $author$project$JellyfinUI$ScrollCategory = F2(
 	function (a, b) {
@@ -6750,6 +6756,7 @@ var $author$project$JellyfinUI$PlayMedia = function (a) {
 var $author$project$JellyfinUI$SelectMediaItem = function (a) {
 	return {$: 3, a: a};
 };
+var $elm$html$Html$i = _VirtualDom_node('i');
 var $author$project$JellyfinUI$viewMediaItem = function (item) {
 	return A2(
 		$elm$html$Html$div,
@@ -6850,17 +6857,35 @@ var $author$project$JellyfinUI$viewMediaItem = function (item) {
 									]))
 							])),
 						A2(
-						$elm$html$Html$button,
+						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300'),
+								$elm$html$Html$Attributes$class('absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300 cursor-pointer'),
 								$elm$html$Html$Events$onClick(
-								$author$project$JellyfinUI$PlayMedia(item.ay)),
-								A2($elm$html$Html$Attributes$style, 'font-size', '1.5rem')
+								$author$project$JellyfinUI$PlayMedia(item.ay))
 							]),
 						_List_fromArray(
 							[
-								$elm$html$Html$text('▶')
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('flex items-center justify-center'),
+										A2($elm$html$Html$Attributes$style, 'margin-left', '2px')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$i,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('text-lg font-bold')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('▶')
+											]))
+									]))
 							]))
 					]))
 			]));
@@ -6883,14 +6908,14 @@ var $author$project$JellyfinUI$viewCategory = F2(
 				_List_fromArray(
 					[
 						$elm$html$Html$Events$onClick($author$project$JellyfinUI$NoOp),
-						$elm$html$Html$Attributes$class('flex items-center justify-center w-8 h-8 opacity-50 cursor-not-allowed')
+						$elm$html$Html$Attributes$class('flex items-center justify-center w-6 h-6 opacity-50 cursor-not-allowed')
 					])) : _Utils_ap(
 				$author$project$Theme$button(5),
 				_List_fromArray(
 					[
 						$elm$html$Html$Events$onClick(
 						A2($author$project$JellyfinUI$ScrollCategory, category.ay, 1)),
-						$elm$html$Html$Attributes$class('flex items-center justify-center w-8 h-8')
+						$elm$html$Html$Attributes$class('flex items-center justify-center w-6 h-6')
 					]));
 			var contentWidth = itemCount * itemWidth;
 			var containerWidth = visibleItems * itemWidth;
@@ -6901,20 +6926,20 @@ var $author$project$JellyfinUI$viewCategory = F2(
 				_List_fromArray(
 					[
 						$elm$html$Html$Events$onClick($author$project$JellyfinUI$NoOp),
-						$elm$html$Html$Attributes$class('flex items-center justify-center w-8 h-8 opacity-50 cursor-not-allowed')
+						$elm$html$Html$Attributes$class('flex items-center justify-center w-6 h-6 opacity-50 cursor-not-allowed')
 					])) : _Utils_ap(
 				$author$project$Theme$button(5),
 				_List_fromArray(
 					[
 						$elm$html$Html$Events$onClick(
 						A2($author$project$JellyfinUI$ScrollCategory, category.ay, -1)),
-						$elm$html$Html$Attributes$class('flex items-center justify-center w-8 h-8')
+						$elm$html$Html$Attributes$class('flex items-center justify-center w-6 h-6')
 					]));
 			return A2(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('space-y-3')
+						$elm$html$Html$Attributes$class('space-y-1')
 					]),
 				_List_fromArray(
 					[
@@ -6928,7 +6953,12 @@ var $author$project$JellyfinUI$viewCategory = F2(
 							[
 								A2(
 								$elm$html$Html$h2,
-								$author$project$Theme$text(1),
+								_Utils_ap(
+									$author$project$Theme$text(2),
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('font-bold text-primary')
+										])),
 								_List_fromArray(
 									[
 										$elm$html$Html$text(category.cs)
@@ -6937,7 +6967,7 @@ var $author$project$JellyfinUI$viewCategory = F2(
 								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('flex items-center space-x-2')
+										$elm$html$Html$Attributes$class('flex items-center space-x-1')
 									]),
 								_List_fromArray(
 									[
@@ -6962,7 +6992,8 @@ var $author$project$JellyfinUI$viewCategory = F2(
 											_List_fromArray(
 												[
 													$elm$html$Html$Events$onClick(
-													$author$project$JellyfinUI$SelectCategory(category.ay))
+													$author$project$JellyfinUI$SelectCategory(category.ay)),
+													$elm$html$Html$Attributes$class('py-1 px-2')
 												])),
 										_List_fromArray(
 											[
@@ -6974,7 +7005,7 @@ var $author$project$JellyfinUI$viewCategory = F2(
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('relative overflow-visible px-2 py-6')
+								$elm$html$Html$Attributes$class('relative overflow-visible px-1 py-1')
 							]),
 						_List_fromArray(
 							[
@@ -6995,7 +7026,7 @@ var $author$project$JellyfinUI$viewCategory = F2(
 										$elm$html$Html$div,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$class('w-full text-center p-12')
+												$elm$html$Html$Attributes$class('w-full text-center p-6')
 											]),
 										_List_fromArray(
 											[
@@ -7014,7 +7045,7 @@ var $author$project$JellyfinUI$viewCategory = F2(
 											$elm$html$Html$div,
 											_List_fromArray(
 												[
-													$elm$html$Html$Attributes$class('flex-shrink-0 w-56 md:w-64 lg:w-72 px-2 py-4')
+													$elm$html$Html$Attributes$class('flex-shrink-0 w-56 md:w-64 lg:w-72 px-2 py-2')
 												]),
 											_List_fromArray(
 												[
@@ -7026,7 +7057,6 @@ var $author$project$JellyfinUI$viewCategory = F2(
 					]));
 		}
 	});
-var $author$project$Theme$Heading3 = 2;
 var $author$project$JellyfinUI$viewMediaItemLarge = function (item) {
 	return A2(
 		$elm$html$Html$div,
@@ -7067,17 +7097,35 @@ var $author$project$JellyfinUI$viewMediaItemLarge = function (item) {
 									]))
 							])),
 						A2(
-						$elm$html$Html$button,
+						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300'),
+								$elm$html$Html$Attributes$class('absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300 cursor-pointer'),
 								$elm$html$Html$Events$onClick(
-								$author$project$JellyfinUI$PlayMedia(item.ay)),
-								A2($elm$html$Html$Attributes$style, 'font-size', '2rem')
+								$author$project$JellyfinUI$PlayMedia(item.ay))
 							]),
 						_List_fromArray(
 							[
-								$elm$html$Html$text('▶')
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('flex items-center justify-center'),
+										A2($elm$html$Html$Attributes$style, 'margin-left', '3px')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$i,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('text-2xl font-bold')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('▶')
+											]))
+									]))
 							]))
 					])),
 				A2(
@@ -7176,7 +7224,7 @@ var $author$project$JellyfinUI$viewContent = function (model) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('px-4 md:px-6 lg:px-8 max-w-screen-2xl mx-auto space-y-10 mb-8')
+				$elm$html$Html$Attributes$class('px-2 md:px-3 lg:px-4 max-w-screen-2xl mx-auto space-y-4 mb-4')
 			]),
 		_List_fromArray(
 			[
@@ -7184,7 +7232,7 @@ var $author$project$JellyfinUI$viewContent = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('flex items-center py-2 space-x-2 flex-wrap')
+						$elm$html$Html$Attributes$class('flex items-center py-1 space-x-2 flex-wrap')
 					]),
 				_List_fromArray(
 					[
@@ -7220,7 +7268,7 @@ var $author$project$JellyfinUI$viewContent = function (model) {
 									$elm$html$Html$div,
 									_List_fromArray(
 										[
-											$elm$html$Html$Attributes$class('flex items-center mb-6 mt-2')
+											$elm$html$Html$Attributes$class('flex items-center mb-3 mt-1')
 										]),
 									_List_fromArray(
 										[
@@ -7239,7 +7287,12 @@ var $author$project$JellyfinUI$viewContent = function (model) {
 												])),
 											A2(
 											$elm$html$Html$h2,
-											$author$project$Theme$text(1),
+											_Utils_ap(
+												$author$project$Theme$text(1),
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('font-bold text-primary')
+													])),
 											_List_fromArray(
 												[
 													$elm$html$Html$text(category.cs)
@@ -7267,7 +7320,7 @@ var $author$project$JellyfinUI$viewContent = function (model) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('space-y-10')
+								$elm$html$Html$Attributes$class('space-y-4')
 							]),
 						A2(
 							$elm$core$List$map,
@@ -7332,7 +7385,7 @@ var $author$project$JellyfinUI$viewGenreOption = function (genre) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('px-4 py-2 hover:bg-background-light cursor-pointer text-text-primary'),
+				$elm$html$Html$Attributes$class('px-3 py-1 hover:bg-background-light cursor-pointer text-text-primary'),
 				$elm$html$Html$Events$onClick(
 				$author$project$JellyfinUI$SelectGenre(genre))
 			]),
@@ -7346,7 +7399,7 @@ var $author$project$JellyfinUI$viewGenreDropdown = function (genres) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('absolute right-0 mt-2 w-48 bg-surface rounded-md shadow-lg z-50 border border-background-light')
+				$elm$html$Html$Attributes$class('absolute right-0 mt-1 w-48 bg-surface rounded-md shadow-lg z-50 border border-background-light')
 			]),
 		_List_fromArray(
 			[
@@ -7354,7 +7407,7 @@ var $author$project$JellyfinUI$viewGenreDropdown = function (genres) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('bg-surface border-b border-background-light p-2')
+						$elm$html$Html$Attributes$class('bg-surface border-b border-background-light p-1')
 					]),
 				_List_fromArray(
 					[
@@ -7390,7 +7443,7 @@ var $author$project$JellyfinUI$viewGenreFilter = function (model) {
 					$author$project$Theme$button(5),
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('flex items-center space-x-2'),
+							$elm$html$Html$Attributes$class('flex items-center space-x-1 py-1 px-2'),
 							$elm$html$Html$Events$onClick($author$project$JellyfinUI$ToggleGenreFilter)
 						])),
 				_List_fromArray(
@@ -7409,7 +7462,7 @@ var $author$project$JellyfinUI$viewGenreFilter = function (model) {
 						$elm$html$Html$button,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('ml-2 text-text-secondary hover:text-error'),
+								$elm$html$Html$Attributes$class('ml-1 text-text-secondary hover:text-error'),
 								$elm$html$Html$Events$onClick($author$project$JellyfinUI$ClearGenreFilter)
 							]),
 						_List_fromArray(
@@ -7429,7 +7482,7 @@ var $author$project$JellyfinUI$viewTypeOption = function (mediaType) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('px-4 py-2 hover:bg-background-light cursor-pointer text-text-primary'),
+				$elm$html$Html$Attributes$class('px-3 py-1 hover:bg-background-light cursor-pointer text-text-primary'),
 				$elm$html$Html$Events$onClick(
 				$author$project$JellyfinUI$SelectType(mediaType))
 			]),
@@ -7443,7 +7496,7 @@ var $author$project$JellyfinUI$viewTypeDropdown = A2(
 	$elm$html$Html$div,
 	_List_fromArray(
 		[
-			$elm$html$Html$Attributes$class('absolute right-0 mt-2 w-48 bg-surface rounded-md shadow-lg z-50 border border-background-light')
+			$elm$html$Html$Attributes$class('absolute right-0 mt-1 w-48 bg-surface rounded-md shadow-lg z-50 border border-background-light')
 		]),
 	_List_fromArray(
 		[
@@ -7451,7 +7504,7 @@ var $author$project$JellyfinUI$viewTypeDropdown = A2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('bg-surface border-b border-background-light p-2')
+					$elm$html$Html$Attributes$class('bg-surface border-b border-background-light p-1')
 				]),
 			_List_fromArray(
 				[
@@ -7490,7 +7543,7 @@ var $author$project$JellyfinUI$viewTypeFilter = function (model) {
 					$author$project$Theme$button(5),
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('flex items-center space-x-2'),
+							$elm$html$Html$Attributes$class('flex items-center space-x-1 py-1 px-2'),
 							$elm$html$Html$Events$onClick($author$project$JellyfinUI$ToggleTypeFilter)
 						])),
 				_List_fromArray(
@@ -7509,7 +7562,7 @@ var $author$project$JellyfinUI$viewTypeFilter = function (model) {
 						$elm$html$Html$button,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('ml-2 text-text-secondary hover:text-error'),
+								$elm$html$Html$Attributes$class('ml-1 text-text-secondary hover:text-error'),
 								$elm$html$Html$Events$onClick($author$project$JellyfinUI$ClearTypeFilter)
 							]),
 						_List_fromArray(
@@ -7525,7 +7578,7 @@ var $author$project$JellyfinUI$viewUserMenuHeader = A2(
 	$elm$html$Html$div,
 	_List_fromArray(
 		[
-			$elm$html$Html$Attributes$class('px-4 py-3 border-b border-background-light')
+			$elm$html$Html$Attributes$class('px-3 py-2 border-b border-background-light')
 		]),
 	_List_fromArray(
 		[
@@ -7533,7 +7586,7 @@ var $author$project$JellyfinUI$viewUserMenuHeader = A2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('flex items-center space-x-3')
+					$elm$html$Html$Attributes$class('flex items-center space-x-2')
 				]),
 			_List_fromArray(
 				[
@@ -7541,7 +7594,7 @@ var $author$project$JellyfinUI$viewUserMenuHeader = A2(
 					$elm$html$Html$div,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('w-10 h-10 rounded-full bg-primary flex items-center justify-center text-text-primary')
+							$elm$html$Html$Attributes$class('w-8 h-8 rounded-full bg-primary flex items-center justify-center text-text-primary')
 						]),
 					_List_fromArray(
 						[
@@ -7583,7 +7636,7 @@ var $author$project$JellyfinUI$viewUserMenuItem = F3(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('px-4 py-2 hover:bg-background-light cursor-pointer'),
+					$elm$html$Html$Attributes$class('px-3 py-1 hover:bg-background-light cursor-pointer'),
 					$elm$html$Html$Events$onClick(
 					$author$project$JellyfinUI$UserMenuAction(action))
 				]),
@@ -7614,7 +7667,7 @@ var $author$project$JellyfinUI$viewUserMenu = A2(
 	$elm$html$Html$div,
 	_List_fromArray(
 		[
-			$elm$html$Html$Attributes$class('absolute right-0 mt-2 w-56 bg-surface rounded-md shadow-lg py-1 z-50 border border-background-light')
+			$elm$html$Html$Attributes$class('absolute right-0 mt-1 w-56 bg-surface rounded-md shadow-lg py-1 z-50 border border-background-light')
 		]),
 	_List_fromArray(
 		[
@@ -7654,7 +7707,7 @@ var $author$project$JellyfinUI$viewUserProfile = function (model) {
 				$elm$html$Html$button,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('w-10 h-10 rounded-full bg-primary flex items-center justify-center text-text-primary hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary-light'),
+						$elm$html$Html$Attributes$class('w-8 h-8 rounded-full bg-primary flex items-center justify-center text-text-primary hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary-light'),
 						$elm$html$Html$Events$onClick($author$project$JellyfinUI$ToggleUserMenu)
 					]),
 				_List_fromArray(
@@ -7669,7 +7722,7 @@ var $author$project$JellyfinUI$viewHeader = function (model) {
 		$elm$html$Html$header,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('bg-surface border-b border-background-light p-4')
+				$elm$html$Html$Attributes$class('bg-surface border-b border-background-light py-2 px-3')
 			]),
 		_List_fromArray(
 			[
@@ -7677,7 +7730,7 @@ var $author$project$JellyfinUI$viewHeader = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('px-2 md:px-4 max-w-screen-2xl mx-auto flex items-center justify-between')
+						$elm$html$Html$Attributes$class('px-1 md:px-2 max-w-screen-2xl mx-auto flex items-center justify-between')
 					]),
 				_List_fromArray(
 					[
@@ -7685,7 +7738,7 @@ var $author$project$JellyfinUI$viewHeader = function (model) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('flex items-center space-x-4')
+								$elm$html$Html$Attributes$class('flex items-center space-x-3')
 							]),
 						_List_fromArray(
 							[
@@ -7708,7 +7761,7 @@ var $author$project$JellyfinUI$viewHeader = function (model) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('w-full max-w-md mx-4')
+								$elm$html$Html$Attributes$class('w-full max-w-md mx-2')
 							]),
 						_List_fromArray(
 							[
@@ -7725,7 +7778,7 @@ var $author$project$JellyfinUI$viewHeader = function (model) {
 										_Utils_ap(
 											_List_fromArray(
 												[
-													$elm$html$Html$Attributes$class('w-full bg-background border border-background-light rounded py-2 px-4 text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50'),
+													$elm$html$Html$Attributes$class('w-full bg-background border border-background-light rounded py-1 px-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50'),
 													$elm$html$Html$Attributes$placeholder('Search media...'),
 													$elm$html$Html$Attributes$value(model.ar),
 													$elm$html$Html$Events$onInput($author$project$JellyfinUI$SearchInput)
@@ -7738,7 +7791,7 @@ var $author$project$JellyfinUI$viewHeader = function (model) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('flex items-center space-x-4')
+								$elm$html$Html$Attributes$class('flex items-center space-x-2')
 							]),
 						_List_fromArray(
 							[
@@ -7753,7 +7806,7 @@ var $author$project$JellyfinUI$viewLoading = A2(
 	$elm$html$Html$div,
 	_List_fromArray(
 		[
-			$elm$html$Html$Attributes$class('flex justify-center items-center h-64')
+			$elm$html$Html$Attributes$class('flex justify-center items-center h-48')
 		]),
 	_List_fromArray(
 		[
@@ -7782,10 +7835,17 @@ var $author$project$JellyfinUI$view = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('flex-1 overflow-y-auto pt-6 pb-16')
+						$elm$html$Html$Attributes$class('flex-1 overflow-y-auto pt-24 pb-8')
 					]),
 				_List_fromArray(
 					[
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('mx-auto w-full max-w-screen-2xl border-t-2 border-primary opacity-25 mb-6')
+							]),
+						_List_Nil),
 						model.am ? $author$project$JellyfinUI$viewLoading : $author$project$JellyfinUI$viewContent(model)
 					])),
 				A2(
