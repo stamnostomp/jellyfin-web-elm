@@ -6756,7 +6756,6 @@ var $author$project$JellyfinUI$PlayMedia = function (a) {
 var $author$project$JellyfinUI$SelectMediaItem = function (a) {
 	return {$: 3, a: a};
 };
-var $elm$html$Html$i = _VirtualDom_node('i');
 var $author$project$JellyfinUI$viewMediaItem = function (item) {
 	return A2(
 		$elm$html$Html$div,
@@ -6860,9 +6859,7 @@ var $author$project$JellyfinUI$viewMediaItem = function (item) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300 cursor-pointer'),
-								$elm$html$Html$Events$onClick(
-								$author$project$JellyfinUI$PlayMedia(item.ay))
+								$elm$html$Html$Attributes$class('absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20')
 							]),
 						_List_fromArray(
 							[
@@ -6870,16 +6867,19 @@ var $author$project$JellyfinUI$viewMediaItem = function (item) {
 								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('flex items-center justify-center'),
-										A2($elm$html$Html$Attributes$style, 'margin-left', '2px')
+										$elm$html$Html$Attributes$class('bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110'),
+										A2($elm$html$Html$Attributes$style, 'box-shadow', '0 0 20px 8px rgba(95, 135, 175, 0.6)'),
+										$elm$html$Html$Events$onClick(
+										$author$project$JellyfinUI$PlayMedia(item.ay))
 									]),
 								_List_fromArray(
 									[
 										A2(
-										$elm$html$Html$i,
+										$elm$html$Html$span,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$class('text-lg font-bold')
+												$elm$html$Html$Attributes$class('text-xl font-bold'),
+												A2($elm$html$Html$Attributes$style, 'margin-left', '3px')
 											]),
 										_List_fromArray(
 											[
@@ -7100,9 +7100,7 @@ var $author$project$JellyfinUI$viewMediaItemLarge = function (item) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 hover:scale-110 transition-all duration-300 cursor-pointer'),
-								$elm$html$Html$Events$onClick(
-								$author$project$JellyfinUI$PlayMedia(item.ay))
+								$elm$html$Html$Attributes$class('absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20')
 							]),
 						_List_fromArray(
 							[
@@ -7110,16 +7108,19 @@ var $author$project$JellyfinUI$viewMediaItemLarge = function (item) {
 								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('flex items-center justify-center'),
-										A2($elm$html$Html$Attributes$style, 'margin-left', '3px')
+										$elm$html$Html$Attributes$class('bg-primary text-white rounded-full w-20 h-20 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110'),
+										A2($elm$html$Html$Attributes$style, 'box-shadow', '0 0 30px 10px rgba(95, 135, 175, 0.7)'),
+										$elm$html$Html$Events$onClick(
+										$author$project$JellyfinUI$PlayMedia(item.ay))
 									]),
 								_List_fromArray(
 									[
 										A2(
-										$elm$html$Html$i,
+										$elm$html$Html$span,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$class('text-2xl font-bold')
+												$elm$html$Html$Attributes$class('text-3xl font-bold'),
+												A2($elm$html$Html$Attributes$style, 'margin-left', '4px')
 											]),
 										_List_fromArray(
 											[
