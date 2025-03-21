@@ -842,13 +842,12 @@ viewCategory model category =
                         List.map
                             (\item ->
                                 div
-                                    [ class "flex-shrink-0 w-52 relative py-1 px-1"
+                                    [ class "flex-shrink-0 w-52 relative py-2 px-1 overflow-visible"
                                     , style "min-width" "185px"
                                     ]
                                     [ viewMediaItem item ]
                             )
-                            category.items
-                    )
+                            category.items                    )
                 ]
             ]
 
@@ -857,11 +856,9 @@ viewCategory model category =
 viewMediaItem : MediaItem -> Html Msg
 viewMediaItem item =
     div
-        [ class "bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary cursor-pointer h-full group"
-        , style "transform" "translateZ(0) scale(1.0)"
+        [ class "bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary cursor-pointer h-full group transform hover:scale-105"
         , style "transition" "all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)"
         , style "will-change" "transform, box-shadow, border-color"
-        , style "hover:transform" "translateZ(0) scale(1.05)"
         , onClick (SelectMediaItem item.id)
         ]
         [ div [ class "relative pt-[150%]" ]
