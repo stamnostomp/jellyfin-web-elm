@@ -6259,7 +6259,7 @@ var $author$project$TMDBData$fetchTMDBData = function (toMsg) {
 	return $elm$http$Http$get(
 		{
 			cj: A2($elm$http$Http$expectJson, toMsg, $author$project$TMDBData$tmdbResponseDecoder),
-			c_: '/data/movies.json'
+			c_: './data/movies.json'
 		});
 };
 var $elm$browser$Browser$Dom$getViewport = _Browser_withWindow(_Browser_getViewport);
