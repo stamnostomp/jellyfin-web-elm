@@ -2719,7 +2719,7 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		M: func(record.M),
+		N: func(record.N),
 		a5: record.a5,
 		a1: record.a1
 	}
@@ -2989,7 +2989,7 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.M;
+		var message = !tag ? value : tag < 3 ? value.a : value.N;
 		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.a5;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
@@ -6136,7 +6136,7 @@ var $author$project$TMDBData$TMDBResponse = function (categories) {
 };
 var $author$project$JellyfinAPI$Category = F3(
 	function (id, name, items) {
-		return {D: id, cu: items, aw: name};
+		return {E: id, cu: items, aw: name};
 	});
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$list = _Json_decodeList;
@@ -6144,7 +6144,7 @@ var $elm$json$Json$Decode$map3 = _Json_map3;
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $author$project$JellyfinAPI$CastMember = F5(
 	function (id, name, character, profileUrl, order) {
-		return {bg: character, D: id, aw: name, bF: order, aI: profileUrl};
+		return {bg: character, E: id, aw: name, bF: order, aI: profileUrl};
 	});
 var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $elm$json$Json$Decode$map5 = _Json_map5;
@@ -6169,7 +6169,7 @@ var $author$project$TMDBData$castMemberDecoder = A6(
 	A2($elm$json$Json$Decode$field, 'order', $elm$json$Json$Decode$int));
 var $author$project$JellyfinAPI$CrewMember = F5(
 	function (id, name, job, department, profileUrl) {
-		return {bk: department, D: id, bv: job, aw: name, aI: profileUrl};
+		return {bk: department, E: id, bv: job, aw: name, aI: profileUrl};
 	});
 var $author$project$TMDBData$crewMemberDecoder = A6(
 	$elm$json$Json$Decode$map5,
@@ -6231,7 +6231,7 @@ var $author$project$TMDBData$mediaItemDecoder = A2(
 		$elm$json$Json$Decode$map6,
 		F6(
 			function (id, title, type_, imageUrl, year, rating) {
-				return {bc: $elm$core$Maybe$Nothing, be: _List_Nil, aD: $elm$core$Maybe$Nothing, aE: _List_Nil, as: _List_Nil, D: id, aG: imageUrl, aJ: rating, aP: title, aQ: type_, aS: year};
+				return {bc: $elm$core$Maybe$Nothing, be: _List_Nil, aD: $elm$core$Maybe$Nothing, aE: _List_Nil, as: _List_Nil, E: id, aG: imageUrl, aJ: rating, aP: title, aQ: type_, aS: year};
 			}),
 		A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$string),
 		A2($elm$json$Json$Decode$field, 'title', $elm$json$Json$Decode$string),
@@ -6265,7 +6265,7 @@ var $author$project$TMDBData$fetchTMDBData = function (toMsg) {
 var $elm$browser$Browser$Dom$getViewport = _Browser_withWindow(_Browser_getViewport);
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$MediaDetail$init = _Utils_Tuple2(
-	{S: $elm$core$Maybe$Nothing, I: false, av: $elm$core$Maybe$Nothing},
+	{T: $elm$core$Maybe$Nothing, J: false, av: $elm$core$Maybe$Nothing},
 	$elm$core$Platform$Cmd$none);
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
@@ -6278,13 +6278,13 @@ var $elm$core$Maybe$withDefault = F2(
 	});
 var $author$project$ServerSettings$init = _Utils_Tuple2(
 	{
-		P: A2($elm$core$Maybe$withDefault, '', $author$project$JellyfinAPI$defaultServerConfig.aU),
+		Q: A2($elm$core$Maybe$withDefault, '', $author$project$JellyfinAPI$defaultServerConfig.aU),
 		aa: $author$project$JellyfinAPI$defaultServerConfig.aV,
-		R: $elm$core$Maybe$Nothing,
+		S: $elm$core$Maybe$Nothing,
 		af: false,
 		ag: false,
 		a2: $author$project$JellyfinAPI$defaultServerConfig,
-		Y: A2($elm$core$Maybe$withDefault, '', $author$project$JellyfinAPI$defaultServerConfig.a8)
+		Z: A2($elm$core$Maybe$withDefault, '', $author$project$JellyfinAPI$defaultServerConfig.a8)
 	},
 	$elm$core$Platform$Cmd$none);
 var $elm$core$Platform$Cmd$map = _Platform_map;
@@ -6299,7 +6299,7 @@ var $author$project$JellyfinUI$init = function () {
 	var mediaDetailModel = _v1.a;
 	var mediaDetailCmd = _v1.b;
 	return _Utils_Tuple2(
-		{aq: allGenres, u: _List_Nil, ab: $elm$core$Dict$empty, ad: $elm$core$Maybe$Nothing, H: false, I: true, J: false, K: false, ai: mediaDetailModel, aj: '', ay: $elm$core$Maybe$Nothing, A: $elm$core$Maybe$Nothing, B: $elm$core$Maybe$Nothing, a2: $author$project$JellyfinAPI$defaultServerConfig, aN: serverSettingsModel, _: 1200},
+		{aq: allGenres, u: _List_Nil, ab: $elm$core$Dict$empty, ad: $elm$core$Maybe$Nothing, I: false, J: true, K: false, L: false, ai: mediaDetailModel, aj: '', ay: $elm$core$Maybe$Nothing, B: $elm$core$Maybe$Nothing, C: $elm$core$Maybe$Nothing, a2: $author$project$JellyfinAPI$defaultServerConfig, aN: serverSettingsModel, x: 1200},
 		$elm$core$Platform$Cmd$batch(
 			_List_fromArray(
 				[
@@ -6676,7 +6676,7 @@ var $author$project$JellyfinUI$findCategory = F2(
 			A2(
 				$elm$core$List$filter,
 				function (cat) {
-					return _Utils_eq(cat.D, categoryId);
+					return _Utils_eq(cat.E, categoryId);
 				},
 				categories));
 	});
@@ -6724,26 +6724,26 @@ var $elm$core$Basics$min = F2(
 var $author$project$MockData$mockCategories = _List_fromArray(
 	[
 		{
-		D: 'continue-watching',
+		E: 'continue-watching',
 		cu: _List_fromArray(
 			[
 				{
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Captain Sarah Chen', D: 'cast1', aw: 'Emma Stone', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'Dr. Marcus Wells', D: 'cast2', aw: 'John Boyega', bF: 1, aI: $elm$core$Maybe$Nothing},
-						{bg: 'Engineer Raj Kumar', D: 'cast3', aw: 'Dev Patel', bF: 2, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Captain Sarah Chen', E: 'cast1', aw: 'Emma Stone', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Dr. Marcus Wells', E: 'cast2', aw: 'John Boyega', bF: 1, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Engineer Raj Kumar', E: 'cast3', aw: 'Dev Patel', bF: 2, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('A thrilling sci-fi series about explorers who venture into a mysterious void at the edge of the universe.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Directing', D: 'crew1', bv: 'Director', aw: 'Ava DuVernay', aI: $elm$core$Maybe$Nothing},
-						{bk: 'Production', D: 'crew2', bv: 'Executive Producer', aw: 'Christopher Nolan', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', E: 'crew1', bv: 'Director', aw: 'Ava DuVernay', aI: $elm$core$Maybe$Nothing},
+						{bk: 'Production', E: 'crew2', bv: 'Executive Producer', aw: 'Christopher Nolan', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Drama', 'Mystery']),
-				D: 'show2',
+				E: 'show2',
 				aG: 'show2.jpg',
 				aJ: 8.7,
 				aP: 'Chronicles of the Void',
@@ -6754,17 +6754,17 @@ var $author$project$MockData$mockCategories = _List_fromArray(
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Dr. Alex Harper', D: 'cast4', aw: 'Ryan Gosling', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'Commander Maya Zhou', D: 'cast5', aw: 'Lupita Nyong\'o', bF: 1, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Dr. Alex Harper', E: 'cast4', aw: 'Ryan Gosling', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Commander Maya Zhou', E: 'cast5', aw: 'Lupita Nyong\'o', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('When a team of scientists discovers a habitable planet at the edge of a distant nebula, they embark on a perilous journey only to find they are not alone.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Directing', D: 'crew3', bv: 'Director', aw: 'Denis Villeneuve', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', E: 'crew3', bv: 'Director', aw: 'Denis Villeneuve', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Adventure', 'Horror']),
-				D: 'movie4',
+				E: 'movie4',
 				aG: 'movie4.jpg',
 				aJ: 7.5,
 				aP: 'Nebula\'s Edge',
@@ -6775,24 +6775,24 @@ var $author$project$MockData$mockCategories = _List_fromArray(
 		aw: 'Continue Watching'
 	},
 		{
-		D: 'recently-added',
+		E: 'recently-added',
 		cu: _List_fromArray(
 			[
 				{
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Dr. James Wilson', D: 'cast6', aw: 'Daniel Kaluuya', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'Agent Elizabeth Bennett', D: 'cast7', aw: 'Florence Pugh', bF: 1, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Dr. James Wilson', E: 'cast6', aw: 'Daniel Kaluuya', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Agent Elizabeth Bennett', E: 'cast7', aw: 'Florence Pugh', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('When a brilliant physicist discovers a way to manipulate time using quantum mechanics, governments and corporations race to control the technology.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Directing', D: 'crew4', bv: 'Director', aw: 'Bong Joon-ho', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', E: 'crew4', bv: 'Director', aw: 'Bong Joon-ho', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Thriller', 'Drama']),
-				D: 'movie1',
+				E: 'movie1',
 				aG: 'movie1.jpg',
 				aJ: 8.5,
 				aP: 'The Quantum Protocol',
@@ -6803,17 +6803,17 @@ var $author$project$MockData$mockCategories = _List_fromArray(
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Memory Detective Eliza Grey', D: 'cast8', aw: 'Saoirse Ronan', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'Hacker Leo Chen', D: 'cast9', aw: 'Rami Malek', bF: 1, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Memory Detective Eliza Grey', E: 'cast8', aw: 'Saoirse Ronan', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Hacker Leo Chen', E: 'cast9', aw: 'Rami Malek', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('In a future where memories can be shared digitally, a memory detective uncovers a conspiracy that threatens global stability.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Directing', D: 'crew5', bv: 'Director', aw: 'Chloe Zhao', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', E: 'crew5', bv: 'Director', aw: 'Chloe Zhao', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Mystery', 'Thriller']),
-				D: 'movie2',
+				E: 'movie2',
 				aG: 'movie2.jpg',
 				aJ: 7.8,
 				aP: 'Echoes of Tomorrow',
@@ -6824,18 +6824,18 @@ var $author$project$MockData$mockCategories = _List_fromArray(
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Various Characters', D: 'cast10', aw: 'Anya Taylor-Joy', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'Various Characters', D: 'cast11', aw: 'Anthony Mackie', bF: 1, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Various Characters', E: 'cast10', aw: 'Anya Taylor-Joy', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Various Characters', E: 'cast11', aw: 'Anthony Mackie', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('An anthology series exploring the intersection of technology and humanity across different possible futures.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Production', D: 'crew6', bv: 'Creator', aw: 'Lana Wachowski', aI: $elm$core$Maybe$Nothing},
-						{bk: 'Directing', D: 'crew7', bv: 'Director', aw: 'Alex Garland', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Production', E: 'crew6', bv: 'Creator', aw: 'Lana Wachowski', aI: $elm$core$Maybe$Nothing},
+						{bk: 'Directing', E: 'crew7', bv: 'Director', aw: 'Alex Garland', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Drama', 'Anthology']),
-				D: 'show1',
+				E: 'show1',
 				aG: 'show1.jpg',
 				aJ: 9.2,
 				aP: 'Digital Horizons',
@@ -6846,17 +6846,17 @@ var $author$project$MockData$mockCategories = _List_fromArray(
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Commander Thomas Rivera', D: 'cast12', aw: 'Oscar Isaac', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'Dr. Maya Patel', D: 'cast13', aw: 'Tessa Thompson', bF: 1, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Commander Thomas Rivera', E: 'cast12', aw: 'Oscar Isaac', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Dr. Maya Patel', E: 'cast13', aw: 'Tessa Thompson', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('The first human colony on Mars faces unexpected challenges when strange artifacts are discovered beneath the planet\'s surface.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Directing', D: 'crew8', bv: 'Director', aw: 'James Gray', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', E: 'crew8', bv: 'Director', aw: 'James Gray', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Adventure']),
-				D: 'movie3',
+				E: 'movie3',
 				aG: 'movie3.jpg',
 				aJ: 6.9,
 				aP: 'Stellar Odyssey',
@@ -6867,24 +6867,24 @@ var $author$project$MockData$mockCategories = _List_fromArray(
 		aw: 'Recently Added'
 	},
 		{
-		D: 'recommended',
+		E: 'recommended',
 		cu: _List_fromArray(
 			[
 				{
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Commander Jack Harding', D: 'cast14', aw: 'Keanu Reeves', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'Astrophysicist Dr. Olivia Chen', D: 'cast15', aw: 'Zendaya', bF: 1, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Commander Jack Harding', E: 'cast14', aw: 'Keanu Reeves', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Astrophysicist Dr. Olivia Chen', E: 'cast15', aw: 'Zendaya', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('As a nearby star threatens to go supernova, a specialized team of astronauts must embark on a mission to prevent catastrophe on Earth.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Directing', D: 'crew9', bv: 'Director', aw: 'Patty Jenkins', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', E: 'crew9', bv: 'Director', aw: 'Patty Jenkins', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Action', 'Drama']),
-				D: 'movie5',
+				E: 'movie5',
 				aG: 'movie5.jpg',
 				aJ: 9.1,
 				aP: 'Hypernova',
@@ -6895,17 +6895,17 @@ var $author$project$MockData$mockCategories = _List_fromArray(
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Dr. Elijah Cross', D: 'cast16', aw: 'Jonathan Majors', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'Timeline Investigator Kate Wilson', D: 'cast17', aw: 'Jodie Comer', bF: 1, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Dr. Elijah Cross', E: 'cast16', aw: 'Jonathan Majors', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Timeline Investigator Kate Wilson', E: 'cast17', aw: 'Jodie Comer', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('After a particle accelerator experiment goes wrong, reality splits into multiple timelines that begin to collide with devastating consequences.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Production', D: 'crew10', bv: 'Creator', aw: 'Noah Hawley', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Production', E: 'crew10', bv: 'Creator', aw: 'Noah Hawley', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Mystery', 'Drama']),
-				D: 'show3',
+				E: 'show3',
 				aG: 'show3.jpg',
 				aJ: 8.4,
 				aP: 'Temporal Divide',
@@ -6916,17 +6916,17 @@ var $author$project$MockData$mockCategories = _List_fromArray(
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Emma/Alternate Emma', D: 'cast18', aw: 'Brie Larson', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'Dr. Marcus Shaw', D: 'cast19', aw: 'LaKeith Stanfield', bF: 1, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Emma/Alternate Emma', E: 'cast18', aw: 'Brie Larson', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Dr. Marcus Shaw', E: 'cast19', aw: 'LaKeith Stanfield', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('A woman discovers her doppelgänger from a parallel universe, leading to an identity crisis as she questions which reality is truly her own.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Directing', D: 'crew11', bv: 'Director', aw: 'Darren Aronofsky', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', E: 'crew11', bv: 'Director', aw: 'Darren Aronofsky', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Psychological', 'Drama']),
-				D: 'movie6',
+				E: 'movie6',
 				aG: 'movie6.jpg',
 				aJ: 7.2,
 				aP: 'Parallel Essence',
@@ -6937,17 +6937,17 @@ var $author$project$MockData$mockCategories = _List_fromArray(
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Dr. Robert Chen', D: 'cast20', aw: 'John David Washington', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'Commander Diana Jackson', D: 'cast21', aw: 'Cynthia Erivo', bF: 1, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Dr. Robert Chen', E: 'cast20', aw: 'John David Washington', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Commander Diana Jackson', E: 'cast21', aw: 'Cynthia Erivo', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('A team of scientists working on quantum computing inadvertently open a gateway to alternate dimensions, unleashing chaos across the multiverse.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Production', D: 'crew12', bv: 'Creators', aw: 'The Wachowskis', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Production', E: 'crew12', bv: 'Creators', aw: 'The Wachowskis', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Adventure', 'Action']),
-				D: 'show4',
+				E: 'show4',
 				aG: 'show4.jpg',
 				aJ: 8.9,
 				aP: 'Quantum Nexus',
@@ -6961,24 +6961,24 @@ var $author$project$MockData$mockCategories = _List_fromArray(
 var $author$project$MockData$mockLibraryCategories = _List_fromArray(
 	[
 		{
-		D: 'movie-library',
+		E: 'movie-library',
 		cu: _List_fromArray(
 			[
 				{
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Voice of IRIS AI', D: 'cast22', aw: 'Steven Yeun', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'Dr. Samantha Liu', D: 'cast23', aw: 'Thomasin McKenzie', bF: 1, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Voice of IRIS AI', E: 'cast22', aw: 'Steven Yeun', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Dr. Samantha Liu', E: 'cast23', aw: 'Thomasin McKenzie', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('A philosophical journey through the cosmos as an AI aboard an interstellar vessel contemplates the nature of existence.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Directing', D: 'crew13', bv: 'Director', aw: 'Richard Linklater', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', E: 'crew13', bv: 'Director', aw: 'Richard Linklater', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Drama', 'Philosophy']),
-				D: 'movie7',
+				E: 'movie7',
 				aG: 'movie7.jpg',
 				aJ: 8.3,
 				aP: 'Cosmic Paradigm',
@@ -6989,17 +6989,17 @@ var $author$project$MockData$mockLibraryCategories = _List_fromArray(
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Ethan Reed', D: 'cast24', aw: 'Paul Mescal', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'Lily Chen', D: 'cast25', aw: 'Daisy Edgar-Jones', bF: 1, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Ethan Reed', E: 'cast24', aw: 'Paul Mescal', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Lily Chen', E: 'cast25', aw: 'Daisy Edgar-Jones', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('Two strangers discover they share dreams and thoughts through an unexplained neural connection, leading them on a journey to find each other.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Directing', D: 'crew14', bv: 'Director', aw: 'Greta Gerwig', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', E: 'crew14', bv: 'Director', aw: 'Greta Gerwig', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Romance', 'Mystery']),
-				D: 'movie8',
+				E: 'movie8',
 				aG: 'movie8.jpg',
 				aJ: 7.9,
 				aP: 'Neural Connection',
@@ -7010,17 +7010,17 @@ var $author$project$MockData$mockLibraryCategories = _List_fromArray(
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Dream Detective Elias Cross', D: 'cast26', aw: 'Mahershala Ali', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'Senator Victoria Palmer', D: 'cast27', aw: 'Rebecca Ferguson', bF: 1, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Dream Detective Elias Cross', E: 'cast26', aw: 'Mahershala Ali', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Senator Victoria Palmer', E: 'cast27', aw: 'Rebecca Ferguson', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('In a world where dreams can be recorded and sold as entertainment, a dream detective investigates the theft of a prominent politician\'s subconscious.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Directing', D: 'crew15', bv: 'Director', aw: 'Rian Johnson', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', E: 'crew15', bv: 'Director', aw: 'Rian Johnson', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Neo-Noir', 'Mystery']),
-				D: 'movie9',
+				E: 'movie9',
 				aG: 'movie9.jpg',
 				aJ: 8.1,
 				aP: 'Synthetic Dreams',
@@ -7031,17 +7031,17 @@ var $author$project$MockData$mockLibraryCategories = _List_fromArray(
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Data Archaeologist Max Rivera', D: 'cast28', aw: 'Pedro Pascal', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'AI Specialist Dr. Amara Johnson', D: 'cast29', aw: 'Letitia Wright', bF: 1, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Data Archaeologist Max Rivera', E: 'cast28', aw: 'Pedro Pascal', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'AI Specialist Dr. Amara Johnson', E: 'cast29', aw: 'Letitia Wright', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('A team of data archaeologists explore the ruins of the Internet after a global cyber-catastrophe, discovering secrets that were meant to stay buried.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Directing', D: 'crew16', bv: 'Director', aw: 'Taika Waititi', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', E: 'crew16', bv: 'Director', aw: 'Taika Waititi', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Adventure', 'Mystery']),
-				D: 'movie10',
+				E: 'movie10',
 				aG: 'movie10.jpg',
 				aJ: 7.6,
 				aP: 'Digital Frontier',
@@ -7052,25 +7052,25 @@ var $author$project$MockData$mockLibraryCategories = _List_fromArray(
 		aw: 'Movies'
 	},
 		{
-		D: 'tv-library',
+		E: 'tv-library',
 		cu: _List_fromArray(
 			[
 				{
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Dr. Lucy Chen', D: 'cast30', aw: 'Gemma Chan', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'General Marcus Williams', D: 'cast31', aw: 'David Oyelowo', bF: 1, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Dr. Lucy Chen', E: 'cast30', aw: 'Gemma Chan', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'General Marcus Williams', E: 'cast31', aw: 'David Oyelowo', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('Humanity makes first contact with an alien intelligence that communicates through manipulating the fabric of reality itself.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Production', D: 'crew17', bv: 'Creator', aw: 'Denis Villeneuve', aI: $elm$core$Maybe$Nothing},
-						{bk: 'Directing', D: 'crew18', bv: 'Director', aw: 'Nia DaCosta', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Production', E: 'crew17', bv: 'Creator', aw: 'Denis Villeneuve', aI: $elm$core$Maybe$Nothing},
+						{bk: 'Directing', E: 'crew18', bv: 'Director', aw: 'Nia DaCosta', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Drama', 'Mystery']),
-				D: 'show5',
+				E: 'show5',
 				aG: 'show5.jpg',
 				aJ: 8.8,
 				aP: 'Ethereal Connection',
@@ -7081,18 +7081,18 @@ var $author$project$MockData$mockLibraryCategories = _List_fromArray(
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Agent Thomas Blake', D: 'cast32', aw: 'Daniel Craig', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'Director Nora Ellis', D: 'cast33', aw: 'Janelle Monáe', bF: 1, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Agent Thomas Blake', E: 'cast32', aw: 'Daniel Craig', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Director Nora Ellis', E: 'cast33', aw: 'Janelle Monáe', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('A secret government agency monitors timeline alterations and sends agents to prevent catastrophic changes to history.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Production', D: 'crew19', bv: 'Creator', aw: 'Jonathan Nolan', aI: $elm$core$Maybe$Nothing},
-						{bk: 'Production', D: 'crew20', bv: 'Creator', aw: 'Lisa Joy', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Production', E: 'crew19', bv: 'Creator', aw: 'Jonathan Nolan', aI: $elm$core$Maybe$Nothing},
+						{bk: 'Production', E: 'crew20', bv: 'Creator', aw: 'Lisa Joy', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Action', 'History']),
-				D: 'show6',
+				E: 'show6',
 				aG: 'show6.jpg',
 				aJ: 9.0,
 				aP: 'Parallel Futures',
@@ -7103,17 +7103,17 @@ var $author$project$MockData$mockLibraryCategories = _List_fromArray(
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Dr. Violet Chen', D: 'cast34', aw: 'Sonoya Mizuno', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'FBI Agent Marcus Hill', D: 'cast35', aw: 'Aldis Hodge', bF: 1, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Dr. Violet Chen', E: 'cast34', aw: 'Sonoya Mizuno', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'FBI Agent Marcus Hill', E: 'cast35', aw: 'Aldis Hodge', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('After a particle accelerator accident, a physicist gains the ability to see and interact with quantum probability waves, allowing her to perceive possible futures.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Production', D: 'crew21', bv: 'Creator', aw: 'Sam Esmail', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Production', E: 'crew21', bv: 'Creator', aw: 'Sam Esmail', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Drama', 'Thriller']),
-				D: 'show7',
+				E: 'show7',
 				aG: 'show7.jpg',
 				aJ: 8.2,
 				aP: 'Quantum Horizon',
@@ -7124,17 +7124,17 @@ var $author$project$MockData$mockLibraryCategories = _List_fromArray(
 				bc: $elm$core$Maybe$Nothing,
 				be: _List_fromArray(
 					[
-						{bg: 'Detective James Park', D: 'cast36', aw: 'John Cho', bF: 0, aI: $elm$core$Maybe$Nothing},
-						{bg: 'Dr. Eliza Ward', D: 'cast37', aw: 'Thandiwe Newton', bF: 1, aI: $elm$core$Maybe$Nothing}
+						{bg: 'Detective James Park', E: 'cast36', aw: 'John Cho', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Dr. Eliza Ward', E: 'cast37', aw: 'Thandiwe Newton', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
 				aD: $elm$core$Maybe$Just('In a near future where human minds can connect to a shared digital consciousness, a detective investigates murders taking place both in reality and the virtual world.'),
 				aE: _List_fromArray(
 					[
-						{bk: 'Production', D: 'crew22', bv: 'Creator', aw: 'Lilly Wachowski', aI: $elm$core$Maybe$Nothing}
+						{bk: 'Production', E: 'crew22', bv: 'Creator', aw: 'Lilly Wachowski', aI: $elm$core$Maybe$Nothing}
 					]),
 				as: _List_fromArray(
 					['Sci-Fi', 'Crime', 'Cyberpunk']),
-				D: 'show8',
+				E: 'show8',
 				aG: 'show8.jpg',
 				aJ: 7.7,
 				aP: 'Neural Network',
@@ -7161,7 +7161,7 @@ var $author$project$MediaDetail$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{S: $elm$core$Maybe$Nothing, I: true}),
+						{T: $elm$core$Maybe$Nothing, J: true}),
 					$elm$core$Platform$Cmd$none);
 			case 1:
 				var result = msg.a;
@@ -7171,8 +7171,8 @@ var $author$project$MediaDetail$update = F2(
 						_Utils_update(
 							model,
 							{
-								S: $elm$core$Maybe$Nothing,
-								I: false,
+								T: $elm$core$Maybe$Nothing,
+								J: false,
 								av: $elm$core$Maybe$Just(detail)
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -7182,8 +7182,8 @@ var $author$project$MediaDetail$update = F2(
 						_Utils_update(
 							model,
 							{
-								S: $elm$core$Maybe$Just(error),
-								I: false
+								T: $elm$core$Maybe$Just(error),
+								J: false
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
@@ -7191,7 +7191,7 @@ var $author$project$MediaDetail$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{S: $elm$core$Maybe$Nothing, av: $elm$core$Maybe$Nothing}),
+						{T: $elm$core$Maybe$Nothing, av: $elm$core$Maybe$Nothing}),
 					$elm$core$Platform$Cmd$none);
 			default:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -7222,31 +7222,31 @@ var $author$project$ServerSettings$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{P: value}),
+						{Q: value}),
 					$elm$core$Platform$Cmd$none);
 			case 3:
 				var value = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{Y: value}),
+						{Z: value}),
 					$elm$core$Platform$Cmd$none);
 			case 4:
 				var newConfig = {
-					aU: $elm$core$String$isEmpty(model.P) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(model.P),
+					aU: $elm$core$String$isEmpty(model.Q) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(model.Q),
 					aV: model.aa,
-					a8: $elm$core$String$isEmpty(model.Y) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(model.Y)
+					a8: $elm$core$String$isEmpty(model.Z) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(model.Z)
 				};
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{R: $elm$core$Maybe$Nothing, ag: false, a2: newConfig}),
+						{S: $elm$core$Maybe$Nothing, ag: false, a2: newConfig}),
 					$elm$core$Platform$Cmd$none);
 			case 5:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{R: $elm$core$Maybe$Nothing, af: true}),
+						{S: $elm$core$Maybe$Nothing, af: true}),
 					A2(
 						$elm$core$Task$perform,
 						$elm$core$Basics$identity,
@@ -7258,7 +7258,7 @@ var $author$project$ServerSettings$update = F2(
 					_Utils_update(
 						model,
 						{
-							R: $elm$core$Maybe$Just(status),
+							S: $elm$core$Maybe$Just(status),
 							af: false
 						}),
 					$elm$core$Platform$Cmd$none);
@@ -7267,10 +7267,10 @@ var $author$project$ServerSettings$update = F2(
 					_Utils_update(
 						model,
 						{
-							P: A2($elm$core$Maybe$withDefault, '', $author$project$JellyfinAPI$defaultServerConfig.aU),
+							Q: A2($elm$core$Maybe$withDefault, '', $author$project$JellyfinAPI$defaultServerConfig.aU),
 							aa: $author$project$JellyfinAPI$defaultServerConfig.aV,
-							R: $elm$core$Maybe$Nothing,
-							Y: A2($elm$core$Maybe$withDefault, '', $author$project$JellyfinAPI$defaultServerConfig.a8)
+							S: $elm$core$Maybe$Nothing,
+							Z: A2($elm$core$Maybe$withDefault, '', $author$project$JellyfinAPI$defaultServerConfig.a8)
 						}),
 					$elm$core$Platform$Cmd$none);
 		}
@@ -7284,7 +7284,7 @@ var $author$project$JellyfinUI$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{_: width}),
+						{x: width}),
 					$elm$core$Platform$Cmd$none);
 			case 0:
 				var query = msg.a;
@@ -7314,7 +7314,7 @@ var $author$project$JellyfinUI$update = F2(
 					A2(
 						$elm$core$List$filter,
 						function (item) {
-							return _Utils_eq(item.D, mediaId);
+							return _Utils_eq(item.E, mediaId);
 						},
 						A2(
 							$elm$core$List$concatMap,
@@ -7328,7 +7328,7 @@ var $author$project$JellyfinUI$update = F2(
 						var duration = 120;
 						var description = A2($elm$core$Maybe$withDefault, 'No description available.', item.aD);
 						var detail = $elm$core$Result$Ok(
-							{aT: item.be, aD: description, aE: item.aE, aX: duration, as: item.as, D: item.D, aG: item.aG, aJ: item.aJ, aP: item.aP, aQ: item.aQ, aS: item.aS});
+							{aT: item.be, aD: description, aE: item.aE, aX: duration, as: item.as, E: item.E, aG: item.aG, aJ: item.aJ, aP: item.aP, aQ: item.aQ, aS: item.aS});
 						return function (cmd) {
 							return A2(
 								$elm$core$Task$perform,
@@ -7357,14 +7357,14 @@ var $author$project$JellyfinUI$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{I: true}),
+						{J: true}),
 					$author$project$TMDBData$fetchTMDBData($author$project$JellyfinUI$TMDBDataReceived));
 			case 6:
 				var categories = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{u: categories, I: false}),
+						{u: categories, J: false}),
 					$elm$core$Platform$Cmd$none);
 			case 7:
 				var subMsg = msg.a;
@@ -7397,13 +7397,13 @@ var $author$project$JellyfinUI$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{H: false, J: false, K: !model.K}),
+						{I: false, K: false, L: !model.L}),
 					$elm$core$Platform$Cmd$none);
 			case 12:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{H: !model.H, J: false, K: false}),
+						{I: !model.I, K: false, L: false}),
 					$elm$core$Platform$Cmd$none);
 			case 13:
 				var genre = msg.a;
@@ -7411,21 +7411,21 @@ var $author$project$JellyfinUI$update = F2(
 					_Utils_update(
 						model,
 						{
-							H: false,
-							A: $elm$core$Maybe$Just(genre)
+							I: false,
+							B: $elm$core$Maybe$Just(genre)
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 14:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{A: $elm$core$Maybe$Nothing}),
+						{B: $elm$core$Maybe$Nothing}),
 					$elm$core$Platform$Cmd$none);
 			case 15:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{H: false, J: !model.J, K: false}),
+						{I: false, K: !model.K, L: false}),
 					$elm$core$Platform$Cmd$none);
 			case 16:
 				var mediaType = msg.a;
@@ -7433,38 +7433,37 @@ var $author$project$JellyfinUI$update = F2(
 					_Utils_update(
 						model,
 						{
-							J: false,
-							B: $elm$core$Maybe$Just(mediaType)
+							K: false,
+							C: $elm$core$Maybe$Just(mediaType)
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 17:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{B: $elm$core$Maybe$Nothing}),
+						{C: $elm$core$Maybe$Nothing}),
 					$elm$core$Platform$Cmd$none);
 			case 11:
 				var action = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{K: false}),
+						{L: false}),
 					$elm$core$Platform$Cmd$none);
 			case 18:
 				var categoryId = msg.a;
 				var direction = msg.b;
 				var scrollAmount = 300.0;
 				var maybeCategory = A2($author$project$JellyfinUI$findCategory, categoryId, model.u);
-				var maxScroll = function () {
+				var maxScrollPosition = function () {
 					if (!maybeCategory.$) {
 						var category = maybeCategory.a;
-						var visibleItems = 4.0;
-						var itemWidth = 280.0;
-						var itemCount = $elm$core$List$length(category.cu);
-						var contentWidth = itemCount * itemWidth;
-						var containerWidth = visibleItems * itemWidth;
-						var maxNegativeScroll = -(contentWidth - containerWidth);
-						return (_Utils_cmp(itemCount, visibleItems) < 1) ? 0.0 : A2($elm$core$Basics$max, maxNegativeScroll, -9999.0);
+						var itemsCount = $elm$core$List$length(category.cu);
+						var itemSize = 200.0;
+						var displayCount = (model.x > 1600) ? 5.0 : ((model.x > 1200) ? 4.0 : ((model.x > 900) ? 3.0 : ((model.x > 600) ? 2.0 : 1.0)));
+						var contentSize = itemsCount * itemSize;
+						var containerSize = displayCount * itemSize;
+						return (_Utils_cmp(itemsCount, displayCount) < 1) ? 0.0 : (-(contentSize - containerSize));
 					} else {
 						return 0.0;
 					}
@@ -7473,7 +7472,7 @@ var $author$project$JellyfinUI$update = F2(
 					$elm$core$Maybe$withDefault,
 					0,
 					A2($elm$core$Dict$get, categoryId, model.ab));
-				var newTranslation = (direction > 0) ? A2($elm$core$Basics$max, maxScroll, currentTranslation - scrollAmount) : A2($elm$core$Basics$min, 0.0, currentTranslation + scrollAmount);
+				var newTranslation = (direction > 0) ? A2($elm$core$Basics$max, maxScrollPosition, currentTranslation - scrollAmount) : A2($elm$core$Basics$min, 0.0, currentTranslation + scrollAmount);
 				var updatedTranslations = A3($elm$core$Dict$insert, categoryId, newTranslation, model.ab);
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -7510,7 +7509,7 @@ var $author$project$JellyfinUI$update = F2(
 								aq: $elm$core$List$isEmpty(allGenres) ? model.aq : allGenres,
 								u: tmdbData.u,
 								ad: $elm$core$Maybe$Nothing,
-								I: false
+								J: false
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
@@ -7538,7 +7537,7 @@ var $author$project$JellyfinUI$update = F2(
 							{
 								u: _Utils_ap($author$project$MockData$mockCategories, $author$project$MockData$mockLibraryCategories),
 								ad: $elm$core$Maybe$Just(errorMsg),
-								I: false
+								J: false
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
@@ -7546,7 +7545,7 @@ var $author$project$JellyfinUI$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{ad: $elm$core$Maybe$Nothing, I: true}),
+						{ad: $elm$core$Maybe$Nothing, J: true}),
 					$author$project$TMDBData$fetchTMDBData($author$project$JellyfinUI$TMDBDataReceived));
 			default:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -8146,7 +8145,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 												[
 													$elm$html$Html$Attributes$class('w-full mt-2'),
 													$elm$html$Html$Events$onClick(
-													$author$project$MediaDetail$PlayMedia(detail.D))
+													$author$project$MediaDetail$PlayMedia(detail.E))
 												])),
 										_List_fromArray(
 											[
@@ -8352,7 +8351,7 @@ var $author$project$MediaDetail$view = function (model) {
 		_List_fromArray(
 			[
 				function () {
-				if (model.I) {
+				if (model.J) {
 					return $author$project$MediaDetail$viewLoading;
 				} else {
 					var _v0 = model.av;
@@ -8360,7 +8359,7 @@ var $author$project$MediaDetail$view = function (model) {
 						var detail = _v0.a;
 						return $author$project$MediaDetail$viewMediaDetail(detail);
 					} else {
-						var _v1 = model.S;
+						var _v1 = model.T;
 						if (!_v1.$) {
 							var errorMsg = _v1.a;
 							return $author$project$MediaDetail$viewError(errorMsg);
@@ -8372,7 +8371,88 @@ var $author$project$MediaDetail$view = function (model) {
 			}()
 			]));
 };
-var $author$project$JellyfinUI$ClearCategory = {$: 2};
+var $elm$core$Basics$neq = _Utils_notEqual;
+var $author$project$JellyfinUI$ClearGenreFilter = {$: 14};
+var $author$project$JellyfinUI$viewActiveFilter = function (maybeGenre) {
+	if (!maybeGenre.$) {
+		var genre = maybeGenre.a;
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('flex items-center bg-primary bg-opacity-20 border border-primary rounded-full px-2 py-0.5')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$span,
+					$author$project$Theme$text(3),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(genre)
+						])),
+					A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('ml-1 text-primary hover:text-primary-dark'),
+							$elm$html$Html$Events$onClick($author$project$JellyfinUI$ClearGenreFilter)
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('×')
+						]))
+				]));
+	} else {
+		return $elm$html$Html$text('');
+	}
+};
+var $author$project$JellyfinUI$ClearTypeFilter = {$: 17};
+var $author$project$JellyfinUI$mediaTypeToString = function (mediaType) {
+	switch (mediaType) {
+		case 0:
+			return 'Movie';
+		case 1:
+			return 'TV Show';
+		default:
+			return 'Music';
+	}
+};
+var $author$project$JellyfinUI$viewActiveTypeFilter = function (maybeType) {
+	if (!maybeType.$) {
+		var mediaType = maybeType.a;
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('flex items-center bg-secondary bg-opacity-20 border border-secondary rounded-full px-2 py-0.5')
+				]),
+			_List_fromArray(
+				[
+					A2(
+					$elm$html$Html$span,
+					$author$project$Theme$text(3),
+					_List_fromArray(
+						[
+							$elm$html$Html$text(
+							$author$project$JellyfinUI$mediaTypeToString(mediaType))
+						])),
+					A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('ml-1 text-secondary hover:text-secondary-dark'),
+							$elm$html$Html$Events$onClick($author$project$JellyfinUI$ClearTypeFilter)
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('×')
+						]))
+				]));
+	} else {
+		return $elm$html$Html$text('');
+	}
+};
 var $elm$core$String$toLower = _String_toLower;
 var $author$project$JellyfinUI$filterCategories = F2(
 	function (query, categories) {
@@ -8458,88 +8538,6 @@ var $author$project$JellyfinUI$filterCategoriesByType = F2(
 					categories));
 		}
 	});
-var $elm$core$Basics$neq = _Utils_notEqual;
-var $author$project$JellyfinUI$ClearGenreFilter = {$: 14};
-var $author$project$JellyfinUI$viewActiveFilter = function (maybeGenre) {
-	if (!maybeGenre.$) {
-		var genre = maybeGenre.a;
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('flex items-center bg-primary bg-opacity-20 border border-primary rounded-full px-2 py-0.5')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$span,
-					$author$project$Theme$text(3),
-					_List_fromArray(
-						[
-							$elm$html$Html$text(genre)
-						])),
-					A2(
-					$elm$html$Html$button,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('ml-1 text-primary hover:text-primary-dark'),
-							$elm$html$Html$Events$onClick($author$project$JellyfinUI$ClearGenreFilter)
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text('×')
-						]))
-				]));
-	} else {
-		return $elm$html$Html$text('');
-	}
-};
-var $author$project$JellyfinUI$ClearTypeFilter = {$: 17};
-var $author$project$JellyfinUI$mediaTypeToString = function (mediaType) {
-	switch (mediaType) {
-		case 0:
-			return 'Movie';
-		case 1:
-			return 'TV Show';
-		default:
-			return 'Music';
-	}
-};
-var $author$project$JellyfinUI$viewActiveTypeFilter = function (maybeType) {
-	if (!maybeType.$) {
-		var mediaType = maybeType.a;
-		return A2(
-			$elm$html$Html$div,
-			_List_fromArray(
-				[
-					$elm$html$Html$Attributes$class('flex items-center bg-secondary bg-opacity-20 border border-secondary rounded-full px-2 py-0.5')
-				]),
-			_List_fromArray(
-				[
-					A2(
-					$elm$html$Html$span,
-					$author$project$Theme$text(3),
-					_List_fromArray(
-						[
-							$elm$html$Html$text(
-							$author$project$JellyfinUI$mediaTypeToString(mediaType))
-						])),
-					A2(
-					$elm$html$Html$button,
-					_List_fromArray(
-						[
-							$elm$html$Html$Attributes$class('ml-1 text-secondary hover:text-secondary-dark'),
-							$elm$html$Html$Events$onClick($author$project$JellyfinUI$ClearTypeFilter)
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text('×')
-						]))
-				]));
-	} else {
-		return $elm$html$Html$text('');
-	}
-};
 var $author$project$Theme$Heading3 = 2;
 var $author$project$JellyfinUI$NoOp = {$: 22};
 var $author$project$JellyfinUI$ScrollCategory = F2(
@@ -8566,9 +8564,9 @@ var $author$project$JellyfinUI$viewMediaItem = function (item) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary cursor-pointer h-full hover:scale-103 hover:z-10 group'),
+				$elm$html$Html$Attributes$class('bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary cursor-pointer h-full group'),
 				$elm$html$Html$Events$onClick(
-				$author$project$JellyfinUI$SelectMediaItem(item.D))
+				$author$project$JellyfinUI$SelectMediaItem(item.E))
 			]),
 		_List_fromArray(
 			[
@@ -8670,13 +8668,29 @@ var $author$project$JellyfinUI$viewCategory = F2(
 		if ($elm$core$List$isEmpty(category.cu)) {
 			return $elm$html$Html$text('');
 		} else {
-			var visibleItems = (model._ > 1600) ? 6.0 : ((model._ > 1200) ? 5.0 : ((model._ > 900) ? 4.0 : ((model._ > 600) ? 3.0 : 2.0)));
-			var itemWidth = 280.0;
+			var itemWidth = 200.0;
 			var itemCount = $elm$core$List$length(category.cu);
+			var displayCount = (model.x > 1600) ? 5.0 : ((model.x > 1200) ? 4.0 : ((model.x > 900) ? 3.0 : ((model.x > 600) ? 2.0 : 1.0)));
+			var maxScrollPosition = (_Utils_cmp(itemCount, displayCount) < 1) ? 0.0 : (-((itemCount * itemWidth) - (displayCount * itemWidth)));
 			var currentTranslation = A2(
 				$elm$core$Maybe$withDefault,
 				0,
-				A2($elm$core$Dict$get, category.D, model.ab));
+				A2($elm$core$Dict$get, category.E, model.ab));
+			var isAtEnd = (_Utils_cmp(currentTranslation, maxScrollPosition) < 1) || (_Utils_cmp(itemCount, displayCount) < 1);
+			var rightButtonStyle = isAtEnd ? _Utils_ap(
+				$author$project$Theme$button(5),
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick($author$project$JellyfinUI$NoOp),
+						$elm$html$Html$Attributes$class('flex items-center justify-center w-6 h-6 opacity-50 cursor-not-allowed')
+					])) : _Utils_ap(
+				$author$project$Theme$button(5),
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(
+						A2($author$project$JellyfinUI$ScrollCategory, category.E, -1)),
+						$elm$html$Html$Attributes$class('flex items-center justify-center w-6 h-6')
+					]));
 			var isAtStart = currentTranslation >= 0.0;
 			var leftButtonStyle = isAtStart ? _Utils_ap(
 				$author$project$Theme$button(5),
@@ -8689,32 +8703,14 @@ var $author$project$JellyfinUI$viewCategory = F2(
 				_List_fromArray(
 					[
 						$elm$html$Html$Events$onClick(
-						A2($author$project$JellyfinUI$ScrollCategory, category.D, 1)),
-						$elm$html$Html$Attributes$class('flex items-center justify-center w-6 h-6')
-					]));
-			var contentWidth = itemCount * itemWidth;
-			var containerWidth = visibleItems * itemWidth;
-			var maxNegativeScroll = -(contentWidth - containerWidth);
-			var isAtEnd = (_Utils_cmp(currentTranslation, maxNegativeScroll) < 1) || (_Utils_cmp(itemCount, visibleItems) < 1);
-			var rightButtonStyle = isAtEnd ? _Utils_ap(
-				$author$project$Theme$button(5),
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick($author$project$JellyfinUI$NoOp),
-						$elm$html$Html$Attributes$class('flex items-center justify-center w-6 h-6 opacity-50 cursor-not-allowed')
-					])) : _Utils_ap(
-				$author$project$Theme$button(5),
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick(
-						A2($author$project$JellyfinUI$ScrollCategory, category.D, -1)),
+						A2($author$project$JellyfinUI$ScrollCategory, category.E, 1)),
 						$elm$html$Html$Attributes$class('flex items-center justify-center w-6 h-6')
 					]));
 			return A2(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('space-y-1')
+						$elm$html$Html$Attributes$class('space-y-2')
 					]),
 				_List_fromArray(
 					[
@@ -8722,7 +8718,7 @@ var $author$project$JellyfinUI$viewCategory = F2(
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('flex justify-between items-center')
+								$elm$html$Html$Attributes$class('flex justify-between items-center mx-1')
 							]),
 						_List_fromArray(
 							[
@@ -8767,7 +8763,7 @@ var $author$project$JellyfinUI$viewCategory = F2(
 											_List_fromArray(
 												[
 													$elm$html$Html$Events$onClick(
-													$author$project$JellyfinUI$SelectCategory(category.D)),
+													$author$project$JellyfinUI$SelectCategory(category.E)),
 													$elm$html$Html$Attributes$class('py-1 px-2')
 												])),
 										_List_fromArray(
@@ -8788,7 +8784,7 @@ var $author$project$JellyfinUI$viewCategory = F2(
 								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('flex space-x-4 hide-scrollbar'),
+										$elm$html$Html$Attributes$class('flex space-x-2 hide-scrollbar'),
 										A2(
 										$elm$html$Html$Attributes$style,
 										'transform',
@@ -8822,8 +8818,8 @@ var $author$project$JellyfinUI$viewCategory = F2(
 											$elm$html$Html$div,
 											_List_fromArray(
 												[
-													$elm$html$Html$Attributes$class('flex-shrink-0 w-56 md:w-64 lg:w-72'),
-													A2($elm$html$Html$Attributes$style, 'min-width', '200px')
+													$elm$html$Html$Attributes$class('flex-shrink-0 w-52 relative py-1 px-1'),
+													A2($elm$html$Html$Attributes$style, 'min-width', '185px')
 												]),
 											_List_fromArray(
 												[
@@ -8835,6 +8831,26 @@ var $author$project$JellyfinUI$viewCategory = F2(
 					]));
 		}
 	});
+var $author$project$JellyfinUI$viewAllCategories = function (model) {
+	var filteredCategories = A2(
+		$author$project$JellyfinUI$filterCategoriesByType,
+		model.C,
+		A2(
+			$author$project$JellyfinUI$filterCategoriesByGenre,
+			model.B,
+			A2($author$project$JellyfinUI$filterCategories, model.aj, model.u)));
+	return A2(
+		$elm$html$Html$div,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('space-y-6')
+			]),
+		A2(
+			$elm$core$List$map,
+			$author$project$JellyfinUI$viewCategory(model),
+			filteredCategories));
+};
+var $author$project$JellyfinUI$ClearCategory = {$: 2};
 var $author$project$JellyfinUI$PlayMedia = function (a) {
 	return {$: 4, a: a};
 };
@@ -8843,9 +8859,9 @@ var $author$project$JellyfinUI$viewMediaItemLarge = function (item) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('flex flex-col bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary hover:scale-103 hover:z-10 group h-full'),
+				$elm$html$Html$Attributes$class('flex flex-col bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary group h-full'),
 				$elm$html$Html$Events$onClick(
-				$author$project$JellyfinUI$SelectMediaItem(item.D))
+				$author$project$JellyfinUI$SelectMediaItem(item.E))
 			]),
 		_List_fromArray(
 			[
@@ -8892,7 +8908,7 @@ var $author$project$JellyfinUI$viewMediaItemLarge = function (item) {
 										$elm$html$Html$Attributes$class('bg-primary text-white rounded-full w-20 h-20 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110'),
 										A2($elm$html$Html$Attributes$style, 'box-shadow', '0 0 30px 10px rgba(95, 135, 175, 0.7)'),
 										$elm$html$Html$Events$onClick(
-										$author$project$JellyfinUI$PlayMedia(item.D))
+										$author$project$JellyfinUI$PlayMedia(item.E))
 									]),
 								_List_fromArray(
 									[
@@ -9002,16 +9018,85 @@ var $author$project$JellyfinUI$viewMediaItemLarge = function (item) {
 					]))
 			]));
 };
+var $author$project$JellyfinUI$viewCategoryDetail = F2(
+	function (model, categoryId) {
+		var filteredCategories = A2(
+			$author$project$JellyfinUI$filterCategoriesByType,
+			model.C,
+			A2(
+				$author$project$JellyfinUI$filterCategoriesByGenre,
+				model.B,
+				A2($author$project$JellyfinUI$filterCategories, model.aj, model.u)));
+		var _v0 = A2($author$project$JellyfinUI$findCategory, categoryId, filteredCategories);
+		if (!_v0.$) {
+			var category = _v0.a;
+			return A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('flex items-center mb-3 mt-1')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$button,
+								_Utils_ap(
+									$author$project$Theme$button(5),
+									_List_fromArray(
+										[
+											$elm$html$Html$Events$onClick($author$project$JellyfinUI$ClearCategory),
+											$elm$html$Html$Attributes$class('mr-2')
+										])),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('← Back')
+									])),
+								A2(
+								$elm$html$Html$h2,
+								_Utils_ap(
+									$author$project$Theme$text(1),
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('font-bold text-primary')
+										])),
+								_List_fromArray(
+									[
+										$elm$html$Html$text(category.aw)
+									]))
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 px-4')
+							]),
+						A2($elm$core$List$map, $author$project$JellyfinUI$viewMediaItemLarge, category.cu))
+					]));
+		} else {
+			return A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Category not found')
+					]));
+		}
+	});
 var $author$project$JellyfinUI$viewContent = function (model) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('px-2 md:px-3 lg:px-4 max-w-screen-2xl mx-auto space-y-4 mb-4')
+				$elm$html$Html$Attributes$class('px-4 max-w-screen-2xl mx-auto space-y-4 mb-4')
 			]),
 		_List_fromArray(
 			[
-				((!_Utils_eq(model.A, $elm$core$Maybe$Nothing)) || (!_Utils_eq(model.B, $elm$core$Maybe$Nothing))) ? A2(
+				((!_Utils_eq(model.B, $elm$core$Maybe$Nothing)) || (!_Utils_eq(model.C, $elm$core$Maybe$Nothing))) ? A2(
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
@@ -9026,98 +9111,16 @@ var $author$project$JellyfinUI$viewContent = function (model) {
 							[
 								$elm$html$Html$text('Active filters:')
 							])),
-						$author$project$JellyfinUI$viewActiveFilter(model.A),
-						$author$project$JellyfinUI$viewActiveTypeFilter(model.B)
+						$author$project$JellyfinUI$viewActiveFilter(model.B),
+						$author$project$JellyfinUI$viewActiveTypeFilter(model.C)
 					])) : $elm$html$Html$text(''),
 				function () {
 				var _v0 = model.ay;
 				if (!_v0.$) {
 					var categoryId = _v0.a;
-					var _v1 = A2(
-						$author$project$JellyfinUI$findCategory,
-						categoryId,
-						A2(
-							$author$project$JellyfinUI$filterCategoriesByType,
-							model.B,
-							A2(
-								$author$project$JellyfinUI$filterCategoriesByGenre,
-								model.A,
-								A2($author$project$JellyfinUI$filterCategories, model.aj, model.u))));
-					if (!_v1.$) {
-						var category = _v1.a;
-						return A2(
-							$elm$html$Html$div,
-							_List_Nil,
-							_List_fromArray(
-								[
-									A2(
-									$elm$html$Html$div,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('flex items-center mb-3 mt-1')
-										]),
-									_List_fromArray(
-										[
-											A2(
-											$elm$html$Html$button,
-											_Utils_ap(
-												$author$project$Theme$button(5),
-												_List_fromArray(
-													[
-														$elm$html$Html$Events$onClick($author$project$JellyfinUI$ClearCategory),
-														$elm$html$Html$Attributes$class('mr-2')
-													])),
-											_List_fromArray(
-												[
-													$elm$html$Html$text('← Back')
-												])),
-											A2(
-											$elm$html$Html$h2,
-											_Utils_ap(
-												$author$project$Theme$text(1),
-												_List_fromArray(
-													[
-														$elm$html$Html$Attributes$class('font-bold text-primary')
-													])),
-											_List_fromArray(
-												[
-													$elm$html$Html$text(category.aw)
-												]))
-										])),
-									A2(
-									$elm$html$Html$div,
-									_List_fromArray(
-										[
-											$elm$html$Html$Attributes$class('grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6')
-										]),
-									A2($elm$core$List$map, $author$project$JellyfinUI$viewMediaItemLarge, category.cu))
-								]));
-					} else {
-						return A2(
-							$elm$html$Html$div,
-							_List_Nil,
-							_List_fromArray(
-								[
-									$elm$html$Html$text('Category not found')
-								]));
-					}
+					return A2($author$project$JellyfinUI$viewCategoryDetail, model, categoryId);
 				} else {
-					return A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('space-y-4')
-							]),
-						A2(
-							$elm$core$List$map,
-							$author$project$JellyfinUI$viewCategory(model),
-							A2(
-								$author$project$JellyfinUI$filterCategories,
-								model.aj,
-								A2(
-									$author$project$JellyfinUI$filterCategoriesByType,
-									model.B,
-									A2($author$project$JellyfinUI$filterCategoriesByGenre, model.A, model.u)))));
+					return $author$project$JellyfinUI$viewAllCategories(model);
 				}
 			}()
 			]));
@@ -9291,7 +9294,7 @@ var $author$project$JellyfinUI$viewGenreFilter = function (model) {
 					[
 						$elm$html$Html$text(
 						function () {
-							var _v0 = model.A;
+							var _v0 = model.B;
 							if (!_v0.$) {
 								var genre = _v0.a;
 								return 'Genre: ' + genre;
@@ -9299,7 +9302,7 @@ var $author$project$JellyfinUI$viewGenreFilter = function (model) {
 								return 'Filter by Genre';
 							}
 						}()),
-						(!_Utils_eq(model.A, $elm$core$Maybe$Nothing)) ? A2(
+						(!_Utils_eq(model.B, $elm$core$Maybe$Nothing)) ? A2(
 						$elm$html$Html$button,
 						_List_fromArray(
 							[
@@ -9311,7 +9314,7 @@ var $author$project$JellyfinUI$viewGenreFilter = function (model) {
 								$elm$html$Html$text('×')
 							])) : $elm$html$Html$text('')
 					])),
-				model.H ? $author$project$JellyfinUI$viewGenreDropdown(model.aq) : $elm$html$Html$text('')
+				model.I ? $author$project$JellyfinUI$viewGenreDropdown(model.aq) : $elm$html$Html$text('')
 			]));
 };
 var $author$project$JellyfinUI$ToggleTypeFilter = {$: 15};
@@ -9391,7 +9394,7 @@ var $author$project$JellyfinUI$viewTypeFilter = function (model) {
 					[
 						$elm$html$Html$text(
 						function () {
-							var _v0 = model.B;
+							var _v0 = model.C;
 							if (!_v0.$) {
 								var mediaType = _v0.a;
 								return 'Type: ' + $author$project$JellyfinUI$mediaTypeToString(mediaType);
@@ -9399,7 +9402,7 @@ var $author$project$JellyfinUI$viewTypeFilter = function (model) {
 								return 'Filter by Type';
 							}
 						}()),
-						(!_Utils_eq(model.B, $elm$core$Maybe$Nothing)) ? A2(
+						(!_Utils_eq(model.C, $elm$core$Maybe$Nothing)) ? A2(
 						$elm$html$Html$button,
 						_List_fromArray(
 							[
@@ -9411,7 +9414,7 @@ var $author$project$JellyfinUI$viewTypeFilter = function (model) {
 								$elm$html$Html$text('×')
 							])) : $elm$html$Html$text('')
 					])),
-				model.J ? $author$project$JellyfinUI$viewTypeDropdown : $elm$html$Html$text('')
+				model.K ? $author$project$JellyfinUI$viewTypeDropdown : $elm$html$Html$text('')
 			]));
 };
 var $author$project$JellyfinUI$ToggleUserMenu = {$: 10};
@@ -9555,7 +9558,7 @@ var $author$project$JellyfinUI$viewUserProfile = function (model) {
 					[
 						$elm$html$Html$text('A')
 					])),
-				model.K ? $author$project$JellyfinUI$viewUserMenu : $elm$html$Html$text('')
+				model.L ? $author$project$JellyfinUI$viewUserMenu : $elm$html$Html$text('')
 			]));
 };
 var $author$project$JellyfinUI$viewHeader = function (model) {
@@ -9667,7 +9670,7 @@ var $author$project$JellyfinUI$view = function (model) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('flex flex-col min-h-screen bg-background')
+				$elm$html$Html$Attributes$class('flex flex-col min-h-screen bg-background overflow-x-hidden')
 			]),
 		_List_fromArray(
 			[
@@ -9676,12 +9679,12 @@ var $author$project$JellyfinUI$view = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$class('flex-1 overflow-y-auto pt-10 pb-8')
+						$elm$html$Html$Attributes$class('flex-1 overflow-y-auto pt-10 pb-8 overflow-x-hidden')
 					]),
 				_List_fromArray(
 					[
 						function () {
-						if (model.I) {
+						if (model.J) {
 							return $author$project$JellyfinUI$viewLoading;
 						} else {
 							var _v0 = model.ad;
