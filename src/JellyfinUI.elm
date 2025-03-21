@@ -853,12 +853,15 @@ viewCategory model category =
             ]
 
 
-{-| View a media item card (small version for category rows)
--}
+{-| View a media item card (small version for category rows)-}
 viewMediaItem : MediaItem -> Html Msg
 viewMediaItem item =
     div
         [ class "bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary cursor-pointer h-full group"
+        , style "transform" "translateZ(0) scale(1.0)"
+        , style "transition" "all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)"
+        , style "will-change" "transform, box-shadow, border-color"
+        , style "hover:transform" "translateZ(0) scale(1.05)"
         , onClick (SelectMediaItem item.id)
         ]
         [ div [ class "relative pt-[150%]" ]
@@ -869,6 +872,11 @@ viewMediaItem item =
                 , attribute "onerror" "this.style.display='none'; this.nextElementSibling.style.display='flex';"
                 ]
                 []
+            , div
+                [ class "absolute inset-0 flex items-center justify-center bg-background-light text-primary-light"
+                , style "display" "none"
+                ]
+                [ text "🎬" ]  -- Fallback if image fails to load
             , div
                 [ class "absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-90 text-text-primary p-3 transition-all duration-300"
                 ]
@@ -893,7 +901,6 @@ viewMediaItem item =
                 ]
             ]
         ]
-
 
 {-| View a media item card (large version for detailed view)
 -}
