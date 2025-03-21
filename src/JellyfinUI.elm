@@ -852,6 +852,8 @@ viewCategory model category =
             ]
 
 
+
+
 {-| View a media item card (small version for category rows)-}
 viewMediaItem : MediaItem -> Html Msg
 viewMediaItem item =
@@ -874,6 +876,26 @@ viewMediaItem item =
                 , style "display" "none"
                 ]
                 [ text "🎬" ]  -- Fallback if image fails to load
+
+            -- Add play button overlay that appears on hover
+            , div
+                [ class "absolute inset-0 flex items-center justify-center z-30"  -- Increased z-index
+                ]
+                [ button
+                    [ class "flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110 bg-transparent relative z-40"  -- Added relative positioning and z-index
+                    , onClick (PlayMedia item.id)
+                    , attribute "data-testid" "play-button"
+                    ]
+                    [ span
+                        [ class "text-2xl font-bold text-white"
+                        , style "filter" "drop-shadow(0 0 10px rgba(127, 168, 204, 1)) drop-shadow(0 0 20px rgba(95, 135, 175, 0.9)) drop-shadow(0 0 30px rgba(95, 135, 175, 0.7))"
+                        , style "position" "relative"  -- Ensure proper stacking
+                        , style "z-index" "50"  -- Even higher z-index for the play icon
+                        ]
+                        [ text "▶" ]
+                    ]
+                ]
+
             , div
                 [ class "absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-90 text-text-primary p-3 transition-all duration-300"
                 ]
@@ -899,8 +921,8 @@ viewMediaItem item =
             ]
         ]
 
-{-| View a media item card (large version for detailed view)
--}
+
+{-| View a media item card (large version for detailed view)-}
 viewMediaItemLarge : MediaItem -> Html Msg
 viewMediaItemLarge item =
     div
