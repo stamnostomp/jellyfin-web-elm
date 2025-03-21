@@ -1,5 +1,7 @@
 module JellyfinUI exposing (Model, Msg, init, update, view, subscriptions)
 
+import Browser.Dom as Dom
+import Browser.Events as Events
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -16,6 +18,7 @@ import TMDBData exposing (TMDBResponse, fetchTMDBData)
 
 -- MODEL
 
+
 type alias Model =
     { categories : List Category
     , searchQuery : String
@@ -24,15 +27,17 @@ type alias Model =
     , serverConfig : ServerConfig
     , mediaDetailModel : MediaDetail.Model
     , serverSettingsModel : ServerSettings.Model
-    , isUserMenuOpen : Bool -- Track if user menu is open
-    , isGenreFilterOpen : Bool -- Track if genre filter dropdown is open
-    , selectedGenre : Maybe String -- Currently selected genre for filtering
-    , availableGenres : List String -- List of available genres
-    , isTypeFilterOpen : Bool -- Track if type filter dropdown is open
-    , selectedType : Maybe MediaType -- Currently selected media type for filtering
-    , categoryTranslation : Dict String Float  -- Stores X-translation for each category
-    , errorMessage : Maybe String -- Store error messages
+    , isUserMenuOpen : Bool
+    , isGenreFilterOpen : Bool
+    , selectedGenre : Maybe String
+    , availableGenres : List String
+    , isTypeFilterOpen : Bool
+    , selectedType : Maybe MediaType
+    , categoryTranslation : Dict String Float
+    , errorMessage : Maybe String
+    , windowWidth : Int
     }
+
 
 init : ( Model, Cmd Msg )
 init =
@@ -43,15 +48,16 @@ init =
         ( serverSettingsModel, serverSettingsCmd ) =
             ServerSettings.init
 
-        -- Initial list of genres (will be updated when TMDB data loads)
+        -- Initial list of genres
         allGenres =
-            [ "Sci-Fi", "Adventure", "Drama", "Action", "Romance", "Mystery",
-              "Comedy", "Fantasy", "Thriller", "Horror", "Documentary" ]
+            [ "Sci-Fi", "Adventure", "Drama", "Action", "Romance", "Mystery"
+            , "Comedy", "Fantasy", "Thriller", "Horror", "Documentary"
+            ]
     in
-    ( { categories = [] -- Start with empty categories until data loads
+    ( { categories = []
       , searchQuery = ""
       , selectedCategory = Nothing
-      , isLoading = True -- Start in loading state
+      , isLoading = True
       , serverConfig = defaultServerConfig
       , mediaDetailModel = mediaDetailModel
       , serverSettingsModel = serverSettingsModel
@@ -63,15 +69,25 @@ init =
       , selectedType = Nothing
       , categoryTranslation = Dict.empty
       , errorMessage = Nothing
+      , windowWidth = 1200
       }
     , Cmd.batch
         [ Cmd.map MediaDetailMsg mediaDetailCmd
         , Cmd.map ServerSettingsMsg serverSettingsCmd
-        , fetchTMDBData TMDBDataReceived -- Fetch data from TMDB JSON
+        , fetchTMDBData TMDBDataReceived
+        , Task.perform
+            (\vp -> WindowResized (round vp.viewport.width) (round vp.viewport.height))
+            Dom.getViewport
         ]
     )
 
+
+
+
+
+
 -- View a media item (large card version for category detail view)
+
 viewMediaItemLarge : MediaItem -> Html Msg
 viewMediaItemLarge item =
     div
@@ -171,7 +187,6 @@ filterCategoriesByType maybeType categories =
                 )
                 |> List.filter (\category -> not (List.isEmpty category.items))
 
--- HELPERS
 
 -- Convert MediaType to string
 mediaTypeToString : MediaType -> String
@@ -182,7 +197,6 @@ mediaTypeToString mediaType =
         Music -> "Music"
 
 -- UPDATE
-
 type Msg
     = SearchInput String
     | SelectCategory String
@@ -194,22 +208,32 @@ type Msg
     | MediaDetailMsg MediaDetail.Msg
     | ServerSettingsMsg ServerSettings.Msg
     | UpdateServerConfig ServerConfig
-    | ToggleUserMenu -- For handling user menu toggle
-    | UserMenuAction String -- For user menu actions
-    | ToggleGenreFilter -- Toggle genre filter dropdown
-    | SelectGenre String -- Select a genre
-    | ClearGenreFilter -- Clear genre filter
-    | ToggleTypeFilter -- Toggle type filter dropdown
-    | SelectType MediaType -- Select a media type
-    | ClearTypeFilter -- Clear type filter
-    | ScrollCategory String Int -- categoryId, direction (+1 for right, -1 for left)
-    | TMDBDataReceived (Result Http.Error TMDBResponse) -- Handle TMDB data response
-    | RetryLoadTMDBData -- Retry loading data if it fails
+    | ToggleUserMenu
+    | UserMenuAction String
+    | ToggleGenreFilter
+    | SelectGenre String
+    | ClearGenreFilter
+    | ToggleTypeFilter
+    | SelectType MediaType
+    | ClearTypeFilter
+    | ScrollCategory String Int
+    | TMDBDataReceived (Result Http.Error TMDBResponse)
+    | RetryLoadTMDBData
+    | WindowResized Int Int
     | NoOp
+
+
+-- UPDATE
+
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        WindowResized width height ->
+            ( { model | windowWidth = width }
+            , Cmd.none
+            )
+
         SearchInput query ->
             ( { model | searchQuery = query }, Cmd.none )
 
@@ -220,7 +244,6 @@ update msg model =
             ( { model | selectedCategory = Nothing }, Cmd.none )
 
         SelectMediaItem mediaId ->
-            -- Find the media item in our categories
             let
                 foundItem =
                     model.categories
@@ -228,19 +251,15 @@ update msg model =
                         |> List.filter (\item -> item.id == mediaId)
                         |> List.head
 
-                -- Create a detail from the found item or mock if not found
                 detailCmd =
                     case foundItem of
                         Just item ->
-                            -- Get description from the item or default
                             let
                                 description =
                                     Maybe.withDefault "No description available." item.description
 
-                                -- Get actual duration (120 minutes as a default for now)
                                 duration = 120
 
-                                -- Create the MediaDetail with real data
                                 detail =
                                     { id = item.id
                                     , title = item.title
@@ -268,12 +287,9 @@ update msg model =
             ( model, detailCmd )
 
         PlayMedia mediaId ->
-            -- In a real implementation, this would start playback
             ( model, Cmd.none )
 
         FetchCategories ->
-            -- This would fetch real data from the Jellyfin API in a complete implementation
-            -- Now it's a placeholder for future real API integration
             ( { model | isLoading = True }, fetchTMDBData TMDBDataReceived )
 
         CategoriesReceived categories ->
@@ -322,55 +338,42 @@ update msg model =
             ( { model | selectedType = Nothing }, Cmd.none )
 
         UserMenuAction action ->
-            -- Handle user menu actions (placeholder for now)
             ( { model | isUserMenuOpen = False }, Cmd.none )
 
         ScrollCategory categoryId direction ->
             let
-                -- Get current translation or default to 0
                 currentTranslation =
                     Dict.get categoryId model.categoryTranslation
                         |> Maybe.withDefault 0
 
-                -- Calculate scroll amount per click
                 scrollAmount = 300.0
 
-                -- Get the category to determine item count
                 maybeCategory = findCategory categoryId model.categories
 
-                -- Calculate a maximum negative scroll distance based on item count
                 maxScroll =
                     case maybeCategory of
                         Just category ->
-                            -- Calculate based on number of items, card width, and container width
-                            -- (Negative because we're translating left)
                             let
                                 itemCount = List.length category.items |> toFloat
-                                itemWidth = 280.0 -- Approximate width including margins
-                                visibleItems = 4.0 -- Approximate number of visible items
+                                itemWidth = 280.0
+                                visibleItems = 4.0
                                 containerWidth = visibleItems * itemWidth
                                 contentWidth = itemCount * itemWidth
                                 maxNegativeScroll = negate (contentWidth - containerWidth)
                             in
                             if itemCount <= visibleItems then
-                                -- Don't allow scrolling if all items fit
                                 0.0
                             else
-                                -- Allow scrolling but limit to prevent empty space
                                 Basics.max maxNegativeScroll -9999.0
                         Nothing ->
                             0.0
 
-                -- Calculate new translation with bounds checking
                 newTranslation =
                     if direction > 0 then
-                        -- Scrolling right (more negative translation) with lower bound
                         Basics.max maxScroll (currentTranslation - scrollAmount)
                     else
-                        -- Scrolling left (more positive translation) with upper bound of 0
                         Basics.min 0.0 (currentTranslation + scrollAmount)
 
-                -- Update the dictionary with new translation
                 updatedTranslations =
                     Dict.insert categoryId newTranslation model.categoryTranslation
             in
@@ -381,7 +384,6 @@ update msg model =
         TMDBDataReceived result ->
             case result of
                 Ok tmdbData ->
-                    -- Extract all unique genres from the received data
                     let
                         allGenres =
                             tmdbData.categories
@@ -403,25 +405,26 @@ update msg model =
                     )
 
                 Err error ->
-                    -- Handle different error types
                     let
                         errorMsg =
                             case error of
                                 Http.BadUrl url ->
                                     "Bad URL: " ++ url
+
                                 Http.Timeout ->
                                     "Request timed out"
+
                                 Http.NetworkError ->
                                     "Network error - check your connection"
+
                                 Http.BadStatus status ->
                                     "Bad status: " ++ String.fromInt status
+
                                 Http.BadBody message ->
                                     "Data parsing error: " ++ message
-
-                        -- Fall back to mock data if there's an error
                     in
                     ( { model
-                      | categories = mockCategories ++ mockLibraryCategories -- Use mock data as fallback
+                      | categories = mockCategories ++ mockLibraryCategories
                       , isLoading = False
                       , errorMessage = Just errorMsg
                       }
@@ -434,19 +437,22 @@ update msg model =
             )
 
         NoOp ->
-            -- Do nothing
             ( model, Cmd.none )
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ Sub.map MediaDetailMsg (MediaDetail.subscriptions model.mediaDetailModel)
+        , Events.onResize WindowResized
+        ]
 
 -- Helper to extract genres from a MediaItem
 getItemGenres : MediaItem -> List String
 getItemGenres item =
     item.genres
-
--- SUBSCRIPTIONS
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.map MediaDetailMsg (MediaDetail.subscriptions model.mediaDetailModel)
 
 
 -- VIEW
@@ -788,15 +794,21 @@ viewCategory model category =
         text ""
     else
         let
+            -- Calculate visible items based on window width
+            visibleItems =
+                if model.windowWidth > 1600 then 6.0
+                else if model.windowWidth > 1200 then 5.0
+                else if model.windowWidth > 900 then 4.0
+                else if model.windowWidth > 600 then 3.0
+                else 2.0
+
             -- Get the current translation for this category or default to 0
             currentTranslation =
                 Dict.get category.id model.categoryTranslation
                     |> Maybe.withDefault 0
 
-            -- Calculate scroll limits
             itemCount = List.length category.items |> toFloat
             itemWidth = 280.0
-            visibleItems = 4.0
             contentWidth = itemCount * itemWidth
             containerWidth = visibleItems * itemWidth
             maxNegativeScroll = negate (contentWidth - containerWidth)
@@ -814,7 +826,7 @@ viewCategory model category =
                         ]
                 else
                     Theme.button Theme.Ghost ++
-                        [ onClick (ScrollCategory category.id 1)  -- Scroll left
+                        [ onClick (ScrollCategory category.id 1)
                         , class "flex items-center justify-center w-6 h-6"
                         ]
 
@@ -826,7 +838,7 @@ viewCategory model category =
                         ]
                 else
                     Theme.button Theme.Ghost ++
-                        [ onClick (ScrollCategory category.id -1)  -- Scroll right
+                        [ onClick (ScrollCategory category.id -1)
                         , class "flex items-center justify-center w-6 h-6"
                         ]
         in
@@ -842,11 +854,14 @@ viewCategory model category =
                         [ text "See All" ]
                     ]
                 ]
-            , div [ class "relative overflow-visible px-1 py-1" ]
+            , div
+                [ class "relative overflow-hidden" ]
                 [ div
-                    [ class "flex"
+                    [ class "flex space-x-4 hide-scrollbar"
                     , style "transform" ("translateX(" ++ String.fromFloat currentTranslation ++ "px)")
                     , style "transition" "transform 0.4s ease"
+                    , style "width" "100%"
+                    , style "overscroll-behavior-x" "contain"
                     ]
                     (if List.isEmpty category.items then
                         [ div [ class "w-full text-center p-6" ]
@@ -857,7 +872,10 @@ viewCategory model category =
                      else
                         List.map
                             (\item ->
-                                div [ class "flex-shrink-0 w-56 md:w-64 lg:w-72 px-2 py-2" ]
+                                div
+                                    [ class "flex-shrink-0 w-56 md:w-64 lg:w-72"
+                                    , style "min-width" "200px"
+                                    ]
                                     [ viewMediaItem item ]
                             )
                             category.items
@@ -873,34 +891,34 @@ viewMediaItem item =
         , onClick (SelectMediaItem item.id)
         ]
         [ div [ class "relative pt-[150%]" ]
-            [ div
-                [ class "absolute inset-0 bg-surface-light flex flex-col justify-end transition-all duration-300 group-hover:brightness-110"
-                , style "background-image" "linear-gradient(rgba(40, 40, 40, 0.2), rgba(30, 30, 30, 0.8))"
+            [ img
+                [ src item.imageUrl
+                , class "absolute inset-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-110"
+                , alt item.title
+                , attribute "onerror" "this.style.display='none'; this.nextElementSibling.style.display='flex';"
                 ]
-                [ div [ class "absolute inset-0 flex items-center justify-center" ]
-                    [ div [ class "text-2xl text-primary-light opacity-70" ]
-                        [ text "🎬" ]
+                []
+            , div
+                [ class "absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-90 text-text-primary p-3 transition-all duration-300"
+                ]
+                [ h3 (Theme.text Theme.Heading3 ++ [ class "truncate text-white" ])
+                    [ text item.title ]
+                , div [ class "flex justify-between items-center mt-1" ]
+                    [ span (Theme.text Theme.Caption)
+                        [ text (String.fromInt item.year) ]
+                    , span (Theme.text Theme.Caption ++ [ class "text-warning" ])
+                        [ text ("★ " ++ String.fromFloat item.rating) ]
                     ]
-                , div [ class "relative z-10 p-3" ]
-                    [ h3 (Theme.text Theme.Heading3 ++ [ class "truncate group-hover:text-primary transition-colors duration-300" ])
-                        [ text item.title ]
-                    , div [ class "flex justify-between items-center mt-1" ]
-                        [ span (Theme.text Theme.Caption)
-                            [ text (String.fromInt item.year) ]
-                        , span (Theme.text Theme.Caption ++ [ class "text-warning" ])
-                            [ text ("★ " ++ String.fromFloat item.rating) ]
-                        ]
-                    , if List.length item.genres > 0 then
-                        div [ class "flex flex-wrap gap-1 mt-1" ]
-                            (List.take 2 item.genres
-                                |> List.map (\genre ->
-                                    span [ class "bg-background-light px-1 py-0.5 rounded text-text-secondary text-xs" ]
-                                        [ text genre ]
-                                )
+                , if List.length item.genres > 0 then
+                    div [ class "flex flex-wrap gap-1 mt-1" ]
+                        (List.take 2 item.genres
+                            |> List.map (\genre ->
+                                span [ class "bg-background-light bg-opacity-50 px-1 py-0.5 rounded text-white text-xs" ]
+                                    [ text genre ]
                             )
-                      else
-                        text ""
-                    ]
+                        )
+                  else
+                    text ""
                 ]
             ]
         ]
