@@ -123,6 +123,6 @@ decodeMediaType str =
 fetchTMDBData : (Result Http.Error TMDBResponse -> msg) -> Cmd msg
 fetchTMDBData toMsg =
     Http.get
-        { url = "/data/movies.json"  -- Path to your generated TMDB JSON
+        { url = "./data/movies.json"  -- Path to your generated TMDB JSON
         , expect = Http.expectJson toMsg tmdbResponseDecoder
         }
