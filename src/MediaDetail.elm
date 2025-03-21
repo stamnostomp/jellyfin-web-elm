@@ -3,7 +3,7 @@ module MediaDetail exposing (Model, Msg(..), init, update, view, subscriptions)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import JellyfinAPI exposing (MediaDetail, MediaType(..))
+import JellyfinAPI exposing (MediaDetail, MediaType(..), CastMember, CrewMember)
 import Theme
 
 
@@ -97,7 +97,7 @@ view model =
 viewLoading : Html Msg
 viewLoading =
     div [ class "fixed inset-0 bg-background-dark bg-opacity-80 flex items-center justify-center z-50" ]
-        [ div [ class "text-primary text-lg" ] -- Reduced text size
+        [ div [ class "text-primary text-lg" ]
             [ text "Loading..." ]
         ]
 
@@ -105,10 +105,10 @@ viewLoading =
 viewError : String -> Html Msg
 viewError errorMsg =
     div [ class "fixed inset-0 bg-background-dark bg-opacity-80 flex items-center justify-center z-50" ]
-        [ div [ class "bg-surface p-4 rounded-lg max-w-lg w-full" ] -- Reduced padding
+        [ div [ class "bg-surface p-4 rounded-lg max-w-lg w-full" ]
             [ h2 (Theme.text Theme.Heading2 ++ [ class "text-error" ])
                 [ text "Error" ]
-            , p (Theme.text Theme.Body ++ [ class "my-3" ]) -- Reduced margin
+            , p (Theme.text Theme.Body ++ [ class "my-3" ])
                 [ text errorMsg ]
             , div [ class "flex justify-end" ]
                 [ button
@@ -121,15 +121,15 @@ viewError errorMsg =
 
 viewMediaDetail : MediaDetail -> Html Msg
 viewMediaDetail detail =
-    div [ class "fixed inset-0 bg-background-dark bg-opacity-80 flex items-center justify-center z-50 p-2 overflow-y-auto" ] -- Reduced padding
+    div [ class "fixed inset-0 bg-background-dark bg-opacity-80 flex items-center justify-center z-50 p-2 overflow-y-auto" ]
         [ div [ class "bg-surface rounded-lg max-w-4xl w-full shadow-lg relative" ]
             [ button
-                [ class "absolute top-2 right-2 text-text-secondary hover:text-text-primary" -- Reduced positioning
+                [ class "absolute top-2 right-2 text-text-secondary hover:text-text-primary"
                 , onClick CloseDetail
                 ]
                 [ text "✕" ]
             , div [ class "md:flex" ]
-                [ div [ class "md:w-1/3 p-3" ] -- Reduced padding
+                [ div [ class "md:w-1/3 p-3" ]
                     [ div [ class "relative pt-[150%] bg-background-light rounded-md" ]
                         [ div
                             [ class "absolute inset-0"
@@ -139,22 +139,22 @@ viewMediaDetail detail =
                         ]
                     , button
                         (Theme.button Theme.Primary ++
-                            [ class "w-full mt-2" -- Reduced margin-top
+                            [ class "w-full mt-2"
                             , onClick (PlayMedia detail.id)
                             ]
                         )
                         [ text "Play" ]
                     , if detail.type_ == TVShow then
                         button
-                            (Theme.button Theme.Ghost ++ [ class "w-full mt-1" ]) -- Reduced margin-top
+                            (Theme.button Theme.Ghost ++ [ class "w-full mt-1" ])
                             [ text "View Episodes" ]
                       else
                         text ""
                     ]
-                , div [ class "md:w-2/3 p-3" ] -- Reduced padding
+                , div [ class "md:w-2/3 p-3" ]
                     [ h1 (Theme.text Theme.Heading1)
                         [ text detail.title ]
-                    , div [ class "flex flex-wrap items-center space-x-1 mt-1" ] -- Reduced spacing and margin
+                    , div [ class "flex flex-wrap items-center space-x-1 mt-1" ]
                         [ span (Theme.text Theme.Caption)
                             [ text (String.fromInt detail.year) ]
                         , span (Theme.text Theme.Caption)
@@ -168,29 +168,29 @@ viewMediaDetail detail =
                         , span (Theme.text Theme.Caption ++ [ class "text-warning" ])
                             [ text ("★ " ++ String.fromFloat detail.rating) ]
                         ]
-                    , div [ class "mt-2" ] -- Reduced margin-top
+                    , div [ class "mt-2" ]
                         [ h3 (Theme.text Theme.Label)
                             [ text "Genres" ]
-                        , div [ class "flex flex-wrap gap-1 mt-1" ] -- Reduced gap and margin
+                        , div [ class "flex flex-wrap gap-1 mt-1" ]
                             (List.map viewGenre detail.genres)
                         ]
-                    , div [ class "mt-2" ] -- Reduced margin-top
+                    , div [ class "mt-2" ]
                         [ h3 (Theme.text Theme.Label)
                             [ text "Overview" ]
-                        , p (Theme.text Theme.Body ++ [ class "mt-1" ]) -- Reduced margin-top
+                        , p (Theme.text Theme.Body ++ [ class "mt-1" ])
                             [ text detail.description ]
                         ]
-                    , div [ class "mt-2" ] -- Reduced margin-top
+                    , div [ class "mt-2" ]
                         [ h3 (Theme.text Theme.Label)
                             [ text "Cast" ]
-                        , div [ class "grid grid-cols-2 gap-1 mt-1" ] -- Reduced gap and margin
-                            (List.take 6 (List.map viewPerson detail.actors))
+                        , div [ class "grid grid-cols-2 gap-1 mt-1" ]
+                            (List.take 6 (List.map viewCastMember detail.actors))
                         ]
-                    , div [ class "mt-2" ] -- Reduced margin-top
+                    , div [ class "mt-2" ]
                         [ h3 (Theme.text Theme.Label)
                             [ text "Directors" ]
-                        , div [ class "flex flex-wrap gap-1 mt-1" ] -- Reduced gap and margin
-                            (List.map viewPerson detail.directors)
+                        , div [ class "flex flex-wrap gap-1 mt-1" ]
+                            (List.map viewCrewMember detail.directors)
                         ]
                     ]
                 ]
@@ -200,17 +200,49 @@ viewMediaDetail detail =
 
 viewGenre : String -> Html Msg
 viewGenre genre =
-    span [ class "bg-background-light px-2 py-0.5 rounded text-text-secondary text-xs" ] -- Reduced padding and text size
+    span [ class "bg-background-light px-2 py-0.5 rounded text-text-secondary text-xs" ]
         [ text genre ]
 
 
-viewPerson : String -> Html Msg
-viewPerson name =
-    div [ class "flex items-center space-x-1" ] -- Reduced spacing
-        [ div [ class "w-5 h-5 rounded-full bg-background-light flex items-center justify-center text-xs" ] -- Reduced size and text
-            [ text (String.left 1 name) ]
-        , span (Theme.text Theme.Body ++ [ class "text-sm" ]) -- Added text-sm
-            [ text name ]
+-- Updated to display cast member with character name
+viewCastMember : CastMember -> Html Msg
+viewCastMember cast =
+    div [ class "flex items-center space-x-1" ]
+        [ div
+            [ class "w-8 h-8 rounded-full bg-background-light flex items-center justify-center text-xs overflow-hidden" ]
+            [ case cast.profileUrl of
+                Just url ->
+                    img [ src url, alt cast.name, class "w-full h-full object-cover" ] []
+                Nothing ->
+                    text (String.left 1 cast.name)
+            ]
+        , div [ class "flex flex-col" ]
+            [ span (Theme.text Theme.Body ++ [ class "text-sm" ])
+                [ text cast.name ]
+            , span (Theme.text Theme.Caption ++ [ class "text-xs text-text-secondary" ])
+                [ text cast.character ]
+            ]
+        ]
+
+
+-- Updated to display crew member with job
+viewCrewMember : CrewMember -> Html Msg
+viewCrewMember crew =
+    div [ class "flex items-center space-x-1" ]
+        [ div
+            [ class "w-7 h-7 rounded-full bg-background-light flex items-center justify-center text-xs overflow-hidden" ]
+            [ case crew.profileUrl of
+                Just url ->
+                    img [ src url, alt crew.name, class "w-full h-full object-cover" ] []
+                Nothing ->
+                    text (String.left 1 crew.name)
+            ]
+        , div [ class "flex flex-col" ]
+            [ span (Theme.text Theme.Body ++ [ class "text-sm" ])
+                [ text crew.name ]
+            , span (Theme.text Theme.Caption ++ [ class "text-xs text-text-secondary" ])
+                [ text crew.job ]
+            ]
         ]
 
 

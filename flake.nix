@@ -1,5 +1,5 @@
 {
-  description = "Elm application with Tailwind CSS using Nix flakes with Haskell TMDB fetcher";
+  description = "Elm application with Tailwind CSS using Nix flakes";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -19,78 +19,58 @@
         fontsDir = "${outputDir}/fonts";
         dataDir = "${outputDir}/data";
 
-        # Helper function to build the Haskell TMDB fetcher
-        buildTmdbFetcher = pkgs.writeShellScriptBin "build-tmdb-fetcher" ''
-          set -e
-          cd tmdb-fetcher
-          ${pkgs.cabal-install}/bin/cabal update
-          ${pkgs.cabal-install}/bin/cabal build
-          echo "TMDB fetcher built successfully!"
-        '';
-
-        # Helper function to run the Haskell TMDB fetcher
-        runTmdbFetcher = pkgs.writeShellScriptBin "run-tmdb-fetcher" ''
+        # Helper function to ensure data directory exists
+        ensureDataDir = pkgs.writeShellScriptBin "ensure-data-dir" ''
           set -e
           mkdir -p ${dataDir}
 
-          # Check if TMDB_API_KEY is set
-          if [ -z "$TMDB_API_KEY" ]; then
-            echo "Warning: TMDB_API_KEY environment variable is not set."
-            echo "Using sample data instead of fetching from TMDB API."
+          if [ ! -f "${dataDir}/movies.json" ]; then
+            echo "Creating sample data directory structure..."
+            echo "Note: Add your movie data JSON to ${dataDir}/movies.json"
 
-            # Create sample data if API key is not available
+            # Create a minimal placeholder json to prevent errors
             cat > ${dataDir}/movies.json << EOF
           {
             "categories": [
               {
-                "id": "continue-watching",
-                "name": "Continue Watching",
+                "id": "sample-data",
+                "name": "Sample Data",
                 "items": [
                   {
-                    "id": "1",
-                    "title": "Sample Movie 1",
+                    "id": "placeholder",
+                    "title": "Sample Movie",
                     "type_": "Movie",
                     "imageUrl": "",
                     "year": 2023,
                     "rating": 8.5,
-                    "description": "This is a sample movie. Please set TMDB_API_KEY to fetch real data."
-                  },
-                  {
-                    "id": "2",
-                    "title": "Sample TV Show",
-                    "type_": "TVShow",
-                    "imageUrl": "",
-                    "year": 2024,
-                    "rating": 9.0,
-                    "description": "This is a sample TV show. Please set TMDB_API_KEY to fetch real data."
-                  }
-                ]
-              },
-              {
-                "id": "movie-library",
-                "name": "Movies",
-                "items": [
-                  {
-                    "id": "3",
-                    "title": "Another Sample Movie",
-                    "type_": "Movie",
-                    "imageUrl": "",
-                    "year": 2022,
-                    "rating": 7.2,
-                    "description": "This is another sample movie. Please set TMDB_API_KEY to fetch real data."
+                    "description": "This is a placeholder. Replace this file with your real movie data.",
+                    "backdropUrl": null,
+                    "genres": ["Sample"],
+                    "cast": [
+                      {
+                        "id": "cast1",
+                        "name": "Sample Actor",
+                        "character": "Main Character",
+                        "profileUrl": null,
+                        "order": 0
+                      }
+                    ],
+                    "directors": [
+                      {
+                        "id": "dir1",
+                        "name": "Sample Director",
+                        "job": "Director",
+                        "department": "Directing",
+                        "profileUrl": null
+                      }
+                    ]
                   }
                 ]
               }
             ]
           }
           EOF
-          else
-            echo "Fetching movie data from TMDB API..."
-            cd tmdb-fetcher
-            ${pkgs.cabal-install}/bin/cabal run
           fi
-
-          echo "Movie data ready at ${dataDir}/movies.json"
         '';
 
         # Helper function to build the Elm application
@@ -159,7 +139,7 @@
         # Helper function to build the entire application
         buildAll = pkgs.writeShellScriptBin "build-all" ''
           set -e
-          ${runTmdbFetcher}/bin/run-tmdb-fetcher
+          ${ensureDataDir}/bin/ensure-data-dir
           ${buildElmApp}/bin/build-elm
           ${buildTailwind}/bin/build-tailwind
           ${installFonts}/bin/install-fonts
@@ -191,8 +171,8 @@
           # Ensure the output directory exists
           mkdir -p ${outputDir}
 
-          # Fetch movie data first
-          ${runTmdbFetcher}/bin/run-tmdb-fetcher
+          # Ensure data directory exists
+          ${ensureDataDir}/bin/ensure-data-dir
 
           # Install fonts if needed
           if [ ! -d "${fontsDir}" ]; then
@@ -252,49 +232,51 @@
               pkgs.elmPackages.elm
               pkgs.nodePackages.tailwindcss
               pkgs.ibm-plex
-              pkgs.cabal-install
-              pkgs.ghc
             ];
             buildPhase = ''
               mkdir -p ${outputDir}
 
-              # Fetch movie data
+              # Ensure data directory exists
               mkdir -p ${dataDir}
-              export TMDB_API_KEY=''${TMDB_API_KEY:-""}
 
-              if [ -d "tmdb-fetcher" ] && [ -n "$TMDB_API_KEY" ]; then
-                echo "Fetching movie data using Haskell TMDB fetcher..."
-                cd tmdb-fetcher
-                ${pkgs.cabal-install}/bin/cabal update
-                ${pkgs.cabal-install}/bin/cabal build
-                ${pkgs.cabal-install}/bin/cabal run
-                cd ..
-              else
-                echo "Creating sample movie data..."
+              # Create sample data file if none exists
+              if [ ! -f "${dataDir}/movies.json" ]; then
+                echo "Creating sample movies.json..."
                 cat > ${dataDir}/movies.json << EOF
               {
                 "categories": [
                   {
-                    "id": "continue-watching",
-                    "name": "Continue Watching",
+                    "id": "sample-data",
+                    "name": "Sample Data",
                     "items": [
                       {
-                        "id": "1",
-                        "title": "Sample Movie 1",
+                        "id": "placeholder",
+                        "title": "Sample Movie",
                         "type_": "Movie",
                         "imageUrl": "",
                         "year": 2023,
                         "rating": 8.5,
-                        "description": "This is a sample movie. Please set TMDB_API_KEY to fetch real data."
-                      },
-                      {
-                        "id": "2",
-                        "title": "Sample TV Show",
-                        "type_": "TVShow",
-                        "imageUrl": "",
-                        "year": 2024,
-                        "rating": 9.0,
-                        "description": "This is a sample TV show. Please set TMDB_API_KEY to fetch real data."
+                        "description": "This is a placeholder. Replace this file with your real movie data.",
+                        "backdropUrl": null,
+                        "genres": ["Sample"],
+                        "cast": [
+                          {
+                            "id": "cast1",
+                            "name": "Sample Actor",
+                            "character": "Main Character",
+                            "profileUrl": null,
+                            "order": 0
+                          }
+                        ],
+                        "directors": [
+                          {
+                            "id": "dir1",
+                            "name": "Sample Director",
+                            "job": "Director",
+                            "department": "Directing",
+                            "profileUrl": null
+                          }
+                        ]
                       }
                     ]
                   }
@@ -349,11 +331,11 @@
                 <head>
                   <meta charset="UTF-8">
                   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                  <title>Elm with Tailwind CSS</title>
+                  <title>Jellyfin Web Elm</title>
                   <link href="output.css" rel="stylesheet">
                   <script src="main.js"></script>
                 </head>
-                <body>
+                <body class="bg-background min-h-screen">
                   <div id="elm-app"></div>
                   <script>
                     var app = Elm.Main.init({
@@ -382,12 +364,7 @@
             python3  # For the simple HTTP server
             nodejs
             ibm-plex
-            cabal-install
-            ghc
-            haskellPackages.cabal-fmt
-            haskellPackages.hlint
-            buildTmdbFetcher
-            runTmdbFetcher
+            ensureDataDir
             buildElmApp
             buildTailwind
             watchTailwind
@@ -400,7 +377,7 @@
           ];
 
           shellHook = ''
-            echo "Elm with Tailwind CSS and Haskell TMDB fetcher development environment ready!"
+            echo "Elm with Tailwind CSS development environment ready!"
             echo ""
             echo "Available commands:"
             echo "  - setup-tailwind     : Set up Tailwind CSS configuration files"
@@ -408,19 +385,17 @@
             echo "  - build-tailwind     : Build Tailwind CSS"
             echo "  - install-fonts      : Install IBM Plex fonts"
             echo "  - watch-tailwind     : Watch for CSS changes and rebuild"
-            echo "  - build-tmdb-fetcher : Build the Haskell TMDB fetcher"
-            echo "  - run-tmdb-fetcher   : Run the Haskell TMDB fetcher"
-            echo "  - build-all          : Build everything (fetches data, builds Elm and Tailwind, installs fonts)"
+            echo "  - ensure-data-dir    : Create data directory for movie data"
+            echo "  - build-all          : Build everything (ensures data dir, builds Elm and Tailwind, installs fonts)"
             echo "  - dev-server         : Start a simple development server on port 8000"
             echo "  - elm-live           : Start elm-live with hot reloading on port 8000"
             echo "  - dev-mode           : Start both elm-live and Tailwind watcher simultaneously"
             echo "  - elm reactor        : Start Elm's built-in development server"
             echo ""
-            echo "For TMDB fetcher, set the API key:"
-            echo "  export TMDB_API_KEY=your_api_key_here"
-            echo ""
             echo "First time setup? Run: setup-tailwind && build-all"
             echo "For development with live reloading, run: dev-mode"
+            echo ""
+            echo "To use your own movie data, place movies.json in the ${dataDir} directory."
           '';
         };
 
@@ -458,10 +433,6 @@
             type = "app";
             program = "${devMode}/bin/dev-mode";
           };
-          fetch-tmdb = {
-            type = "app";
-            program = "${runTmdbFetcher}/bin/run-tmdb-fetcher";
-          },
         };
       }
     );

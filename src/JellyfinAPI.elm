@@ -8,6 +8,8 @@ module JellyfinAPI exposing
     , MediaDetail
     , ServerConfig
     , defaultServerConfig
+    , CastMember
+    , CrewMember
     )
 
 import Http
@@ -23,6 +25,24 @@ type MediaType
     | Music
 
 
+type alias CastMember =
+    { id : String
+    , name : String
+    , character : String
+    , profileUrl : Maybe String
+    , order : Int
+    }
+
+
+type alias CrewMember =
+    { id : String
+    , name : String
+    , job : String
+    , department : String
+    , profileUrl : Maybe String
+    }
+
+
 type alias MediaItem =
     { id : String
     , title : String
@@ -30,6 +50,11 @@ type alias MediaItem =
     , imageUrl : String
     , year : Int
     , rating : Float
+    , description : Maybe String
+    , backdropUrl : Maybe String
+    , genres : List String
+    , cast : List CastMember
+    , directors : List CrewMember
     }
 
 
@@ -41,8 +66,8 @@ type alias MediaDetail =
     , year : Int
     , rating : Float
     , description : String
-    , directors : List String
-    , actors : List String
+    , directors : List CrewMember
+    , actors : List CastMember
     , duration : Int -- in minutes
     , genres : List String
     }
@@ -125,7 +150,22 @@ mediaTypeDecoder =
 
 mediaItemDecoder : Decoder MediaItem
 mediaItemDecoder =
-    Decode.map6 MediaItem
+    -- Create a function that accepts all the required fields and constructs a MediaItem
+    Decode.map6
+        (\id title type_ imageUrl year rating ->
+            { id = id
+            , title = title
+            , type_ = type_
+            , imageUrl = imageUrl
+            , year = year
+            , rating = rating
+            , description = Nothing -- Default values for the additional fields
+            , backdropUrl = Nothing
+            , genres = []
+            , cast = []
+            , directors = []
+            }
+        )
         (Decode.field "Id" Decode.string)
         (Decode.field "Name" Decode.string)
         (Decode.field "Type" mediaTypeDecoder)
@@ -150,7 +190,7 @@ mediaDetailDecoder =
                     , year = year
                     , rating = rating
                     , description = description
-                    , directors = directors
+                    , directors = [] -- Will be filled in later
                     , actors = [] -- Will be filled in later
                     , duration = 0 -- Will be filled in later
                     , genres = [] -- Will be filled in later
@@ -169,6 +209,14 @@ mediaDetailDecoder =
                 )
                 (Decode.field "People" (Decode.list (Decode.field "Name" Decode.string))
                     |> Decode.map (List.filter (\_ -> True)) -- This would filter for directors in real impl
+                    |> Decode.map (List.map (\name ->
+                        { id = "0"
+                        , name = name
+                        , job = "Director"
+                        , department = "Directing"
+                        , profileUrl = Nothing
+                        }
+                    ))
                 )
 
         -- Decoder for the remaining fields
@@ -183,6 +231,14 @@ mediaDetailDecoder =
                 )
                 (Decode.field "People" (Decode.list (Decode.field "Name" Decode.string))
                     |> Decode.map (List.filter (\_ -> True)) -- This would filter for actors in real impl
+                    |> Decode.map (List.map (\name ->
+                        { id = "0"
+                        , name = name
+                        , character = "Unknown Role"
+                        , profileUrl = Nothing
+                        , order = 0
+                        }
+                    ))
                 )
                 (Decode.field "RunTimeTicks" Decode.int
                     |> Decode.map (\ticks -> ticks // 600000000) -- Convert ticks to minutes
