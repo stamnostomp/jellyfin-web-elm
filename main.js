@@ -8564,11 +8564,9 @@ var $author$project$JellyfinUI$viewMediaItem = function (item) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary cursor-pointer h-full group'),
-				A2($elm$html$Html$Attributes$style, 'transform', 'translateZ(0) scale(1.0)'),
+				$elm$html$Html$Attributes$class('bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary cursor-pointer h-full group transform hover:scale-105'),
 				A2($elm$html$Html$Attributes$style, 'transition', 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)'),
 				A2($elm$html$Html$Attributes$style, 'will-change', 'transform, box-shadow, border-color'),
-				A2($elm$html$Html$Attributes$style, 'hover:transform', 'translateZ(0) scale(1.05)'),
 				$elm$html$Html$Events$onClick(
 				$author$project$JellyfinUI$SelectMediaItem(item.E))
 			]),
@@ -8833,7 +8831,7 @@ var $author$project$JellyfinUI$viewCategory = F2(
 											$elm$html$Html$div,
 											_List_fromArray(
 												[
-													$elm$html$Html$Attributes$class('flex-shrink-0 w-52 relative py-1 px-1'),
+													$elm$html$Html$Attributes$class('flex-shrink-0 w-52 relative py-2 px-1 overflow-visible'),
 													A2($elm$html$Html$Attributes$style, 'min-width', '185px')
 												]),
 											_List_fromArray(
