@@ -8565,6 +8565,10 @@ var $author$project$JellyfinUI$viewMediaItem = function (item) {
 		_List_fromArray(
 			[
 				$elm$html$Html$Attributes$class('bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary cursor-pointer h-full group'),
+				A2($elm$html$Html$Attributes$style, 'transform', 'translateZ(0) scale(1.0)'),
+				A2($elm$html$Html$Attributes$style, 'transition', 'all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)'),
+				A2($elm$html$Html$Attributes$style, 'will-change', 'transform, box-shadow, border-color'),
+				A2($elm$html$Html$Attributes$style, 'hover:transform', 'translateZ(0) scale(1.05)'),
 				$elm$html$Html$Events$onClick(
 				$author$project$JellyfinUI$SelectMediaItem(item.E))
 			]),
@@ -8588,6 +8592,17 @@ var $author$project$JellyfinUI$viewMediaItem = function (item) {
 								A2($elm$html$Html$Attributes$attribute, 'onerror', 'this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';')
 							]),
 						_List_Nil),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('absolute inset-0 flex items-center justify-center bg-background-light text-primary-light'),
+								A2($elm$html$Html$Attributes$style, 'display', 'none')
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('🎬')
+							])),
 						A2(
 						$elm$html$Html$div,
 						_List_fromArray(
