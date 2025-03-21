@@ -1,10 +1,14 @@
 module JellyfinUI exposing (Model, Msg, init, update, view, subscriptions)
 
+{-| The main UI module for Jellyfin web client.
+    This module handles the overall UI layout and state management.
+-}
+
 import Browser.Dom as Dom
 import Browser.Events as Events
 import Dict exposing (Dict)
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (class, src, alt, attribute, placeholder, value, style, disabled)
 import Html.Events exposing (onClick, onInput)
 import Http
 import JellyfinAPI exposing (MediaItem, MediaType(..), Category, ServerConfig, defaultServerConfig, CastMember, CrewMember)
@@ -19,6 +23,8 @@ import TMDBData exposing (TMDBResponse, fetchTMDBData)
 -- MODEL
 
 
+{-| Main model for the Jellyfin UI
+-}
 type alias Model =
     { categories : List Category
     , searchQuery : String
@@ -39,6 +45,8 @@ type alias Model =
     }
 
 
+{-| Initialize the model and commands
+-}
 init : ( Model, Cmd Msg )
 init =
     let
@@ -83,120 +91,11 @@ init =
 
 
 
-
-
-
--- View a media item (large card version for category detail view)
-
-viewMediaItemLarge : MediaItem -> Html Msg
-viewMediaItemLarge item =
-    div
-        [ class "flex flex-col bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary hover:scale-103 hover:z-10 group h-full"
-        , onClick (SelectMediaItem item.id)
-        ]
-        [ div [ class "relative pt-[150%]" ] -- Aspect ratio 2:3 for posters
-            [ div
-                [ class "absolute inset-0 bg-surface-light flex items-center justify-center transition-all duration-300 group-hover:brightness-110"
-                , style "background-image" "linear-gradient(rgba(40, 40, 40, 0.2), rgba(30, 30, 30, 0.8))"
-                ]
-                [ div [ class "text-4xl text-primary-light opacity-70" ]
-                    [ text "🎬" ]  -- Movie icon placeholder where an image would be
-                ]
-            , div
-                [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
-                ]
-                [ button
-                    [ class "bg-primary text-white rounded-full w-20 h-20 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110"
-                    , style "box-shadow" "0 0 30px 10px rgba(95, 135, 175, 0.7)"
-                    , onClick (PlayMedia item.id)
-                    ]
-                    [ span [ class "text-3xl font-bold", style "margin-left" "4px" ] [ text "▶" ]
-                    ]
-                ]
-            ]
-        , div [ class "p-4 flex-grow transition-colors duration-300 group-hover:bg-surface-light" ]
-            [ h3 (Theme.text Theme.Heading3 ++ [ class "truncate group-hover:text-primary transition-colors duration-300" ])
-                [ text item.title ]
-            , div [ class "flex justify-between items-center mt-2" ]
-                [ div [ class "flex items-center space-x-2" ]
-                    [ span (Theme.text Theme.Caption)
-                        [ text (mediaTypeToString item.type_) ]
-                    , span (Theme.text Theme.Caption)
-                        [ text ("(" ++ String.fromInt item.year ++ ")") ]
-                    ]
-                , div [ class "flex items-center" ]
-                    [ span (Theme.text Theme.Caption ++ [ class "text-warning" ])
-                        [ text ("★ " ++ String.fromFloat item.rating) ]
-                    ]
-                ]
-            , p (Theme.text Theme.Caption ++ [ class "mt-2 line-clamp-2" ])
-                [ text (Maybe.withDefault "No description available." item.description) ]
-            ]
-        ]
-
--- Filter categories based on search query
-filterCategories : String -> List Category -> List Category
-filterCategories query categories =
-    if String.isEmpty query then
-        categories
-    else
-        categories
-            |> List.map (\category ->
-                { category |
-                    items = List.filter
-                        (\item -> String.contains (String.toLower query) (String.toLower item.title))
-                        category.items
-                }
-            )
-            |> List.filter (\category -> not (List.isEmpty category.items))
-
--- Filter categories based on genre
-filterCategoriesByGenre : Maybe String -> List Category -> List Category
-filterCategoriesByGenre maybeGenre categories =
-    case maybeGenre of
-        Nothing ->
-            categories
-
-        Just genre ->
-            categories
-                |> List.map (\category ->
-                    { category |
-                        items = List.filter (itemHasGenre genre) category.items
-                    }
-                )
-                |> List.filter (\category -> not (List.isEmpty category.items))
-
--- Check if an item has a specific genre
-itemHasGenre : String -> MediaItem -> Bool
-itemHasGenre genre item =
-    List.member genre item.genres
-
--- Add new filter function for media type
-filterCategoriesByType : Maybe MediaType -> List Category -> List Category
-filterCategoriesByType maybeType categories =
-    case maybeType of
-        Nothing ->
-            categories
-
-        Just mediaType ->
-            categories
-                |> List.map (\category ->
-                    { category |
-                        items = List.filter (\item -> item.type_ == mediaType) category.items
-                    }
-                )
-                |> List.filter (\category -> not (List.isEmpty category.items))
-
-
--- Convert MediaType to string
-mediaTypeToString : MediaType -> String
-mediaTypeToString mediaType =
-    case mediaType of
-        Movie -> "Movie"
-        TVShow -> "TV Show"
-        Music -> "Music"
-
 -- UPDATE
+
+
+{-| Messages that can be sent in the Jellyfin UI
+-}
 type Msg
     = SearchInput String
     | SelectCategory String
@@ -223,9 +122,8 @@ type Msg
     | NoOp
 
 
--- UPDATE
-
-
+{-| Update function to handle messages
+-}
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -350,27 +248,33 @@ update msg model =
 
                 maybeCategory = findCategory categoryId model.categories
 
-                maxScroll =
+                maxScrollPosition =
                     case maybeCategory of
                         Just category ->
                             let
-                                itemCount = List.length category.items |> toFloat
-                                itemWidth = 280.0
-                                visibleItems = 4.0
-                                containerWidth = visibleItems * itemWidth
-                                contentWidth = itemCount * itemWidth
-                                maxNegativeScroll = negate (contentWidth - containerWidth)
+                                itemsCount = toFloat (List.length category.items)
+                                itemSize = 200.0
+
+                                displayCount =
+                                    if model.windowWidth > 1600 then 5.0
+                                    else if model.windowWidth > 1200 then 4.0
+                                    else if model.windowWidth > 900 then 3.0
+                                    else if model.windowWidth > 600 then 2.0
+                                    else 1.0
+
+                                containerSize = displayCount * itemSize
+                                contentSize = itemsCount * itemSize
                             in
-                            if itemCount <= visibleItems then
+                            if itemsCount <= displayCount then
                                 0.0
                             else
-                                Basics.max maxNegativeScroll -9999.0
+                                negate (contentSize - containerSize)
                         Nothing ->
                             0.0
 
                 newTranslation =
                     if direction > 0 then
-                        Basics.max maxScroll (currentTranslation - scrollAmount)
+                        Basics.max maxScrollPosition (currentTranslation - scrollAmount)
                     else
                         Basics.min 0.0 (currentTranslation + scrollAmount)
 
@@ -439,9 +343,12 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
+
 -- SUBSCRIPTIONS
 
 
+{-| Subscribe to window resize events and media detail subscriptions
+-}
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
@@ -449,19 +356,17 @@ subscriptions model =
         , Events.onResize WindowResized
         ]
 
--- Helper to extract genres from a MediaItem
-getItemGenres : MediaItem -> List String
-getItemGenres item =
-    item.genres
-
 
 -- VIEW
 
+
+{-| Main view function
+-}
 view : Model -> Html Msg
 view model =
-    div [ class "flex flex-col min-h-screen bg-background" ]
+    div [ class "flex flex-col min-h-screen bg-background overflow-x-hidden" ]
         [ viewHeader model
-        , div [ class "flex-1 overflow-y-auto pt-10 pb-8" ]
+        , div [ class "flex-1 overflow-y-auto pt-10 pb-8 overflow-x-hidden" ]
             [ if model.isLoading then
                 viewLoading
               else
@@ -474,6 +379,9 @@ view model =
         , Html.map MediaDetailMsg (MediaDetail.view model.mediaDetailModel)
         ]
 
+
+{-| View the header with search and filters
+-}
 viewHeader : Model -> Html Msg
 viewHeader model =
     header [ class "bg-surface border-b border-background-light py-2 px-3" ]
@@ -503,7 +411,9 @@ viewHeader model =
             ]
         ]
 
--- New function for type filter dropdown
+
+{-| View the type filter dropdown
+-}
 viewTypeFilter : Model -> Html Msg
 viewTypeFilter model =
     div [ class "relative" ]
@@ -535,7 +445,9 @@ viewTypeFilter model =
             text ""
         ]
 
--- Type dropdown menu
+
+{-| View the type options dropdown
+-}
 viewTypeDropdown : Html Msg
 viewTypeDropdown =
     div
@@ -552,7 +464,9 @@ viewTypeDropdown =
             ]
         ]
 
--- Individual type option
+
+{-| View a single type option
+-}
 viewTypeOption : MediaType -> Html Msg
 viewTypeOption mediaType =
     div
@@ -561,7 +475,9 @@ viewTypeOption mediaType =
         ]
         [ text (mediaTypeToString mediaType) ]
 
--- Genre filter dropdown (existing function)
+
+{-| View the genre filter dropdown
+-}
 viewGenreFilter : Model -> Html Msg
 viewGenreFilter model =
     div [ class "relative" ]
@@ -593,7 +509,9 @@ viewGenreFilter model =
             text ""
         ]
 
--- Genre dropdown menu
+
+{-| View the genre options dropdown
+-}
 viewGenreDropdown : List String -> Html Msg
 viewGenreDropdown genres =
     div
@@ -608,7 +526,9 @@ viewGenreDropdown genres =
             (List.map viewGenreOption genres)
         ]
 
--- Individual genre option
+
+{-| View a single genre option
+-}
 viewGenreOption : String -> Html Msg
 viewGenreOption genre =
     div
@@ -617,7 +537,9 @@ viewGenreOption genre =
         ]
         [ text genre ]
 
--- User profile view remains the same
+
+{-| View the user profile button and dropdown
+-}
 viewUserProfile : Model -> Html Msg
 viewUserProfile model =
     div [ class "relative" ]
@@ -625,14 +547,16 @@ viewUserProfile model =
             [ class "w-8 h-8 rounded-full bg-primary flex items-center justify-center text-text-primary hover:bg-primary-dark transition-colors focus:outline-none focus:ring-2 focus:ring-primary-light"
             , onClick ToggleUserMenu
             ]
-            [ text "A" ]  -- "A" for Admin/Avatar
+            [ text "A" ]
         , if model.isUserMenuOpen then
             viewUserMenu
           else
             text ""
         ]
 
--- User dropdown menu
+
+{-| View the user menu dropdown
+-}
 viewUserMenu : Html Msg
 viewUserMenu =
     div
@@ -649,7 +573,9 @@ viewUserMenu =
         , viewUserMenuItem "Sign Out" "Exit your account" "signout"
         ]
 
--- User menu header with user info
+
+{-| View the user menu header with user info
+-}
 viewUserMenuHeader : Html Msg
 viewUserMenuHeader =
     div [ class "px-3 py-2 border-b border-background-light" ]
@@ -665,7 +591,9 @@ viewUserMenuHeader =
             ]
         ]
 
--- Individual menu item
+
+{-| View a single user menu item
+-}
 viewUserMenuItem : String -> String -> String -> Html Msg
 viewUserMenuItem label description action =
     div
@@ -678,7 +606,9 @@ viewUserMenuItem label description action =
             [ text description ]
         ]
 
--- Loading view
+
+{-| View the loading indicator
+-}
 viewLoading : Html Msg
 viewLoading =
     div [ class "flex justify-center items-center h-48" ]
@@ -686,7 +616,9 @@ viewLoading =
             [ text "Loading..." ]
         ]
 
--- Error view
+
+{-| View the error message with retry button
+-}
 viewError : String -> Html Msg
 viewError errorMessage =
     div [ class "flex flex-col items-center justify-center h-48 px-4" ]
@@ -701,9 +633,12 @@ viewError errorMessage =
             ]
         ]
 
+
+{-| View the main content area
+-}
 viewContent : Model -> Html Msg
 viewContent model =
-    div [ class "px-2 md:px-3 lg:px-4 max-w-screen-2xl mx-auto space-y-4 mb-4" ]
+    div [ class "px-4 max-w-screen-2xl mx-auto space-y-4 mb-4" ]
         [ -- Show active filters if any
           if model.selectedGenre /= Nothing || model.selectedType /= Nothing then
               div [ class "flex items-center py-1 space-x-2 flex-wrap" ]
@@ -717,37 +652,16 @@ viewContent model =
         , case model.selectedCategory of
               Just categoryId ->
                   -- View a specific category in detail
-                  case findCategory categoryId (filterCategoriesByType model.selectedType (filterCategoriesByGenre model.selectedGenre (filterCategories model.searchQuery model.categories))) of
-                      Just category ->
-                          div []
-                              [ div [ class "flex items-center mb-3 mt-1" ]
-                                  [ button
-                                      (Theme.button Theme.Ghost ++ [ onClick ClearCategory, class "mr-2" ])
-                                      [ text "← Back" ]
-                                  , h2 (Theme.text Theme.Heading2 ++ [ class "font-bold text-primary" ])
-                                      [ text category.name ]
-                                  ]
-                              , div [ class "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6" ]
-                                  (List.map viewMediaItemLarge category.items)
-                              ]
-                      Nothing ->
-                          div [] [ text "Category not found" ]
+                  viewCategoryDetail model categoryId
 
               Nothing ->
                   -- View all categories with filters applied
-                  div [ class "space-y-4" ]
-                      (List.map
-                          (viewCategory model)
-                          (filterCategories
-                              model.searchQuery
-                              (filterCategoriesByType model.selectedType
-                                  (filterCategoriesByGenre model.selectedGenre model.categories)
-                              )
-                          )
-                      )
+                  viewAllCategories model
         ]
 
--- View for active filter badge
+
+{-| View active filter badge
+-}
 viewActiveFilter : Maybe String -> Html Msg
 viewActiveFilter maybeGenre =
     case maybeGenre of
@@ -764,7 +678,9 @@ viewActiveFilter maybeGenre =
         Nothing ->
             text ""
 
--- View for active type filter badge
+
+{-| View active type filter badge
+-}
 viewActiveTypeFilter : Maybe MediaType -> Html Msg
 viewActiveTypeFilter maybeType =
     case maybeType of
@@ -781,41 +697,94 @@ viewActiveTypeFilter maybeType =
         Nothing ->
             text ""
 
--- Find a category by ID
+
+{-| View a specific category detail page
+-}
+viewCategoryDetail : Model -> String -> Html Msg
+viewCategoryDetail model categoryId =
+    let
+        filteredCategories =
+            filterCategoriesByType model.selectedType
+                (filterCategoriesByGenre model.selectedGenre
+                    (filterCategories model.searchQuery model.categories))
+    in
+    case findCategory categoryId filteredCategories of
+        Just category ->
+            div []
+                [ div [ class "flex items-center mb-3 mt-1" ]
+                    [ button
+                        (Theme.button Theme.Ghost ++ [ onClick ClearCategory, class "mr-2" ])
+                        [ text "← Back" ]
+                    , h2 (Theme.text Theme.Heading2 ++ [ class "font-bold text-primary" ])
+                        [ text category.name ]
+                    ]
+                , div [ class "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 px-4" ]
+                    (List.map viewMediaItemLarge category.items)
+                ]
+        Nothing ->
+            div [] [ text "Category not found" ]
+
+
+{-| View all categories with filters applied
+-}
+viewAllCategories : Model -> Html Msg
+viewAllCategories model =
+    let
+        filteredCategories =
+            filterCategoriesByType model.selectedType
+                (filterCategoriesByGenre model.selectedGenre
+                    (filterCategories model.searchQuery model.categories))
+    in
+    div [ class "space-y-6" ]
+        (List.map
+            (viewCategory model)
+            filteredCategories
+        )
+
+
+{-| Find a category by ID in a list of categories
+-}
 findCategory : String -> List Category -> Maybe Category
 findCategory categoryId categories =
     List.filter (\cat -> cat.id == categoryId) categories
         |> List.head
 
--- View a category row with its items and scroll arrows
+
+{-| View a category row with its items and scroll arrows
+-}
 viewCategory : Model -> Category -> Html Msg
 viewCategory model category =
     if List.isEmpty category.items then
         text ""
     else
         let
-            -- Calculate visible items based on window width
-            visibleItems =
-                if model.windowWidth > 1600 then 6.0
-                else if model.windowWidth > 1200 then 5.0
-                else if model.windowWidth > 900 then 4.0
-                else if model.windowWidth > 600 then 3.0
-                else 2.0
+            -- Calculate display parameters
+            itemCount = toFloat (List.length category.items)
+            itemWidth = 200.0
 
-            -- Get the current translation for this category or default to 0
+            -- Calculate visible items based on window width
+            displayCount =
+                if model.windowWidth > 1600 then 5.0
+                else if model.windowWidth > 1200 then 4.0
+                else if model.windowWidth > 900 then 3.0
+                else if model.windowWidth > 600 then 2.0
+                else 1.0
+
+            -- Get the current translation
             currentTranslation =
                 Dict.get category.id model.categoryTranslation
                     |> Maybe.withDefault 0
 
-            itemCount = List.length category.items |> toFloat
-            itemWidth = 280.0
-            contentWidth = itemCount * itemWidth
-            containerWidth = visibleItems * itemWidth
-            maxNegativeScroll = negate (contentWidth - containerWidth)
+            -- Determine scroll limits
+            maxScrollPosition =
+                if itemCount <= displayCount then
+                    0.0
+                else
+                    negate ((itemCount * itemWidth) - (displayCount * itemWidth))
 
             -- Determine if we're at scroll limits
             isAtStart = currentTranslation >= 0.0
-            isAtEnd = currentTranslation <= maxNegativeScroll || itemCount <= visibleItems
+            isAtEnd = currentTranslation <= maxScrollPosition || itemCount <= displayCount
 
             -- Button styles based on scroll position
             leftButtonStyle =
@@ -842,8 +811,8 @@ viewCategory model category =
                         , class "flex items-center justify-center w-6 h-6"
                         ]
         in
-        div [ class "space-y-1" ]
-            [ div [ class "flex justify-between items-center" ]
+        div [ class "space-y-2" ]
+            [ div [ class "flex justify-between items-center mx-1" ]
                 [ h2 (Theme.text Theme.Heading3 ++ [ class "font-bold text-primary" ])
                     [ text category.name ]
                 , div [ class "flex items-center space-x-1" ]
@@ -857,7 +826,7 @@ viewCategory model category =
             , div
                 [ class "relative overflow-hidden" ]
                 [ div
-                    [ class "flex space-x-4 hide-scrollbar"
+                    [ class "flex space-x-2 hide-scrollbar"
                     , style "transform" ("translateX(" ++ String.fromFloat currentTranslation ++ "px)")
                     , style "transition" "transform 0.4s ease"
                     , style "width" "100%"
@@ -873,8 +842,8 @@ viewCategory model category =
                         List.map
                             (\item ->
                                 div
-                                    [ class "flex-shrink-0 w-56 md:w-64 lg:w-72"
-                                    , style "min-width" "200px"
+                                    [ class "flex-shrink-0 w-52 relative py-1 px-1"
+                                    , style "min-width" "185px"
                                     ]
                                     [ viewMediaItem item ]
                             )
@@ -883,11 +852,13 @@ viewCategory model category =
                 ]
             ]
 
--- View a media item (small card version)
+
+{-| View a media item card (small version for category rows)
+-}
 viewMediaItem : MediaItem -> Html Msg
 viewMediaItem item =
     div
-        [ class "bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary cursor-pointer h-full hover:scale-103 hover:z-10 group"
+        [ class "bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary cursor-pointer h-full group"
         , onClick (SelectMediaItem item.id)
         ]
         [ div [ class "relative pt-[150%]" ]
@@ -922,3 +893,126 @@ viewMediaItem item =
                 ]
             ]
         ]
+
+
+{-| View a media item card (large version for detailed view)
+-}
+viewMediaItemLarge : MediaItem -> Html Msg
+viewMediaItemLarge item =
+    div
+        [ class "flex flex-col bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary group h-full"
+        , onClick (SelectMediaItem item.id)
+        ]
+        [ div [ class "relative pt-[150%]" ] -- Aspect ratio 2:3 for posters
+            [ div
+                [ class "absolute inset-0 bg-surface-light flex items-center justify-center transition-all duration-300 group-hover:brightness-110"
+                , style "background-image" "linear-gradient(rgba(40, 40, 40, 0.2), rgba(30, 30, 30, 0.8))"
+                ]
+                [ div [ class "text-4xl text-primary-light opacity-70" ]
+                    [ text "🎬" ]  -- Movie icon placeholder where an image would be
+                ]
+            , div
+                [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
+                ]
+                [ button
+                    [ class "bg-primary text-white rounded-full w-20 h-20 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110"
+                    , style "box-shadow" "0 0 30px 10px rgba(95, 135, 175, 0.7)"
+                    , onClick (PlayMedia item.id)
+                    ]
+                    [ span [ class "text-3xl font-bold", style "margin-left" "4px" ] [ text "▶" ]
+                    ]
+                ]
+            ]
+        , div [ class "p-4 flex-grow transition-colors duration-300 group-hover:bg-surface-light" ]
+            [ h3 (Theme.text Theme.Heading3 ++ [ class "truncate group-hover:text-primary transition-colors duration-300" ])
+                [ text item.title ]
+            , div [ class "flex justify-between items-center mt-2" ]
+                [ div [ class "flex items-center space-x-2" ]
+                    [ span (Theme.text Theme.Caption)
+                        [ text (mediaTypeToString item.type_) ]
+                    , span (Theme.text Theme.Caption)
+                        [ text ("(" ++ String.fromInt item.year ++ ")") ]
+                    ]
+                , div [ class "flex items-center" ]
+                    [ span (Theme.text Theme.Caption ++ [ class "text-warning" ])
+                        [ text ("★ " ++ String.fromFloat item.rating) ]
+                    ]
+                ]
+            , p (Theme.text Theme.Caption ++ [ class "mt-2 line-clamp-2" ])
+                [ text (Maybe.withDefault "No description available." item.description) ]
+            ]
+        ]
+
+
+-- HELPER FUNCTIONS
+
+
+{-| Convert MediaType to string
+-}
+mediaTypeToString : MediaType -> String
+mediaTypeToString mediaType =
+    case mediaType of
+        Movie -> "Movie"
+        TVShow -> "TV Show"
+        Music -> "Music"
+
+
+{-| Check if an item has a specific genre
+-}
+itemHasGenre : String -> MediaItem -> Bool
+itemHasGenre genre item =
+    List.member genre item.genres
+
+
+{-| Filter categories based on search query
+-}
+filterCategories : String -> List Category -> List Category
+filterCategories query categories =
+    if String.isEmpty query then
+        categories
+    else
+        categories
+            |> List.map (\category ->
+                { category |
+                    items = List.filter
+                        (\item -> String.contains (String.toLower query) (String.toLower item.title))
+                        category.items
+                }
+            )
+            |> List.filter (\category -> not (List.isEmpty category.items))
+
+
+{-| Filter categories based on genre
+-}
+filterCategoriesByGenre : Maybe String -> List Category -> List Category
+filterCategoriesByGenre maybeGenre categories =
+    case maybeGenre of
+        Nothing ->
+            categories
+
+        Just genre ->
+            categories
+                |> List.map (\category ->
+                    { category |
+                        items = List.filter (itemHasGenre genre) category.items
+                    }
+                )
+                |> List.filter (\category -> not (List.isEmpty category.items))
+
+
+{-| Filter categories based on media type
+-}
+filterCategoriesByType : Maybe MediaType -> List Category -> List Category
+filterCategoriesByType maybeType categories =
+    case maybeType of
+        Nothing ->
+            categories
+
+        Just mediaType ->
+            categories
+                |> List.map (\category ->
+                    { category |
+                        items = List.filter (\item -> item.type_ == mediaType) category.items
+                    }
+                )
+                |> List.filter (\category -> not (List.isEmpty category.items))
