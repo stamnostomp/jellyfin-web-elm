@@ -784,11 +784,11 @@ function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.a3.at === region.bl.at)
+	if (region.a4.au === region.bm.au)
 	{
-		return 'on line ' + region.a3.at;
+		return 'on line ' + region.a4.au;
 	}
-	return 'on lines ' + region.a3.at + ' through ' + region.bl.at;
+	return 'on lines ' + region.a4.au + ' through ' + region.bm.au;
 }
 
 
@@ -2720,8 +2720,8 @@ var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
 		M: func(record.M),
-		a4: record.a4,
-		a0: record.a0
+		a5: record.a5,
+		a1: record.a1
 	}
 });
 
@@ -2990,10 +2990,10 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 
 		var value = result.a;
 		var message = !tag ? value : tag < 3 ? value.a : value.M;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.a4;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.a5;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.a0) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.a1) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3983,7 +3983,7 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 		impl.cZ,
 		impl.cV,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.a2 && impl.a2(sendToApp)
+			var divertHrefToApp = impl.a3 && impl.a3(sendToApp)
 			var view = impl.c$;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
@@ -3992,12 +3992,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.ca);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.b9);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.aO) && (_VirtualDom_doc.title = title = doc.aO);
+				(title !== doc.aP) && (_VirtualDom_doc.title = title = doc.aP);
 			});
 		}
 	);
@@ -4058,7 +4058,7 @@ function _Browser_application(impl)
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		a2: function(sendToApp)
+		a3: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4156,17 +4156,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { cp: 'hidden', cd: 'visibilitychange' }
+		? { cp: 'hidden', cc: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { cp: 'mozHidden', cd: 'mozvisibilitychange' }
+		? { cp: 'mozHidden', cc: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { cp: 'msHidden', cd: 'msvisibilitychange' }
+		? { cp: 'msHidden', cc: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { cp: 'webkitHidden', cd: 'webkitvisibilitychange' }
-		: { cp: 'hidden', cd: 'visibilitychange' };
+		? { cp: 'webkitHidden', cc: 'webkitvisibilitychange' }
+		: { cp: 'hidden', cc: 'visibilitychange' };
 }
 
 
@@ -4249,10 +4249,10 @@ function _Browser_getViewport()
 	return {
 		bS: _Browser_getScene(),
 		b0: {
-			b3: _Browser_window.pageXOffset,
-			b4: _Browser_window.pageYOffset,
-			b2: _Browser_doc.documentElement.clientWidth,
-			bs: _Browser_doc.documentElement.clientHeight
+			b2: _Browser_window.pageXOffset,
+			b3: _Browser_window.pageYOffset,
+			c0: _Browser_doc.documentElement.clientWidth,
+			co: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4262,8 +4262,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		b2: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		bs: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		c0: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		co: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4287,14 +4287,14 @@ function _Browser_getViewportOf(id)
 	{
 		return {
 			bS: {
-				b2: node.scrollWidth,
-				bs: node.scrollHeight
+				c0: node.scrollWidth,
+				co: node.scrollHeight
 			},
 			b0: {
-				b3: node.scrollLeft,
-				b4: node.scrollTop,
-				b2: node.clientWidth,
-				bs: node.clientHeight
+				b2: node.scrollLeft,
+				b3: node.scrollTop,
+				c0: node.clientWidth,
+				co: node.clientHeight
 			}
 		};
 	});
@@ -4326,16 +4326,16 @@ function _Browser_getElement(id)
 		return {
 			bS: _Browser_getScene(),
 			b0: {
-				b3: x,
-				b4: y,
-				b2: _Browser_doc.documentElement.clientWidth,
-				bs: _Browser_doc.documentElement.clientHeight
+				b2: x,
+				b3: y,
+				c0: _Browser_doc.documentElement.clientWidth,
+				co: _Browser_doc.documentElement.clientHeight
 			},
-			ci: {
-				b3: x + rect.left,
-				b4: y + rect.top,
-				b2: rect.width,
-				bs: rect.height
+			ch: {
+				b2: x + rect.left,
+				b3: y + rect.top,
+				c0: rect.width,
+				co: rect.height
 			}
 		};
 	});
@@ -4380,13 +4380,13 @@ var _Http_toTask = F3(function(router, toTask, request)
 	return _Scheduler_binding(function(callback)
 	{
 		function done(response) {
-			callback(toTask(request.ck.a(response)));
+			callback(toTask(request.cj.a(response)));
 		}
 
 		var xhr = new XMLHttpRequest();
 		xhr.addEventListener('error', function() { done($elm$http$Http$NetworkError_); });
 		xhr.addEventListener('timeout', function() { done($elm$http$Http$Timeout_); });
-		xhr.addEventListener('load', function() { done(_Http_toResponse(request.ck.b, xhr)); });
+		xhr.addEventListener('load', function() { done(_Http_toResponse(request.cj.b, xhr)); });
 		$elm$core$Maybe$isJust(request.b$) && _Http_track(router, xhr, request.b$.a);
 
 		try {
@@ -4397,8 +4397,8 @@ var _Http_toTask = F3(function(router, toTask, request)
 
 		_Http_configureRequest(xhr, request);
 
-		request.ca.a && xhr.setRequestHeader('Content-Type', request.ca.a);
-		xhr.send(request.ca.b);
+		request.b9.a && xhr.setRequestHeader('Content-Type', request.b9.a);
+		xhr.send(request.b9.b);
 
 		return function() { xhr.c = true; xhr.abort(); };
 	});
@@ -4409,13 +4409,13 @@ var _Http_toTask = F3(function(router, toTask, request)
 
 function _Http_configureRequest(xhr, request)
 {
-	for (var headers = request.br; headers.b; headers = headers.b) // WHILE_CONS
+	for (var headers = request.bs; headers.b; headers = headers.b) // WHILE_CONS
 	{
 		xhr.setRequestHeader(headers.a.a, headers.a.b);
 	}
 	xhr.timeout = request.cY.a || 0;
-	xhr.responseType = request.ck.d;
-	xhr.withCredentials = request.b6;
+	xhr.responseType = request.cj.d;
+	xhr.withCredentials = request.b5;
 }
 
 
@@ -4439,7 +4439,7 @@ function _Http_toMetadata(xhr)
 		c_: xhr.responseURL,
 		cT: xhr.status,
 		cU: xhr.statusText,
-		br: _Http_parseHeaders(xhr.getAllResponseHeaders())
+		bs: _Http_parseHeaders(xhr.getAllResponseHeaders())
 	};
 }
 
@@ -5049,7 +5049,7 @@ var $elm$url$Url$Http = 0;
 var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {bn: fragment, bt: host, bG: path, bI: port_, bL: protocol, bM: query};
+		return {bo: fragment, bt: host, bG: path, bI: port_, bL: protocol, bM: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5338,8 +5338,12 @@ var $author$project$JellyfinUI$ServerSettingsMsg = function (a) {
 var $author$project$JellyfinUI$TMDBDataReceived = function (a) {
 	return {$: 19, a: a};
 };
+var $author$project$JellyfinUI$WindowResized = F2(
+	function (a, b) {
+		return {$: 21, a: a, b: b};
+	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $author$project$JellyfinAPI$defaultServerConfig = {aT: $elm$core$Maybe$Nothing, aU: 'http://localhost:8096', a7: $elm$core$Maybe$Nothing};
+var $author$project$JellyfinAPI$defaultServerConfig = {aU: $elm$core$Maybe$Nothing, aV: 'http://localhost:8096', a8: $elm$core$Maybe$Nothing};
 var $elm$core$Dict$RBEmpty_elm_builtin = {$: -2};
 var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
@@ -6091,10 +6095,10 @@ var $elm$http$Http$cmdMap = F2(
 			var r = cmd.a;
 			return $elm$http$Http$Request(
 				{
-					b6: r.b6,
-					ca: r.ca,
-					ck: A2(_Http_mapExpect, func, r.ck),
-					br: r.br,
+					b5: r.b5,
+					b9: r.b9,
+					cj: A2(_Http_mapExpect, func, r.cj),
+					bs: r.bs,
 					cx: r.cx,
 					cY: r.cY,
 					b$: r.b$,
@@ -6121,18 +6125,18 @@ var $elm$http$Http$subscription = _Platform_leaf('Http');
 var $elm$http$Http$request = function (r) {
 	return $elm$http$Http$command(
 		$elm$http$Http$Request(
-			{b6: false, ca: r.ca, ck: r.ck, br: r.br, cx: r.cx, cY: r.cY, b$: r.b$, c_: r.c_}));
+			{b5: false, b9: r.b9, cj: r.cj, bs: r.bs, cx: r.cx, cY: r.cY, b$: r.b$, c_: r.c_}));
 };
 var $elm$http$Http$get = function (r) {
 	return $elm$http$Http$request(
-		{ca: $elm$http$Http$emptyBody, ck: r.ck, br: _List_Nil, cx: 'GET', cY: $elm$core$Maybe$Nothing, b$: $elm$core$Maybe$Nothing, c_: r.c_});
+		{b9: $elm$http$Http$emptyBody, cj: r.cj, bs: _List_Nil, cx: 'GET', cY: $elm$core$Maybe$Nothing, b$: $elm$core$Maybe$Nothing, c_: r.c_});
 };
 var $author$project$TMDBData$TMDBResponse = function (categories) {
 	return {u: categories};
 };
 var $author$project$JellyfinAPI$Category = F3(
 	function (id, name, items) {
-		return {D: id, cu: items, av: name};
+		return {D: id, cu: items, aw: name};
 	});
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$list = _Json_decodeList;
@@ -6140,7 +6144,7 @@ var $elm$json$Json$Decode$map3 = _Json_map3;
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $author$project$JellyfinAPI$CastMember = F5(
 	function (id, name, character, profileUrl, order) {
-		return {bf: character, D: id, av: name, bF: order, aH: profileUrl};
+		return {bg: character, D: id, aw: name, bF: order, aI: profileUrl};
 	});
 var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $elm$json$Json$Decode$map5 = _Json_map5;
@@ -6165,7 +6169,7 @@ var $author$project$TMDBData$castMemberDecoder = A6(
 	A2($elm$json$Json$Decode$field, 'order', $elm$json$Json$Decode$int));
 var $author$project$JellyfinAPI$CrewMember = F5(
 	function (id, name, job, department, profileUrl) {
-		return {bj: department, D: id, bv: job, av: name, aH: profileUrl};
+		return {bk: department, D: id, bv: job, aw: name, aI: profileUrl};
 	});
 var $author$project$TMDBData$crewMemberDecoder = A6(
 	$elm$json$Json$Decode$map5,
@@ -6204,7 +6208,7 @@ var $author$project$TMDBData$mediaItemDecoder = A2(
 				function (description, backdropUrl, genres, cast, directors) {
 					return _Utils_update(
 						baseItem,
-						{bb: backdropUrl, bd: cast, aC: description, aD: directors, ar: genres});
+						{bc: backdropUrl, be: cast, aD: description, aE: directors, as: genres});
 				}),
 			$elm$json$Json$Decode$maybe(
 				A2($elm$json$Json$Decode$field, 'description', $elm$json$Json$Decode$string)),
@@ -6227,7 +6231,7 @@ var $author$project$TMDBData$mediaItemDecoder = A2(
 		$elm$json$Json$Decode$map6,
 		F6(
 			function (id, title, type_, imageUrl, year, rating) {
-				return {bb: $elm$core$Maybe$Nothing, bd: _List_Nil, aC: $elm$core$Maybe$Nothing, aD: _List_Nil, ar: _List_Nil, D: id, aF: imageUrl, aI: rating, aO: title, aP: type_, aR: year};
+				return {bc: $elm$core$Maybe$Nothing, be: _List_Nil, aD: $elm$core$Maybe$Nothing, aE: _List_Nil, as: _List_Nil, D: id, aG: imageUrl, aJ: rating, aP: title, aQ: type_, aS: year};
 			}),
 		A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$string),
 		A2($elm$json$Json$Decode$field, 'title', $elm$json$Json$Decode$string),
@@ -6254,13 +6258,14 @@ var $author$project$TMDBData$tmdbResponseDecoder = A2(
 var $author$project$TMDBData$fetchTMDBData = function (toMsg) {
 	return $elm$http$Http$get(
 		{
-			ck: A2($elm$http$Http$expectJson, toMsg, $author$project$TMDBData$tmdbResponseDecoder),
+			cj: A2($elm$http$Http$expectJson, toMsg, $author$project$TMDBData$tmdbResponseDecoder),
 			c_: '/data/movies.json'
 		});
 };
+var $elm$browser$Browser$Dom$getViewport = _Browser_withWindow(_Browser_getViewport);
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$MediaDetail$init = _Utils_Tuple2(
-	{S: $elm$core$Maybe$Nothing, I: false, au: $elm$core$Maybe$Nothing},
+	{S: $elm$core$Maybe$Nothing, I: false, av: $elm$core$Maybe$Nothing},
 	$elm$core$Platform$Cmd$none);
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
@@ -6273,16 +6278,17 @@ var $elm$core$Maybe$withDefault = F2(
 	});
 var $author$project$ServerSettings$init = _Utils_Tuple2(
 	{
-		P: A2($elm$core$Maybe$withDefault, '', $author$project$JellyfinAPI$defaultServerConfig.aT),
-		_: $author$project$JellyfinAPI$defaultServerConfig.aU,
+		P: A2($elm$core$Maybe$withDefault, '', $author$project$JellyfinAPI$defaultServerConfig.aU),
+		aa: $author$project$JellyfinAPI$defaultServerConfig.aV,
 		R: $elm$core$Maybe$Nothing,
-		ae: false,
 		af: false,
-		a1: $author$project$JellyfinAPI$defaultServerConfig,
-		Y: A2($elm$core$Maybe$withDefault, '', $author$project$JellyfinAPI$defaultServerConfig.a7)
+		ag: false,
+		a2: $author$project$JellyfinAPI$defaultServerConfig,
+		Y: A2($elm$core$Maybe$withDefault, '', $author$project$JellyfinAPI$defaultServerConfig.a8)
 	},
 	$elm$core$Platform$Cmd$none);
 var $elm$core$Platform$Cmd$map = _Platform_map;
+var $elm$core$Basics$round = _Basics_round;
 var $author$project$JellyfinUI$init = function () {
 	var allGenres = _List_fromArray(
 		['Sci-Fi', 'Adventure', 'Drama', 'Action', 'Romance', 'Mystery', 'Comedy', 'Fantasy', 'Thriller', 'Horror', 'Documentary']);
@@ -6293,13 +6299,22 @@ var $author$project$JellyfinUI$init = function () {
 	var mediaDetailModel = _v1.a;
 	var mediaDetailCmd = _v1.b;
 	return _Utils_Tuple2(
-		{ap: allGenres, u: _List_Nil, aa: $elm$core$Dict$empty, ac: $elm$core$Maybe$Nothing, H: false, I: true, J: false, K: false, ah: mediaDetailModel, ai: '', ax: $elm$core$Maybe$Nothing, A: $elm$core$Maybe$Nothing, B: $elm$core$Maybe$Nothing, a1: $author$project$JellyfinAPI$defaultServerConfig, aM: serverSettingsModel},
+		{aq: allGenres, u: _List_Nil, ab: $elm$core$Dict$empty, ad: $elm$core$Maybe$Nothing, H: false, I: true, J: false, K: false, ai: mediaDetailModel, aj: '', ay: $elm$core$Maybe$Nothing, A: $elm$core$Maybe$Nothing, B: $elm$core$Maybe$Nothing, a2: $author$project$JellyfinAPI$defaultServerConfig, aN: serverSettingsModel, _: 1200},
 		$elm$core$Platform$Cmd$batch(
 			_List_fromArray(
 				[
 					A2($elm$core$Platform$Cmd$map, $author$project$JellyfinUI$MediaDetailMsg, mediaDetailCmd),
 					A2($elm$core$Platform$Cmd$map, $author$project$JellyfinUI$ServerSettingsMsg, serverSettingsCmd),
-					$author$project$TMDBData$fetchTMDBData($author$project$JellyfinUI$TMDBDataReceived)
+					$author$project$TMDBData$fetchTMDBData($author$project$JellyfinUI$TMDBDataReceived),
+					A2(
+					$elm$core$Task$perform,
+					function (vp) {
+						return A2(
+							$author$project$JellyfinUI$WindowResized,
+							$elm$core$Basics$round(vp.b0.c0),
+							$elm$core$Basics$round(vp.b0.co));
+					},
+					$elm$browser$Browser$Dom$getViewport)
 				])));
 }();
 var $author$project$Main$init = function (_v0) {
@@ -6307,26 +6322,314 @@ var $author$project$Main$init = function (_v0) {
 	var jellyfinModel = _v1.a;
 	var jellyfinCmd = _v1.b;
 	return _Utils_Tuple2(
-		{ag: jellyfinModel},
+		{ah: jellyfinModel},
 		A2($elm$core$Platform$Cmd$map, $elm$core$Basics$identity, jellyfinCmd));
 };
 var $elm$core$Platform$Sub$map = _Platform_map;
 var $elm$core$Platform$Sub$batch = _Platform_batch;
+var $elm$browser$Browser$Events$Window = 1;
+var $elm$browser$Browser$Events$MySub = F3(
+	function (a, b, c) {
+		return {$: 0, a: a, b: b, c: c};
+	});
+var $elm$browser$Browser$Events$State = F2(
+	function (subs, pids) {
+		return {bH: pids, bY: subs};
+	});
+var $elm$browser$Browser$Events$init = $elm$core$Task$succeed(
+	A2($elm$browser$Browser$Events$State, _List_Nil, $elm$core$Dict$empty));
+var $elm$browser$Browser$Events$nodeToKey = function (node) {
+	if (!node) {
+		return 'd_';
+	} else {
+		return 'w_';
+	}
+};
+var $elm$browser$Browser$Events$addKey = function (sub) {
+	var node = sub.a;
+	var name = sub.b;
+	return _Utils_Tuple2(
+		_Utils_ap(
+			$elm$browser$Browser$Events$nodeToKey(node),
+			name),
+		sub);
+};
+var $elm$core$Dict$fromList = function (assocs) {
+	return A3(
+		$elm$core$List$foldl,
+		F2(
+			function (_v0, dict) {
+				var key = _v0.a;
+				var value = _v0.b;
+				return A3($elm$core$Dict$insert, key, value, dict);
+			}),
+		$elm$core$Dict$empty,
+		assocs);
+};
+var $elm$core$Dict$foldl = F3(
+	function (func, acc, dict) {
+		foldl:
+		while (true) {
+			if (dict.$ === -2) {
+				return acc;
+			} else {
+				var key = dict.b;
+				var value = dict.c;
+				var left = dict.d;
+				var right = dict.e;
+				var $temp$func = func,
+					$temp$acc = A3(
+					func,
+					key,
+					value,
+					A3($elm$core$Dict$foldl, func, acc, left)),
+					$temp$dict = right;
+				func = $temp$func;
+				acc = $temp$acc;
+				dict = $temp$dict;
+				continue foldl;
+			}
+		}
+	});
+var $elm$core$Dict$merge = F6(
+	function (leftStep, bothStep, rightStep, leftDict, rightDict, initialResult) {
+		var stepState = F3(
+			function (rKey, rValue, _v0) {
+				stepState:
+				while (true) {
+					var list = _v0.a;
+					var result = _v0.b;
+					if (!list.b) {
+						return _Utils_Tuple2(
+							list,
+							A3(rightStep, rKey, rValue, result));
+					} else {
+						var _v2 = list.a;
+						var lKey = _v2.a;
+						var lValue = _v2.b;
+						var rest = list.b;
+						if (_Utils_cmp(lKey, rKey) < 0) {
+							var $temp$rKey = rKey,
+								$temp$rValue = rValue,
+								$temp$_v0 = _Utils_Tuple2(
+								rest,
+								A3(leftStep, lKey, lValue, result));
+							rKey = $temp$rKey;
+							rValue = $temp$rValue;
+							_v0 = $temp$_v0;
+							continue stepState;
+						} else {
+							if (_Utils_cmp(lKey, rKey) > 0) {
+								return _Utils_Tuple2(
+									list,
+									A3(rightStep, rKey, rValue, result));
+							} else {
+								return _Utils_Tuple2(
+									rest,
+									A4(bothStep, lKey, lValue, rValue, result));
+							}
+						}
+					}
+				}
+			});
+		var _v3 = A3(
+			$elm$core$Dict$foldl,
+			stepState,
+			_Utils_Tuple2(
+				$elm$core$Dict$toList(leftDict),
+				initialResult),
+			rightDict);
+		var leftovers = _v3.a;
+		var intermediateResult = _v3.b;
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v4, result) {
+					var k = _v4.a;
+					var v = _v4.b;
+					return A3(leftStep, k, v, result);
+				}),
+			intermediateResult,
+			leftovers);
+	});
+var $elm$browser$Browser$Events$Event = F2(
+	function (key, event) {
+		return {bn: event, bw: key};
+	});
+var $elm$browser$Browser$Events$spawn = F3(
+	function (router, key, _v0) {
+		var node = _v0.a;
+		var name = _v0.b;
+		var actualNode = function () {
+			if (!node) {
+				return _Browser_doc;
+			} else {
+				return _Browser_window;
+			}
+		}();
+		return A2(
+			$elm$core$Task$map,
+			function (value) {
+				return _Utils_Tuple2(key, value);
+			},
+			A3(
+				_Browser_on,
+				actualNode,
+				name,
+				function (event) {
+					return A2(
+						$elm$core$Platform$sendToSelf,
+						router,
+						A2($elm$browser$Browser$Events$Event, key, event));
+				}));
+	});
+var $elm$core$Dict$union = F2(
+	function (t1, t2) {
+		return A3($elm$core$Dict$foldl, $elm$core$Dict$insert, t2, t1);
+	});
+var $elm$browser$Browser$Events$onEffects = F3(
+	function (router, subs, state) {
+		var stepRight = F3(
+			function (key, sub, _v6) {
+				var deads = _v6.a;
+				var lives = _v6.b;
+				var news = _v6.c;
+				return _Utils_Tuple3(
+					deads,
+					lives,
+					A2(
+						$elm$core$List$cons,
+						A3($elm$browser$Browser$Events$spawn, router, key, sub),
+						news));
+			});
+		var stepLeft = F3(
+			function (_v4, pid, _v5) {
+				var deads = _v5.a;
+				var lives = _v5.b;
+				var news = _v5.c;
+				return _Utils_Tuple3(
+					A2($elm$core$List$cons, pid, deads),
+					lives,
+					news);
+			});
+		var stepBoth = F4(
+			function (key, pid, _v2, _v3) {
+				var deads = _v3.a;
+				var lives = _v3.b;
+				var news = _v3.c;
+				return _Utils_Tuple3(
+					deads,
+					A3($elm$core$Dict$insert, key, pid, lives),
+					news);
+			});
+		var newSubs = A2($elm$core$List$map, $elm$browser$Browser$Events$addKey, subs);
+		var _v0 = A6(
+			$elm$core$Dict$merge,
+			stepLeft,
+			stepBoth,
+			stepRight,
+			state.bH,
+			$elm$core$Dict$fromList(newSubs),
+			_Utils_Tuple3(_List_Nil, $elm$core$Dict$empty, _List_Nil));
+		var deadPids = _v0.a;
+		var livePids = _v0.b;
+		var makeNewPids = _v0.c;
+		return A2(
+			$elm$core$Task$andThen,
+			function (pids) {
+				return $elm$core$Task$succeed(
+					A2(
+						$elm$browser$Browser$Events$State,
+						newSubs,
+						A2(
+							$elm$core$Dict$union,
+							livePids,
+							$elm$core$Dict$fromList(pids))));
+			},
+			A2(
+				$elm$core$Task$andThen,
+				function (_v1) {
+					return $elm$core$Task$sequence(makeNewPids);
+				},
+				$elm$core$Task$sequence(
+					A2($elm$core$List$map, $elm$core$Process$kill, deadPids))));
+	});
+var $elm$browser$Browser$Events$onSelfMsg = F3(
+	function (router, _v0, state) {
+		var event = _v0.bn;
+		var key = _v0.bw;
+		var toMessage = function (_v2) {
+			var subKey = _v2.a;
+			var _v3 = _v2.b;
+			var node = _v3.a;
+			var name = _v3.b;
+			var decoder = _v3.c;
+			return _Utils_eq(subKey, key) ? A2(_Browser_decodeEvent, decoder, event) : $elm$core$Maybe$Nothing;
+		};
+		var messages = A2($elm$core$List$filterMap, toMessage, state.bY);
+		return A2(
+			$elm$core$Task$andThen,
+			function (_v1) {
+				return $elm$core$Task$succeed(state);
+			},
+			$elm$core$Task$sequence(
+				A2(
+					$elm$core$List$map,
+					$elm$core$Platform$sendToApp(router),
+					messages)));
+	});
+var $elm$browser$Browser$Events$subMap = F2(
+	function (func, _v0) {
+		var node = _v0.a;
+		var name = _v0.b;
+		var decoder = _v0.c;
+		return A3(
+			$elm$browser$Browser$Events$MySub,
+			node,
+			name,
+			A2($elm$json$Json$Decode$map, func, decoder));
+	});
+_Platform_effectManagers['Browser.Events'] = _Platform_createManager($elm$browser$Browser$Events$init, $elm$browser$Browser$Events$onEffects, $elm$browser$Browser$Events$onSelfMsg, 0, $elm$browser$Browser$Events$subMap);
+var $elm$browser$Browser$Events$subscription = _Platform_leaf('Browser.Events');
+var $elm$browser$Browser$Events$on = F3(
+	function (node, name, decoder) {
+		return $elm$browser$Browser$Events$subscription(
+			A3($elm$browser$Browser$Events$MySub, node, name, decoder));
+	});
+var $elm$browser$Browser$Events$onResize = function (func) {
+	return A3(
+		$elm$browser$Browser$Events$on,
+		1,
+		'resize',
+		A2(
+			$elm$json$Json$Decode$field,
+			'target',
+			A3(
+				$elm$json$Json$Decode$map2,
+				func,
+				A2($elm$json$Json$Decode$field, 'innerWidth', $elm$json$Json$Decode$int),
+				A2($elm$json$Json$Decode$field, 'innerHeight', $elm$json$Json$Decode$int))));
+};
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$MediaDetail$subscriptions = function (_v0) {
 	return $elm$core$Platform$Sub$none;
 };
 var $author$project$JellyfinUI$subscriptions = function (model) {
-	return A2(
-		$elm$core$Platform$Sub$map,
-		$author$project$JellyfinUI$MediaDetailMsg,
-		$author$project$MediaDetail$subscriptions(model.ah));
+	return $elm$core$Platform$Sub$batch(
+		_List_fromArray(
+			[
+				A2(
+				$elm$core$Platform$Sub$map,
+				$author$project$JellyfinUI$MediaDetailMsg,
+				$author$project$MediaDetail$subscriptions(model.ai)),
+				$elm$browser$Browser$Events$onResize($author$project$JellyfinUI$WindowResized)
+			]));
 };
 var $author$project$Main$subscriptions = function (model) {
 	return A2(
 		$elm$core$Platform$Sub$map,
 		$elm$core$Basics$identity,
-		$author$project$JellyfinUI$subscriptions(model.ag));
+		$author$project$JellyfinUI$subscriptions(model.ah));
 };
 var $author$project$MediaDetail$MediaDetailReceived = function (a) {
 	return {$: 1, a: a};
@@ -6425,234 +6728,234 @@ var $author$project$MockData$mockCategories = _List_fromArray(
 		cu: _List_fromArray(
 			[
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Captain Sarah Chen', D: 'cast1', av: 'Emma Stone', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'Dr. Marcus Wells', D: 'cast2', av: 'John Boyega', bF: 1, aH: $elm$core$Maybe$Nothing},
-						{bf: 'Engineer Raj Kumar', D: 'cast3', av: 'Dev Patel', bF: 2, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Captain Sarah Chen', D: 'cast1', aw: 'Emma Stone', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Dr. Marcus Wells', D: 'cast2', aw: 'John Boyega', bF: 1, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Engineer Raj Kumar', D: 'cast3', aw: 'Dev Patel', bF: 2, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('A thrilling sci-fi series about explorers who venture into a mysterious void at the edge of the universe.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('A thrilling sci-fi series about explorers who venture into a mysterious void at the edge of the universe.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Directing', D: 'crew1', bv: 'Director', av: 'Ava DuVernay', aH: $elm$core$Maybe$Nothing},
-						{bj: 'Production', D: 'crew2', bv: 'Executive Producer', av: 'Christopher Nolan', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', D: 'crew1', bv: 'Director', aw: 'Ava DuVernay', aI: $elm$core$Maybe$Nothing},
+						{bk: 'Production', D: 'crew2', bv: 'Executive Producer', aw: 'Christopher Nolan', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Drama', 'Mystery']),
 				D: 'show2',
-				aF: 'show2.jpg',
-				aI: 8.7,
-				aO: 'Chronicles of the Void',
-				aP: 1,
-				aR: 2021
+				aG: 'show2.jpg',
+				aJ: 8.7,
+				aP: 'Chronicles of the Void',
+				aQ: 1,
+				aS: 2021
 			},
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Dr. Alex Harper', D: 'cast4', av: 'Ryan Gosling', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'Commander Maya Zhou', D: 'cast5', av: 'Lupita Nyong\'o', bF: 1, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Dr. Alex Harper', D: 'cast4', aw: 'Ryan Gosling', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Commander Maya Zhou', D: 'cast5', aw: 'Lupita Nyong\'o', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('When a team of scientists discovers a habitable planet at the edge of a distant nebula, they embark on a perilous journey only to find they are not alone.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('When a team of scientists discovers a habitable planet at the edge of a distant nebula, they embark on a perilous journey only to find they are not alone.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Directing', D: 'crew3', bv: 'Director', av: 'Denis Villeneuve', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', D: 'crew3', bv: 'Director', aw: 'Denis Villeneuve', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Adventure', 'Horror']),
 				D: 'movie4',
-				aF: 'movie4.jpg',
-				aI: 7.5,
-				aO: 'Nebula\'s Edge',
-				aP: 0,
-				aR: 2024
+				aG: 'movie4.jpg',
+				aJ: 7.5,
+				aP: 'Nebula\'s Edge',
+				aQ: 0,
+				aS: 2024
 			}
 			]),
-		av: 'Continue Watching'
+		aw: 'Continue Watching'
 	},
 		{
 		D: 'recently-added',
 		cu: _List_fromArray(
 			[
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Dr. James Wilson', D: 'cast6', av: 'Daniel Kaluuya', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'Agent Elizabeth Bennett', D: 'cast7', av: 'Florence Pugh', bF: 1, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Dr. James Wilson', D: 'cast6', aw: 'Daniel Kaluuya', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Agent Elizabeth Bennett', D: 'cast7', aw: 'Florence Pugh', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('When a brilliant physicist discovers a way to manipulate time using quantum mechanics, governments and corporations race to control the technology.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('When a brilliant physicist discovers a way to manipulate time using quantum mechanics, governments and corporations race to control the technology.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Directing', D: 'crew4', bv: 'Director', av: 'Bong Joon-ho', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', D: 'crew4', bv: 'Director', aw: 'Bong Joon-ho', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Thriller', 'Drama']),
 				D: 'movie1',
-				aF: 'movie1.jpg',
-				aI: 8.5,
-				aO: 'The Quantum Protocol',
-				aP: 0,
-				aR: 2023
+				aG: 'movie1.jpg',
+				aJ: 8.5,
+				aP: 'The Quantum Protocol',
+				aQ: 0,
+				aS: 2023
 			},
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Memory Detective Eliza Grey', D: 'cast8', av: 'Saoirse Ronan', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'Hacker Leo Chen', D: 'cast9', av: 'Rami Malek', bF: 1, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Memory Detective Eliza Grey', D: 'cast8', aw: 'Saoirse Ronan', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Hacker Leo Chen', D: 'cast9', aw: 'Rami Malek', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('In a future where memories can be shared digitally, a memory detective uncovers a conspiracy that threatens global stability.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('In a future where memories can be shared digitally, a memory detective uncovers a conspiracy that threatens global stability.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Directing', D: 'crew5', bv: 'Director', av: 'Chloe Zhao', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', D: 'crew5', bv: 'Director', aw: 'Chloe Zhao', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Mystery', 'Thriller']),
 				D: 'movie2',
-				aF: 'movie2.jpg',
-				aI: 7.8,
-				aO: 'Echoes of Tomorrow',
-				aP: 0,
-				aR: 2024
+				aG: 'movie2.jpg',
+				aJ: 7.8,
+				aP: 'Echoes of Tomorrow',
+				aQ: 0,
+				aS: 2024
 			},
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Various Characters', D: 'cast10', av: 'Anya Taylor-Joy', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'Various Characters', D: 'cast11', av: 'Anthony Mackie', bF: 1, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Various Characters', D: 'cast10', aw: 'Anya Taylor-Joy', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Various Characters', D: 'cast11', aw: 'Anthony Mackie', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('An anthology series exploring the intersection of technology and humanity across different possible futures.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('An anthology series exploring the intersection of technology and humanity across different possible futures.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Production', D: 'crew6', bv: 'Creator', av: 'Lana Wachowski', aH: $elm$core$Maybe$Nothing},
-						{bj: 'Directing', D: 'crew7', bv: 'Director', av: 'Alex Garland', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Production', D: 'crew6', bv: 'Creator', aw: 'Lana Wachowski', aI: $elm$core$Maybe$Nothing},
+						{bk: 'Directing', D: 'crew7', bv: 'Director', aw: 'Alex Garland', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Drama', 'Anthology']),
 				D: 'show1',
-				aF: 'show1.jpg',
-				aI: 9.2,
-				aO: 'Digital Horizons',
-				aP: 1,
-				aR: 2023
+				aG: 'show1.jpg',
+				aJ: 9.2,
+				aP: 'Digital Horizons',
+				aQ: 1,
+				aS: 2023
 			},
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Commander Thomas Rivera', D: 'cast12', av: 'Oscar Isaac', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'Dr. Maya Patel', D: 'cast13', av: 'Tessa Thompson', bF: 1, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Commander Thomas Rivera', D: 'cast12', aw: 'Oscar Isaac', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Dr. Maya Patel', D: 'cast13', aw: 'Tessa Thompson', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('The first human colony on Mars faces unexpected challenges when strange artifacts are discovered beneath the planet\'s surface.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('The first human colony on Mars faces unexpected challenges when strange artifacts are discovered beneath the planet\'s surface.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Directing', D: 'crew8', bv: 'Director', av: 'James Gray', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', D: 'crew8', bv: 'Director', aw: 'James Gray', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Adventure']),
 				D: 'movie3',
-				aF: 'movie3.jpg',
-				aI: 6.9,
-				aO: 'Stellar Odyssey',
-				aP: 0,
-				aR: 2022
+				aG: 'movie3.jpg',
+				aJ: 6.9,
+				aP: 'Stellar Odyssey',
+				aQ: 0,
+				aS: 2022
 			}
 			]),
-		av: 'Recently Added'
+		aw: 'Recently Added'
 	},
 		{
 		D: 'recommended',
 		cu: _List_fromArray(
 			[
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Commander Jack Harding', D: 'cast14', av: 'Keanu Reeves', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'Astrophysicist Dr. Olivia Chen', D: 'cast15', av: 'Zendaya', bF: 1, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Commander Jack Harding', D: 'cast14', aw: 'Keanu Reeves', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Astrophysicist Dr. Olivia Chen', D: 'cast15', aw: 'Zendaya', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('As a nearby star threatens to go supernova, a specialized team of astronauts must embark on a mission to prevent catastrophe on Earth.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('As a nearby star threatens to go supernova, a specialized team of astronauts must embark on a mission to prevent catastrophe on Earth.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Directing', D: 'crew9', bv: 'Director', av: 'Patty Jenkins', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', D: 'crew9', bv: 'Director', aw: 'Patty Jenkins', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Action', 'Drama']),
 				D: 'movie5',
-				aF: 'movie5.jpg',
-				aI: 9.1,
-				aO: 'Hypernova',
-				aP: 0,
-				aR: 2023
+				aG: 'movie5.jpg',
+				aJ: 9.1,
+				aP: 'Hypernova',
+				aQ: 0,
+				aS: 2023
 			},
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Dr. Elijah Cross', D: 'cast16', av: 'Jonathan Majors', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'Timeline Investigator Kate Wilson', D: 'cast17', av: 'Jodie Comer', bF: 1, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Dr. Elijah Cross', D: 'cast16', aw: 'Jonathan Majors', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Timeline Investigator Kate Wilson', D: 'cast17', aw: 'Jodie Comer', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('After a particle accelerator experiment goes wrong, reality splits into multiple timelines that begin to collide with devastating consequences.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('After a particle accelerator experiment goes wrong, reality splits into multiple timelines that begin to collide with devastating consequences.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Production', D: 'crew10', bv: 'Creator', av: 'Noah Hawley', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Production', D: 'crew10', bv: 'Creator', aw: 'Noah Hawley', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Mystery', 'Drama']),
 				D: 'show3',
-				aF: 'show3.jpg',
-				aI: 8.4,
-				aO: 'Temporal Divide',
-				aP: 1,
-				aR: 2022
+				aG: 'show3.jpg',
+				aJ: 8.4,
+				aP: 'Temporal Divide',
+				aQ: 1,
+				aS: 2022
 			},
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Emma/Alternate Emma', D: 'cast18', av: 'Brie Larson', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'Dr. Marcus Shaw', D: 'cast19', av: 'LaKeith Stanfield', bF: 1, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Emma/Alternate Emma', D: 'cast18', aw: 'Brie Larson', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Dr. Marcus Shaw', D: 'cast19', aw: 'LaKeith Stanfield', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('A woman discovers her doppelgänger from a parallel universe, leading to an identity crisis as she questions which reality is truly her own.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('A woman discovers her doppelgänger from a parallel universe, leading to an identity crisis as she questions which reality is truly her own.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Directing', D: 'crew11', bv: 'Director', av: 'Darren Aronofsky', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', D: 'crew11', bv: 'Director', aw: 'Darren Aronofsky', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Psychological', 'Drama']),
 				D: 'movie6',
-				aF: 'movie6.jpg',
-				aI: 7.2,
-				aO: 'Parallel Essence',
-				aP: 0,
-				aR: 2024
+				aG: 'movie6.jpg',
+				aJ: 7.2,
+				aP: 'Parallel Essence',
+				aQ: 0,
+				aS: 2024
 			},
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Dr. Robert Chen', D: 'cast20', av: 'John David Washington', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'Commander Diana Jackson', D: 'cast21', av: 'Cynthia Erivo', bF: 1, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Dr. Robert Chen', D: 'cast20', aw: 'John David Washington', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Commander Diana Jackson', D: 'cast21', aw: 'Cynthia Erivo', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('A team of scientists working on quantum computing inadvertently open a gateway to alternate dimensions, unleashing chaos across the multiverse.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('A team of scientists working on quantum computing inadvertently open a gateway to alternate dimensions, unleashing chaos across the multiverse.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Production', D: 'crew12', bv: 'Creators', av: 'The Wachowskis', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Production', D: 'crew12', bv: 'Creators', aw: 'The Wachowskis', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Adventure', 'Action']),
 				D: 'show4',
-				aF: 'show4.jpg',
-				aI: 8.9,
-				aO: 'Quantum Nexus',
-				aP: 1,
-				aR: 2021
+				aG: 'show4.jpg',
+				aJ: 8.9,
+				aP: 'Quantum Nexus',
+				aQ: 1,
+				aS: 2021
 			}
 			]),
-		av: 'Recommended For You'
+		aw: 'Recommended For You'
 	}
 	]);
 var $author$project$MockData$mockLibraryCategories = _List_fromArray(
@@ -6662,184 +6965,184 @@ var $author$project$MockData$mockLibraryCategories = _List_fromArray(
 		cu: _List_fromArray(
 			[
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Voice of IRIS AI', D: 'cast22', av: 'Steven Yeun', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'Dr. Samantha Liu', D: 'cast23', av: 'Thomasin McKenzie', bF: 1, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Voice of IRIS AI', D: 'cast22', aw: 'Steven Yeun', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Dr. Samantha Liu', D: 'cast23', aw: 'Thomasin McKenzie', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('A philosophical journey through the cosmos as an AI aboard an interstellar vessel contemplates the nature of existence.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('A philosophical journey through the cosmos as an AI aboard an interstellar vessel contemplates the nature of existence.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Directing', D: 'crew13', bv: 'Director', av: 'Richard Linklater', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', D: 'crew13', bv: 'Director', aw: 'Richard Linklater', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Drama', 'Philosophy']),
 				D: 'movie7',
-				aF: 'movie7.jpg',
-				aI: 8.3,
-				aO: 'Cosmic Paradigm',
-				aP: 0,
-				aR: 2023
+				aG: 'movie7.jpg',
+				aJ: 8.3,
+				aP: 'Cosmic Paradigm',
+				aQ: 0,
+				aS: 2023
 			},
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Ethan Reed', D: 'cast24', av: 'Paul Mescal', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'Lily Chen', D: 'cast25', av: 'Daisy Edgar-Jones', bF: 1, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Ethan Reed', D: 'cast24', aw: 'Paul Mescal', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Lily Chen', D: 'cast25', aw: 'Daisy Edgar-Jones', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('Two strangers discover they share dreams and thoughts through an unexplained neural connection, leading them on a journey to find each other.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('Two strangers discover they share dreams and thoughts through an unexplained neural connection, leading them on a journey to find each other.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Directing', D: 'crew14', bv: 'Director', av: 'Greta Gerwig', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', D: 'crew14', bv: 'Director', aw: 'Greta Gerwig', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Romance', 'Mystery']),
 				D: 'movie8',
-				aF: 'movie8.jpg',
-				aI: 7.9,
-				aO: 'Neural Connection',
-				aP: 0,
-				aR: 2024
+				aG: 'movie8.jpg',
+				aJ: 7.9,
+				aP: 'Neural Connection',
+				aQ: 0,
+				aS: 2024
 			},
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Dream Detective Elias Cross', D: 'cast26', av: 'Mahershala Ali', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'Senator Victoria Palmer', D: 'cast27', av: 'Rebecca Ferguson', bF: 1, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Dream Detective Elias Cross', D: 'cast26', aw: 'Mahershala Ali', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Senator Victoria Palmer', D: 'cast27', aw: 'Rebecca Ferguson', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('In a world where dreams can be recorded and sold as entertainment, a dream detective investigates the theft of a prominent politician\'s subconscious.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('In a world where dreams can be recorded and sold as entertainment, a dream detective investigates the theft of a prominent politician\'s subconscious.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Directing', D: 'crew15', bv: 'Director', av: 'Rian Johnson', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', D: 'crew15', bv: 'Director', aw: 'Rian Johnson', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Neo-Noir', 'Mystery']),
 				D: 'movie9',
-				aF: 'movie9.jpg',
-				aI: 8.1,
-				aO: 'Synthetic Dreams',
-				aP: 0,
-				aR: 2022
+				aG: 'movie9.jpg',
+				aJ: 8.1,
+				aP: 'Synthetic Dreams',
+				aQ: 0,
+				aS: 2022
 			},
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Data Archaeologist Max Rivera', D: 'cast28', av: 'Pedro Pascal', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'AI Specialist Dr. Amara Johnson', D: 'cast29', av: 'Letitia Wright', bF: 1, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Data Archaeologist Max Rivera', D: 'cast28', aw: 'Pedro Pascal', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'AI Specialist Dr. Amara Johnson', D: 'cast29', aw: 'Letitia Wright', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('A team of data archaeologists explore the ruins of the Internet after a global cyber-catastrophe, discovering secrets that were meant to stay buried.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('A team of data archaeologists explore the ruins of the Internet after a global cyber-catastrophe, discovering secrets that were meant to stay buried.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Directing', D: 'crew16', bv: 'Director', av: 'Taika Waititi', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Directing', D: 'crew16', bv: 'Director', aw: 'Taika Waititi', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Adventure', 'Mystery']),
 				D: 'movie10',
-				aF: 'movie10.jpg',
-				aI: 7.6,
-				aO: 'Digital Frontier',
-				aP: 0,
-				aR: 2023
+				aG: 'movie10.jpg',
+				aJ: 7.6,
+				aP: 'Digital Frontier',
+				aQ: 0,
+				aS: 2023
 			}
 			]),
-		av: 'Movies'
+		aw: 'Movies'
 	},
 		{
 		D: 'tv-library',
 		cu: _List_fromArray(
 			[
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Dr. Lucy Chen', D: 'cast30', av: 'Gemma Chan', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'General Marcus Williams', D: 'cast31', av: 'David Oyelowo', bF: 1, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Dr. Lucy Chen', D: 'cast30', aw: 'Gemma Chan', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'General Marcus Williams', D: 'cast31', aw: 'David Oyelowo', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('Humanity makes first contact with an alien intelligence that communicates through manipulating the fabric of reality itself.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('Humanity makes first contact with an alien intelligence that communicates through manipulating the fabric of reality itself.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Production', D: 'crew17', bv: 'Creator', av: 'Denis Villeneuve', aH: $elm$core$Maybe$Nothing},
-						{bj: 'Directing', D: 'crew18', bv: 'Director', av: 'Nia DaCosta', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Production', D: 'crew17', bv: 'Creator', aw: 'Denis Villeneuve', aI: $elm$core$Maybe$Nothing},
+						{bk: 'Directing', D: 'crew18', bv: 'Director', aw: 'Nia DaCosta', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Drama', 'Mystery']),
 				D: 'show5',
-				aF: 'show5.jpg',
-				aI: 8.8,
-				aO: 'Ethereal Connection',
-				aP: 1,
-				aR: 2022
+				aG: 'show5.jpg',
+				aJ: 8.8,
+				aP: 'Ethereal Connection',
+				aQ: 1,
+				aS: 2022
 			},
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Agent Thomas Blake', D: 'cast32', av: 'Daniel Craig', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'Director Nora Ellis', D: 'cast33', av: 'Janelle Monáe', bF: 1, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Agent Thomas Blake', D: 'cast32', aw: 'Daniel Craig', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Director Nora Ellis', D: 'cast33', aw: 'Janelle Monáe', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('A secret government agency monitors timeline alterations and sends agents to prevent catastrophic changes to history.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('A secret government agency monitors timeline alterations and sends agents to prevent catastrophic changes to history.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Production', D: 'crew19', bv: 'Creator', av: 'Jonathan Nolan', aH: $elm$core$Maybe$Nothing},
-						{bj: 'Production', D: 'crew20', bv: 'Creator', av: 'Lisa Joy', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Production', D: 'crew19', bv: 'Creator', aw: 'Jonathan Nolan', aI: $elm$core$Maybe$Nothing},
+						{bk: 'Production', D: 'crew20', bv: 'Creator', aw: 'Lisa Joy', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Action', 'History']),
 				D: 'show6',
-				aF: 'show6.jpg',
-				aI: 9.0,
-				aO: 'Parallel Futures',
-				aP: 1,
-				aR: 2023
+				aG: 'show6.jpg',
+				aJ: 9.0,
+				aP: 'Parallel Futures',
+				aQ: 1,
+				aS: 2023
 			},
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Dr. Violet Chen', D: 'cast34', av: 'Sonoya Mizuno', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'FBI Agent Marcus Hill', D: 'cast35', av: 'Aldis Hodge', bF: 1, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Dr. Violet Chen', D: 'cast34', aw: 'Sonoya Mizuno', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'FBI Agent Marcus Hill', D: 'cast35', aw: 'Aldis Hodge', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('After a particle accelerator accident, a physicist gains the ability to see and interact with quantum probability waves, allowing her to perceive possible futures.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('After a particle accelerator accident, a physicist gains the ability to see and interact with quantum probability waves, allowing her to perceive possible futures.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Production', D: 'crew21', bv: 'Creator', av: 'Sam Esmail', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Production', D: 'crew21', bv: 'Creator', aw: 'Sam Esmail', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Drama', 'Thriller']),
 				D: 'show7',
-				aF: 'show7.jpg',
-				aI: 8.2,
-				aO: 'Quantum Horizon',
-				aP: 1,
-				aR: 2024
+				aG: 'show7.jpg',
+				aJ: 8.2,
+				aP: 'Quantum Horizon',
+				aQ: 1,
+				aS: 2024
 			},
 				{
-				bb: $elm$core$Maybe$Nothing,
-				bd: _List_fromArray(
+				bc: $elm$core$Maybe$Nothing,
+				be: _List_fromArray(
 					[
-						{bf: 'Detective James Park', D: 'cast36', av: 'John Cho', bF: 0, aH: $elm$core$Maybe$Nothing},
-						{bf: 'Dr. Eliza Ward', D: 'cast37', av: 'Thandiwe Newton', bF: 1, aH: $elm$core$Maybe$Nothing}
+						{bg: 'Detective James Park', D: 'cast36', aw: 'John Cho', bF: 0, aI: $elm$core$Maybe$Nothing},
+						{bg: 'Dr. Eliza Ward', D: 'cast37', aw: 'Thandiwe Newton', bF: 1, aI: $elm$core$Maybe$Nothing}
 					]),
-				aC: $elm$core$Maybe$Just('In a near future where human minds can connect to a shared digital consciousness, a detective investigates murders taking place both in reality and the virtual world.'),
-				aD: _List_fromArray(
+				aD: $elm$core$Maybe$Just('In a near future where human minds can connect to a shared digital consciousness, a detective investigates murders taking place both in reality and the virtual world.'),
+				aE: _List_fromArray(
 					[
-						{bj: 'Production', D: 'crew22', bv: 'Creator', av: 'Lilly Wachowski', aH: $elm$core$Maybe$Nothing}
+						{bk: 'Production', D: 'crew22', bv: 'Creator', aw: 'Lilly Wachowski', aI: $elm$core$Maybe$Nothing}
 					]),
-				ar: _List_fromArray(
+				as: _List_fromArray(
 					['Sci-Fi', 'Crime', 'Cyberpunk']),
 				D: 'show8',
-				aF: 'show8.jpg',
-				aI: 7.7,
-				aO: 'Neural Network',
-				aP: 1,
-				aR: 2021
+				aG: 'show8.jpg',
+				aJ: 7.7,
+				aP: 'Neural Network',
+				aQ: 1,
+				aS: 2021
 			}
 			]),
-		av: 'TV Shows'
+		aw: 'TV Shows'
 	}
 	]);
 var $elm$core$Basics$negate = function (n) {
@@ -6870,7 +7173,7 @@ var $author$project$MediaDetail$update = F2(
 							{
 								S: $elm$core$Maybe$Nothing,
 								I: false,
-								au: $elm$core$Maybe$Just(detail)
+								av: $elm$core$Maybe$Just(detail)
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
@@ -6888,7 +7191,7 @@ var $author$project$MediaDetail$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{S: $elm$core$Maybe$Nothing, au: $elm$core$Maybe$Nothing}),
+						{S: $elm$core$Maybe$Nothing, av: $elm$core$Maybe$Nothing}),
 					$elm$core$Platform$Cmd$none);
 			default:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -6905,14 +7208,14 @@ var $author$project$ServerSettings$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{af: !model.af}),
+						{ag: !model.ag}),
 					$elm$core$Platform$Cmd$none);
 			case 1:
 				var value = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{_: value}),
+						{aa: value}),
 					$elm$core$Platform$Cmd$none);
 			case 2:
 				var value = msg.a;
@@ -6930,20 +7233,20 @@ var $author$project$ServerSettings$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 4:
 				var newConfig = {
-					aT: $elm$core$String$isEmpty(model.P) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(model.P),
-					aU: model._,
-					a7: $elm$core$String$isEmpty(model.Y) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(model.Y)
+					aU: $elm$core$String$isEmpty(model.P) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(model.P),
+					aV: model.aa,
+					a8: $elm$core$String$isEmpty(model.Y) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(model.Y)
 				};
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{R: $elm$core$Maybe$Nothing, af: false, a1: newConfig}),
+						{R: $elm$core$Maybe$Nothing, ag: false, a2: newConfig}),
 					$elm$core$Platform$Cmd$none);
 			case 5:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{R: $elm$core$Maybe$Nothing, ae: true}),
+						{R: $elm$core$Maybe$Nothing, af: true}),
 					A2(
 						$elm$core$Task$perform,
 						$elm$core$Basics$identity,
@@ -6956,7 +7259,7 @@ var $author$project$ServerSettings$update = F2(
 						model,
 						{
 							R: $elm$core$Maybe$Just(status),
-							ae: false
+							af: false
 						}),
 					$elm$core$Platform$Cmd$none);
 			default:
@@ -6964,10 +7267,10 @@ var $author$project$ServerSettings$update = F2(
 					_Utils_update(
 						model,
 						{
-							P: A2($elm$core$Maybe$withDefault, '', $author$project$JellyfinAPI$defaultServerConfig.aT),
-							_: $author$project$JellyfinAPI$defaultServerConfig.aU,
+							P: A2($elm$core$Maybe$withDefault, '', $author$project$JellyfinAPI$defaultServerConfig.aU),
+							aa: $author$project$JellyfinAPI$defaultServerConfig.aV,
 							R: $elm$core$Maybe$Nothing,
-							Y: A2($elm$core$Maybe$withDefault, '', $author$project$JellyfinAPI$defaultServerConfig.a7)
+							Y: A2($elm$core$Maybe$withDefault, '', $author$project$JellyfinAPI$defaultServerConfig.a8)
 						}),
 					$elm$core$Platform$Cmd$none);
 		}
@@ -6975,12 +7278,20 @@ var $author$project$ServerSettings$update = F2(
 var $author$project$JellyfinUI$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
+			case 21:
+				var width = msg.a;
+				var height = msg.b;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{_: width}),
+					$elm$core$Platform$Cmd$none);
 			case 0:
 				var query = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{ai: query}),
+						{aj: query}),
 					$elm$core$Platform$Cmd$none);
 			case 1:
 				var categoryId = msg.a;
@@ -6988,14 +7299,14 @@ var $author$project$JellyfinUI$update = F2(
 					_Utils_update(
 						model,
 						{
-							ax: $elm$core$Maybe$Just(categoryId)
+							ay: $elm$core$Maybe$Just(categoryId)
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 2:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{ax: $elm$core$Maybe$Nothing}),
+						{ay: $elm$core$Maybe$Nothing}),
 					$elm$core$Platform$Cmd$none);
 			case 3:
 				var mediaId = msg.a;
@@ -7015,9 +7326,9 @@ var $author$project$JellyfinUI$update = F2(
 					if (!foundItem.$) {
 						var item = foundItem.a;
 						var duration = 120;
-						var description = A2($elm$core$Maybe$withDefault, 'No description available.', item.aC);
+						var description = A2($elm$core$Maybe$withDefault, 'No description available.', item.aD);
 						var detail = $elm$core$Result$Ok(
-							{aS: item.bd, aC: description, aD: item.aD, aW: duration, ar: item.ar, D: item.D, aF: item.aF, aI: item.aI, aO: item.aO, aP: item.aP, aR: item.aR});
+							{aT: item.be, aD: description, aE: item.aE, aX: duration, as: item.as, D: item.D, aG: item.aG, aJ: item.aJ, aP: item.aP, aQ: item.aQ, aS: item.aS});
 						return function (cmd) {
 							return A2(
 								$elm$core$Task$perform,
@@ -7057,30 +7368,30 @@ var $author$project$JellyfinUI$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 7:
 				var subMsg = msg.a;
-				var _v2 = A2($author$project$MediaDetail$update, subMsg, model.ah);
+				var _v2 = A2($author$project$MediaDetail$update, subMsg, model.ai);
 				var updatedMediaDetailModel = _v2.a;
 				var mediaDetailCmd = _v2.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{ah: updatedMediaDetailModel}),
+						{ai: updatedMediaDetailModel}),
 					A2($elm$core$Platform$Cmd$map, $author$project$JellyfinUI$MediaDetailMsg, mediaDetailCmd));
 			case 8:
 				var subMsg = msg.a;
-				var _v3 = A2($author$project$ServerSettings$update, subMsg, model.aM);
+				var _v3 = A2($author$project$ServerSettings$update, subMsg, model.aN);
 				var updatedServerSettingsModel = _v3.a;
 				var serverSettingsCmd = _v3.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{aM: updatedServerSettingsModel}),
+						{aN: updatedServerSettingsModel}),
 					A2($elm$core$Platform$Cmd$map, $author$project$JellyfinUI$ServerSettingsMsg, serverSettingsCmd));
 			case 9:
 				var newConfig = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{a1: newConfig}),
+						{a2: newConfig}),
 					$elm$core$Platform$Cmd$none);
 			case 10:
 				return _Utils_Tuple2(
@@ -7161,13 +7472,13 @@ var $author$project$JellyfinUI$update = F2(
 				var currentTranslation = A2(
 					$elm$core$Maybe$withDefault,
 					0,
-					A2($elm$core$Dict$get, categoryId, model.aa));
+					A2($elm$core$Dict$get, categoryId, model.ab));
 				var newTranslation = (direction > 0) ? A2($elm$core$Basics$max, maxScroll, currentTranslation - scrollAmount) : A2($elm$core$Basics$min, 0.0, currentTranslation + scrollAmount);
-				var updatedTranslations = A3($elm$core$Dict$insert, categoryId, newTranslation, model.aa);
+				var updatedTranslations = A3($elm$core$Dict$insert, categoryId, newTranslation, model.ab);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{aa: updatedTranslations}),
+						{ab: updatedTranslations}),
 					$elm$core$Platform$Cmd$none);
 			case 19:
 				var result = msg.a;
@@ -7184,7 +7495,7 @@ var $author$project$JellyfinUI$update = F2(
 							A2(
 								$elm$core$List$concatMap,
 								function ($) {
-									return $.ar;
+									return $.as;
 								},
 								A2(
 									$elm$core$List$concatMap,
@@ -7196,9 +7507,9 @@ var $author$project$JellyfinUI$update = F2(
 						_Utils_update(
 							model,
 							{
-								ap: $elm$core$List$isEmpty(allGenres) ? model.ap : allGenres,
+								aq: $elm$core$List$isEmpty(allGenres) ? model.aq : allGenres,
 								u: tmdbData.u,
-								ac: $elm$core$Maybe$Nothing,
+								ad: $elm$core$Maybe$Nothing,
 								I: false
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -7226,7 +7537,7 @@ var $author$project$JellyfinUI$update = F2(
 							model,
 							{
 								u: _Utils_ap($author$project$MockData$mockCategories, $author$project$MockData$mockLibraryCategories),
-								ac: $elm$core$Maybe$Just(errorMsg),
+								ad: $elm$core$Maybe$Just(errorMsg),
 								I: false
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -7235,7 +7546,7 @@ var $author$project$JellyfinUI$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{ac: $elm$core$Maybe$Nothing, I: true}),
+						{ad: $elm$core$Maybe$Nothing, I: true}),
 					$author$project$TMDBData$fetchTMDBData($author$project$JellyfinUI$TMDBDataReceived));
 			default:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -7244,13 +7555,13 @@ var $author$project$JellyfinUI$update = F2(
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		var jellyfinMsg = msg;
-		var _v1 = A2($author$project$JellyfinUI$update, jellyfinMsg, model.ag);
+		var _v1 = A2($author$project$JellyfinUI$update, jellyfinMsg, model.ah);
 		var updatedJellyfinModel = _v1.a;
 		var jellyfinCmd = _v1.b;
 		return _Utils_Tuple2(
 			_Utils_update(
 				model,
-				{ag: updatedJellyfinModel}),
+				{ah: updatedJellyfinModel}),
 			A2($elm$core$Platform$Cmd$map, $elm$core$Basics$identity, jellyfinCmd));
 	});
 var $elm$json$Json$Encode$string = _Json_wrap;
@@ -7630,7 +7941,7 @@ var $author$project$MediaDetail$viewCastMember = function (cast) {
 				_List_fromArray(
 					[
 						function () {
-						var _v0 = cast.aH;
+						var _v0 = cast.aI;
 						if (!_v0.$) {
 							var url = _v0.a;
 							return A2(
@@ -7638,13 +7949,13 @@ var $author$project$MediaDetail$viewCastMember = function (cast) {
 								_List_fromArray(
 									[
 										$elm$html$Html$Attributes$src(url),
-										$elm$html$Html$Attributes$alt(cast.av),
+										$elm$html$Html$Attributes$alt(cast.aw),
 										$elm$html$Html$Attributes$class('w-full h-full object-cover')
 									]),
 								_List_Nil);
 						} else {
 							return $elm$html$Html$text(
-								A2($elm$core$String$left, 1, cast.av));
+								A2($elm$core$String$left, 1, cast.aw));
 						}
 					}()
 					])),
@@ -7666,7 +7977,7 @@ var $author$project$MediaDetail$viewCastMember = function (cast) {
 								])),
 						_List_fromArray(
 							[
-								$elm$html$Html$text(cast.av)
+								$elm$html$Html$text(cast.aw)
 							])),
 						A2(
 						$elm$html$Html$span,
@@ -7678,7 +7989,7 @@ var $author$project$MediaDetail$viewCastMember = function (cast) {
 								])),
 						_List_fromArray(
 							[
-								$elm$html$Html$text(cast.bf)
+								$elm$html$Html$text(cast.bg)
 							]))
 					]))
 			]));
@@ -7701,7 +8012,7 @@ var $author$project$MediaDetail$viewCrewMember = function (crew) {
 				_List_fromArray(
 					[
 						function () {
-						var _v0 = crew.aH;
+						var _v0 = crew.aI;
 						if (!_v0.$) {
 							var url = _v0.a;
 							return A2(
@@ -7709,13 +8020,13 @@ var $author$project$MediaDetail$viewCrewMember = function (crew) {
 								_List_fromArray(
 									[
 										$elm$html$Html$Attributes$src(url),
-										$elm$html$Html$Attributes$alt(crew.av),
+										$elm$html$Html$Attributes$alt(crew.aw),
 										$elm$html$Html$Attributes$class('w-full h-full object-cover')
 									]),
 								_List_Nil);
 						} else {
 							return $elm$html$Html$text(
-								A2($elm$core$String$left, 1, crew.av));
+								A2($elm$core$String$left, 1, crew.aw));
 						}
 					}()
 					])),
@@ -7737,7 +8048,7 @@ var $author$project$MediaDetail$viewCrewMember = function (crew) {
 								])),
 						_List_fromArray(
 							[
-								$elm$html$Html$text(crew.av)
+								$elm$html$Html$text(crew.aw)
 							])),
 						A2(
 						$elm$html$Html$span,
@@ -7841,7 +8152,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 											[
 												$elm$html$Html$text('Play')
 											])),
-										(detail.aP === 1) ? A2(
+										(detail.aQ === 1) ? A2(
 										$elm$html$Html$button,
 										_Utils_ap(
 											$author$project$Theme$button(5),
@@ -7867,7 +8178,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 										$author$project$Theme$text(0),
 										_List_fromArray(
 											[
-												$elm$html$Html$text(detail.aO)
+												$elm$html$Html$text(detail.aP)
 											])),
 										A2(
 										$elm$html$Html$div,
@@ -7883,7 +8194,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 												_List_fromArray(
 													[
 														$elm$html$Html$text(
-														$elm$core$String$fromInt(detail.aR))
+														$elm$core$String$fromInt(detail.aS))
 													])),
 												A2(
 												$elm$html$Html$span,
@@ -7898,7 +8209,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 												_List_fromArray(
 													[
 														$elm$html$Html$text(
-														$author$project$MediaDetail$mediaTypeToString(detail.aP))
+														$author$project$MediaDetail$mediaTypeToString(detail.aQ))
 													])),
 												A2(
 												$elm$html$Html$span,
@@ -7913,7 +8224,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 												_List_fromArray(
 													[
 														$elm$html$Html$text(
-														$author$project$MediaDetail$formatDuration(detail.aW))
+														$author$project$MediaDetail$formatDuration(detail.aX))
 													])),
 												A2(
 												$elm$html$Html$span,
@@ -7926,7 +8237,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 												_List_fromArray(
 													[
 														$elm$html$Html$text(
-														'★ ' + $elm$core$String$fromFloat(detail.aI))
+														'★ ' + $elm$core$String$fromFloat(detail.aJ))
 													]))
 											])),
 										A2(
@@ -7950,7 +8261,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 													[
 														$elm$html$Html$Attributes$class('flex flex-wrap gap-1 mt-1')
 													]),
-												A2($elm$core$List$map, $author$project$MediaDetail$viewGenre, detail.ar))
+												A2($elm$core$List$map, $author$project$MediaDetail$viewGenre, detail.as))
 											])),
 										A2(
 										$elm$html$Html$div,
@@ -7977,7 +8288,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 														])),
 												_List_fromArray(
 													[
-														$elm$html$Html$text(detail.aC)
+														$elm$html$Html$text(detail.aD)
 													]))
 											])),
 										A2(
@@ -8004,7 +8315,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 												A2(
 													$elm$core$List$take,
 													6,
-													A2($elm$core$List$map, $author$project$MediaDetail$viewCastMember, detail.aS)))
+													A2($elm$core$List$map, $author$project$MediaDetail$viewCastMember, detail.aT)))
 											])),
 										A2(
 										$elm$html$Html$div,
@@ -8027,7 +8338,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 													[
 														$elm$html$Html$Attributes$class('flex flex-wrap gap-1 mt-1')
 													]),
-												A2($elm$core$List$map, $author$project$MediaDetail$viewCrewMember, detail.aD))
+												A2($elm$core$List$map, $author$project$MediaDetail$viewCrewMember, detail.aE))
 											]))
 									]))
 							]))
@@ -8044,7 +8355,7 @@ var $author$project$MediaDetail$view = function (model) {
 				if (model.I) {
 					return $author$project$MediaDetail$viewLoading;
 				} else {
-					var _v0 = model.au;
+					var _v0 = model.av;
 					if (!_v0.$) {
 						var detail = _v0.a;
 						return $author$project$MediaDetail$viewMediaDetail(detail);
@@ -8082,7 +8393,7 @@ var $author$project$JellyfinUI$filterCategories = F2(
 									return A2(
 										$elm$core$String$contains,
 										$elm$core$String$toLower(query),
-										$elm$core$String$toLower(item.aO));
+										$elm$core$String$toLower(item.aP));
 								},
 								category.cu)
 						});
@@ -8091,7 +8402,7 @@ var $author$project$JellyfinUI$filterCategories = F2(
 	});
 var $author$project$JellyfinUI$itemHasGenre = F2(
 	function (genre, item) {
-		return A2($elm$core$List$member, genre, item.ar);
+		return A2($elm$core$List$member, genre, item.as);
 	});
 var $author$project$JellyfinUI$filterCategoriesByGenre = F2(
 	function (maybeGenre, categories) {
@@ -8139,7 +8450,7 @@ var $author$project$JellyfinUI$filterCategoriesByType = F2(
 								cu: A2(
 									$elm$core$List$filter,
 									function (item) {
-										return _Utils_eq(item.aP, mediaType);
+										return _Utils_eq(item.aQ, mediaType);
 									},
 									category.cu)
 							});
@@ -8230,7 +8541,7 @@ var $author$project$JellyfinUI$viewActiveTypeFilter = function (maybeType) {
 	}
 };
 var $author$project$Theme$Heading3 = 2;
-var $author$project$JellyfinUI$NoOp = {$: 21};
+var $author$project$JellyfinUI$NoOp = {$: 22};
 var $author$project$JellyfinUI$ScrollCategory = F2(
 	function (a, b) {
 		return {$: 18, a: a, b: b};
@@ -8242,6 +8553,14 @@ var $elm$core$Basics$ge = _Utils_ge;
 var $author$project$JellyfinUI$SelectMediaItem = function (a) {
 	return {$: 3, a: a};
 };
+var $elm$virtual_dom$VirtualDom$attribute = F2(
+	function (key, value) {
+		return A2(
+			_VirtualDom_attribute,
+			_VirtualDom_noOnOrFormAction(key),
+			_VirtualDom_noJavaScriptOrHtmlUri(value));
+	});
+var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
 var $author$project$JellyfinUI$viewMediaItem = function (item) {
 	return A2(
 		$elm$html$Html$div,
@@ -8262,105 +8581,86 @@ var $author$project$JellyfinUI$viewMediaItem = function (item) {
 				_List_fromArray(
 					[
 						A2(
+						$elm$html$Html$img,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$src(item.aG),
+								$elm$html$Html$Attributes$class('absolute inset-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-110'),
+								$elm$html$Html$Attributes$alt(item.aP),
+								A2($elm$html$Html$Attributes$attribute, 'onerror', 'this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';')
+							]),
+						_List_Nil),
+						A2(
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('absolute inset-0 bg-surface-light flex flex-col justify-end transition-all duration-300 group-hover:brightness-110'),
-								A2($elm$html$Html$Attributes$style, 'background-image', 'linear-gradient(rgba(40, 40, 40, 0.2), rgba(30, 30, 30, 0.8))')
+								$elm$html$Html$Attributes$class('absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-90 text-text-primary p-3 transition-all duration-300')
 							]),
 						_List_fromArray(
 							[
 								A2(
-								$elm$html$Html$div,
+								$elm$html$Html$h3,
+								_Utils_ap(
+									$author$project$Theme$text(2),
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('truncate text-white')
+										])),
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('absolute inset-0 flex items-center justify-center')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('text-2xl text-primary-light opacity-70')
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('🎬')
-											]))
+										$elm$html$Html$text(item.aP)
 									])),
 								A2(
 								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('relative z-10 p-3')
+										$elm$html$Html$Attributes$class('flex justify-between items-center mt-1')
 									]),
 								_List_fromArray(
 									[
 										A2(
-										$elm$html$Html$h3,
+										$elm$html$Html$span,
+										$author$project$Theme$text(4),
+										_List_fromArray(
+											[
+												$elm$html$Html$text(
+												$elm$core$String$fromInt(item.aS))
+											])),
+										A2(
+										$elm$html$Html$span,
 										_Utils_ap(
-											$author$project$Theme$text(2),
+											$author$project$Theme$text(4),
 											_List_fromArray(
 												[
-													$elm$html$Html$Attributes$class('truncate group-hover:text-primary transition-colors duration-300')
+													$elm$html$Html$Attributes$class('text-warning')
 												])),
 										_List_fromArray(
 											[
-												$elm$html$Html$text(item.aO)
-											])),
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('flex justify-between items-center mt-1')
-											]),
-										_List_fromArray(
-											[
-												A2(
-												$elm$html$Html$span,
-												$author$project$Theme$text(4),
-												_List_fromArray(
-													[
-														$elm$html$Html$text(
-														$elm$core$String$fromInt(item.aR))
-													])),
-												A2(
-												$elm$html$Html$span,
-												_Utils_ap(
-													$author$project$Theme$text(4),
-													_List_fromArray(
-														[
-															$elm$html$Html$Attributes$class('text-warning')
-														])),
-												_List_fromArray(
-													[
-														$elm$html$Html$text(
-														'★ ' + $elm$core$String$fromFloat(item.aI))
-													]))
-											])),
-										($elm$core$List$length(item.ar) > 0) ? A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('flex flex-wrap gap-1 mt-1')
-											]),
-										A2(
-											$elm$core$List$map,
-											function (genre) {
-												return A2(
-													$elm$html$Html$span,
-													_List_fromArray(
-														[
-															$elm$html$Html$Attributes$class('bg-background-light px-1 py-0.5 rounded text-text-secondary text-xs')
-														]),
-													_List_fromArray(
-														[
-															$elm$html$Html$text(genre)
-														]));
-											},
-											A2($elm$core$List$take, 2, item.ar))) : $elm$html$Html$text('')
-									]))
+												$elm$html$Html$text(
+												'★ ' + $elm$core$String$fromFloat(item.aJ))
+											]))
+									])),
+								($elm$core$List$length(item.as) > 0) ? A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('flex flex-wrap gap-1 mt-1')
+									]),
+								A2(
+									$elm$core$List$map,
+									function (genre) {
+										return A2(
+											$elm$html$Html$span,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('bg-background-light bg-opacity-50 px-1 py-0.5 rounded text-white text-xs')
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text(genre)
+												]));
+									},
+									A2($elm$core$List$take, 2, item.as))) : $elm$html$Html$text('')
 							]))
 					]))
 			]));
@@ -8370,13 +8670,13 @@ var $author$project$JellyfinUI$viewCategory = F2(
 		if ($elm$core$List$isEmpty(category.cu)) {
 			return $elm$html$Html$text('');
 		} else {
-			var visibleItems = 4.0;
+			var visibleItems = (model._ > 1600) ? 6.0 : ((model._ > 1200) ? 5.0 : ((model._ > 900) ? 4.0 : ((model._ > 600) ? 3.0 : 2.0)));
 			var itemWidth = 280.0;
 			var itemCount = $elm$core$List$length(category.cu);
 			var currentTranslation = A2(
 				$elm$core$Maybe$withDefault,
 				0,
-				A2($elm$core$Dict$get, category.D, model.aa));
+				A2($elm$core$Dict$get, category.D, model.ab));
 			var isAtStart = currentTranslation >= 0.0;
 			var leftButtonStyle = isAtStart ? _Utils_ap(
 				$author$project$Theme$button(5),
@@ -8436,7 +8736,7 @@ var $author$project$JellyfinUI$viewCategory = F2(
 										])),
 								_List_fromArray(
 									[
-										$elm$html$Html$text(category.av)
+										$elm$html$Html$text(category.aw)
 									])),
 								A2(
 								$elm$html$Html$div,
@@ -8480,7 +8780,7 @@ var $author$project$JellyfinUI$viewCategory = F2(
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('relative overflow-visible px-1 py-1')
+								$elm$html$Html$Attributes$class('relative overflow-hidden')
 							]),
 						_List_fromArray(
 							[
@@ -8488,12 +8788,14 @@ var $author$project$JellyfinUI$viewCategory = F2(
 								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('flex'),
+										$elm$html$Html$Attributes$class('flex space-x-4 hide-scrollbar'),
 										A2(
 										$elm$html$Html$Attributes$style,
 										'transform',
 										'translateX(' + ($elm$core$String$fromFloat(currentTranslation) + 'px)')),
-										A2($elm$html$Html$Attributes$style, 'transition', 'transform 0.4s ease')
+										A2($elm$html$Html$Attributes$style, 'transition', 'transform 0.4s ease'),
+										A2($elm$html$Html$Attributes$style, 'width', '100%'),
+										A2($elm$html$Html$Attributes$style, 'overscroll-behavior-x', 'contain')
 									]),
 								$elm$core$List$isEmpty(category.cu) ? _List_fromArray(
 									[
@@ -8520,7 +8822,8 @@ var $author$project$JellyfinUI$viewCategory = F2(
 											$elm$html$Html$div,
 											_List_fromArray(
 												[
-													$elm$html$Html$Attributes$class('flex-shrink-0 w-56 md:w-64 lg:w-72 px-2 py-2')
+													$elm$html$Html$Attributes$class('flex-shrink-0 w-56 md:w-64 lg:w-72'),
+													A2($elm$html$Html$Attributes$style, 'min-width', '200px')
 												]),
 											_List_fromArray(
 												[
@@ -8625,7 +8928,7 @@ var $author$project$JellyfinUI$viewMediaItemLarge = function (item) {
 								])),
 						_List_fromArray(
 							[
-								$elm$html$Html$text(item.aO)
+								$elm$html$Html$text(item.aP)
 							])),
 						A2(
 						$elm$html$Html$div,
@@ -8649,7 +8952,7 @@ var $author$project$JellyfinUI$viewMediaItemLarge = function (item) {
 										_List_fromArray(
 											[
 												$elm$html$Html$text(
-												$author$project$JellyfinUI$mediaTypeToString(item.aP))
+												$author$project$JellyfinUI$mediaTypeToString(item.aQ))
 											])),
 										A2(
 										$elm$html$Html$span,
@@ -8657,7 +8960,7 @@ var $author$project$JellyfinUI$viewMediaItemLarge = function (item) {
 										_List_fromArray(
 											[
 												$elm$html$Html$text(
-												'(' + ($elm$core$String$fromInt(item.aR) + ')'))
+												'(' + ($elm$core$String$fromInt(item.aS) + ')'))
 											]))
 									])),
 								A2(
@@ -8679,7 +8982,7 @@ var $author$project$JellyfinUI$viewMediaItemLarge = function (item) {
 										_List_fromArray(
 											[
 												$elm$html$Html$text(
-												'★ ' + $elm$core$String$fromFloat(item.aI))
+												'★ ' + $elm$core$String$fromFloat(item.aJ))
 											]))
 									]))
 							])),
@@ -8694,7 +8997,7 @@ var $author$project$JellyfinUI$viewMediaItemLarge = function (item) {
 						_List_fromArray(
 							[
 								$elm$html$Html$text(
-								A2($elm$core$Maybe$withDefault, 'No description available.', item.aC))
+								A2($elm$core$Maybe$withDefault, 'No description available.', item.aD))
 							]))
 					]))
 			]));
@@ -8727,7 +9030,7 @@ var $author$project$JellyfinUI$viewContent = function (model) {
 						$author$project$JellyfinUI$viewActiveTypeFilter(model.B)
 					])) : $elm$html$Html$text(''),
 				function () {
-				var _v0 = model.ax;
+				var _v0 = model.ay;
 				if (!_v0.$) {
 					var categoryId = _v0.a;
 					var _v1 = A2(
@@ -8739,7 +9042,7 @@ var $author$project$JellyfinUI$viewContent = function (model) {
 							A2(
 								$author$project$JellyfinUI$filterCategoriesByGenre,
 								model.A,
-								A2($author$project$JellyfinUI$filterCategories, model.ai, model.u))));
+								A2($author$project$JellyfinUI$filterCategories, model.aj, model.u))));
 					if (!_v1.$) {
 						var category = _v1.a;
 						return A2(
@@ -8778,7 +9081,7 @@ var $author$project$JellyfinUI$viewContent = function (model) {
 													])),
 											_List_fromArray(
 												[
-													$elm$html$Html$text(category.av)
+													$elm$html$Html$text(category.aw)
 												]))
 										])),
 									A2(
@@ -8810,7 +9113,7 @@ var $author$project$JellyfinUI$viewContent = function (model) {
 							$author$project$JellyfinUI$viewCategory(model),
 							A2(
 								$author$project$JellyfinUI$filterCategories,
-								model.ai,
+								model.aj,
 								A2(
 									$author$project$JellyfinUI$filterCategoriesByType,
 									model.B,
@@ -9008,7 +9311,7 @@ var $author$project$JellyfinUI$viewGenreFilter = function (model) {
 								$elm$html$Html$text('×')
 							])) : $elm$html$Html$text('')
 					])),
-				model.H ? $author$project$JellyfinUI$viewGenreDropdown(model.ap) : $elm$html$Html$text('')
+				model.H ? $author$project$JellyfinUI$viewGenreDropdown(model.aq) : $elm$html$Html$text('')
 			]));
 };
 var $author$project$JellyfinUI$ToggleTypeFilter = {$: 15};
@@ -9318,7 +9621,7 @@ var $author$project$JellyfinUI$viewHeader = function (model) {
 												[
 													$elm$html$Html$Attributes$class('w-full bg-background border border-background-light rounded py-1 px-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50'),
 													$elm$html$Html$Attributes$placeholder('Search media...'),
-													$elm$html$Html$Attributes$value(model.ai),
+													$elm$html$Html$Attributes$value(model.aj),
 													$elm$html$Html$Events$onInput($author$project$JellyfinUI$SearchInput)
 												]),
 											$author$project$Theme$text(3)),
@@ -9381,7 +9684,7 @@ var $author$project$JellyfinUI$view = function (model) {
 						if (model.I) {
 							return $author$project$JellyfinUI$viewLoading;
 						} else {
-							var _v0 = model.ac;
+							var _v0 = model.ad;
 							if (!_v0.$) {
 								var error = _v0.a;
 								return $author$project$JellyfinUI$viewError(error);
@@ -9394,7 +9697,7 @@ var $author$project$JellyfinUI$view = function (model) {
 				A2(
 				$elm$html$Html$map,
 				$author$project$JellyfinUI$MediaDetailMsg,
-				$author$project$MediaDetail$view(model.ah))
+				$author$project$MediaDetail$view(model.ai))
 			]));
 };
 var $author$project$Main$view = function (model) {
@@ -9409,7 +9712,7 @@ var $author$project$Main$view = function (model) {
 				A2(
 				$elm$html$Html$map,
 				$elm$core$Basics$identity,
-				$author$project$JellyfinUI$view(model.ag))
+				$author$project$JellyfinUI$view(model.ah))
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
