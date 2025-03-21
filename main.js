@@ -8548,6 +8548,9 @@ var $author$project$JellyfinUI$SelectCategory = function (a) {
 	return {$: 1, a: a};
 };
 var $elm$core$Basics$ge = _Utils_ge;
+var $author$project$JellyfinUI$PlayMedia = function (a) {
+	return {$: 4, a: a};
+};
 var $author$project$JellyfinUI$SelectMediaItem = function (a) {
 	return {$: 3, a: a};
 };
@@ -8600,6 +8603,40 @@ var $author$project$JellyfinUI$viewMediaItem = function (item) {
 						_List_fromArray(
 							[
 								$elm$html$Html$text('🎬')
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('absolute inset-0 flex items-center justify-center z-30')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$button,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110 bg-transparent relative z-40'),
+										$elm$html$Html$Events$onClick(
+										$author$project$JellyfinUI$PlayMedia(item.E)),
+										A2($elm$html$Html$Attributes$attribute, 'data-testid', 'play-button')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$span,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('text-2xl font-bold text-white'),
+												A2($elm$html$Html$Attributes$style, 'filter', 'drop-shadow(0 0 10px rgba(127, 168, 204, 1)) drop-shadow(0 0 20px rgba(95, 135, 175, 0.9)) drop-shadow(0 0 30px rgba(95, 135, 175, 0.7))'),
+												A2($elm$html$Html$Attributes$style, 'position', 'relative'),
+												A2($elm$html$Html$Attributes$style, 'z-index', '50')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('▶')
+											]))
+									]))
 							])),
 						A2(
 						$elm$html$Html$div,
@@ -8864,9 +8901,6 @@ var $author$project$JellyfinUI$viewAllCategories = function (model) {
 			filteredCategories));
 };
 var $author$project$JellyfinUI$ClearCategory = {$: 2};
-var $author$project$JellyfinUI$PlayMedia = function (a) {
-	return {$: 4, a: a};
-};
 var $author$project$JellyfinUI$viewMediaItemLarge = function (item) {
 	return A2(
 		$elm$html$Html$div,
