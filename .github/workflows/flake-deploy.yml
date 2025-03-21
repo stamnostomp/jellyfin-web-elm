@@ -81,6 +81,16 @@ jobs:
             fi
           fi
 
+          # Ensure data directory exists and is copied
+          if [ -d "public/data" ]; then
+            echo "Copying data directory..."
+            mkdir -p deploy/data
+            cp -r public/data/* deploy/data/
+          elif [ -d "data" ]; then
+            echo "Copying data directory from root..."
+            mkdir -p deploy/data
+            cp -r data/* deploy/data/
+          fi
           # Check if the public folder has the files from any of the build methods
           if [ -d "public" ] && [ -f "public/main.js" ] && [ -f "public/output.css" ]; then
             echo "Found files in public directory, copying to deploy directory..."
