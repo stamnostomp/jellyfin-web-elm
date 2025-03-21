@@ -1,5 +1,5 @@
 {
-  description = "Elm application with Tailwind CSS using Nix flakes";
+  description = "Elm application with Tailwind CSS using Nix flakes with Haskell TMDB fetcher";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -17,6 +17,81 @@
         outputJs = "${outputDir}/main.js";
         outputCss = "${outputDir}/output.css";
         fontsDir = "${outputDir}/fonts";
+        dataDir = "${outputDir}/data";
+
+        # Helper function to build the Haskell TMDB fetcher
+        buildTmdbFetcher = pkgs.writeShellScriptBin "build-tmdb-fetcher" ''
+          set -e
+          cd tmdb-fetcher
+          ${pkgs.cabal-install}/bin/cabal update
+          ${pkgs.cabal-install}/bin/cabal build
+          echo "TMDB fetcher built successfully!"
+        '';
+
+        # Helper function to run the Haskell TMDB fetcher
+        runTmdbFetcher = pkgs.writeShellScriptBin "run-tmdb-fetcher" ''
+          set -e
+          mkdir -p ${dataDir}
+
+          # Check if TMDB_API_KEY is set
+          if [ -z "$TMDB_API_KEY" ]; then
+            echo "Warning: TMDB_API_KEY environment variable is not set."
+            echo "Using sample data instead of fetching from TMDB API."
+
+            # Create sample data if API key is not available
+            cat > ${dataDir}/movies.json << EOF
+          {
+            "categories": [
+              {
+                "id": "continue-watching",
+                "name": "Continue Watching",
+                "items": [
+                  {
+                    "id": "1",
+                    "title": "Sample Movie 1",
+                    "type_": "Movie",
+                    "imageUrl": "",
+                    "year": 2023,
+                    "rating": 8.5,
+                    "description": "This is a sample movie. Please set TMDB_API_KEY to fetch real data."
+                  },
+                  {
+                    "id": "2",
+                    "title": "Sample TV Show",
+                    "type_": "TVShow",
+                    "imageUrl": "",
+                    "year": 2024,
+                    "rating": 9.0,
+                    "description": "This is a sample TV show. Please set TMDB_API_KEY to fetch real data."
+                  }
+                ]
+              },
+              {
+                "id": "movie-library",
+                "name": "Movies",
+                "items": [
+                  {
+                    "id": "3",
+                    "title": "Another Sample Movie",
+                    "type_": "Movie",
+                    "imageUrl": "",
+                    "year": 2022,
+                    "rating": 7.2,
+                    "description": "This is another sample movie. Please set TMDB_API_KEY to fetch real data."
+                  }
+                ]
+              }
+            ]
+          }
+          EOF
+          else
+            echo "Fetching movie data from TMDB API..."
+            cd tmdb-fetcher
+            ${pkgs.cabal-install}/bin/cabal run
+          fi
+
+          echo "Movie data ready at ${dataDir}/movies.json"
+        '';
 
         # Helper function to build the Elm application
         buildElmApp = pkgs.writeShellScriptBin "build-elm" ''
@@ -84,6 +159,7 @@
         # Helper function to build the entire application
         buildAll = pkgs.writeShellScriptBin "build-all" ''
           set -e
+          ${runTmdbFetcher}/bin/run-tmdb-fetcher
           ${buildElmApp}/bin/build-elm
           ${buildTailwind}/bin/build-tailwind
           ${installFonts}/bin/install-fonts
@@ -97,7 +173,7 @@
           ${pkgs.python3}/bin/python -m http.server 8000
         '';
 
-        # NEW: Helper function to run elm-live for live reloading
+        # Helper function to run elm-live for live reloading
         elmLive = pkgs.writeShellScriptBin "elm-live" ''
           set -e
           mkdir -p ${outputDir}
@@ -105,7 +181,7 @@
           ${pkgs.elmPackages.elm-live}/bin/elm-live ${srcDir}/Main.elm --port=8000 --dir=${outputDir} --start-page=index.html -- --output=${outputJs}
         '';
 
-        # NEW: Helper function to run both Elm live reload and Tailwind watch concurrently
+        # Helper function to run both Elm live reload and Tailwind watch concurrently
         devMode = pkgs.writeShellScriptBin "dev-mode" ''
           set -e
           echo "Starting development environment with live reloading..."
@@ -114,6 +190,9 @@
 
           # Ensure the output directory exists
           mkdir -p ${outputDir}
+
+          # Fetch movie data first
+          ${runTmdbFetcher}/bin/run-tmdb-fetcher
 
           # Install fonts if needed
           if [ ! -d "${fontsDir}" ]; then
@@ -173,9 +252,56 @@
               pkgs.elmPackages.elm
               pkgs.nodePackages.tailwindcss
               pkgs.ibm-plex
+              pkgs.cabal-install
+              pkgs.ghc
             ];
             buildPhase = ''
               mkdir -p ${outputDir}
+
+              # Fetch movie data
+              mkdir -p ${dataDir}
+              export TMDB_API_KEY=''${TMDB_API_KEY:-""}
+
+              if [ -d "tmdb-fetcher" ] && [ -n "$TMDB_API_KEY" ]; then
+                echo "Fetching movie data using Haskell TMDB fetcher..."
+                cd tmdb-fetcher
+                ${pkgs.cabal-install}/bin/cabal update
+                ${pkgs.cabal-install}/bin/cabal build
+                ${pkgs.cabal-install}/bin/cabal run
+                cd ..
+              else
+                echo "Creating sample movie data..."
+                cat > ${dataDir}/movies.json << EOF
+              {
+                "categories": [
+                  {
+                    "id": "continue-watching",
+                    "name": "Continue Watching",
+                    "items": [
+                      {
+                        "id": "1",
+                        "title": "Sample Movie 1",
+                        "type_": "Movie",
+                        "imageUrl": "",
+                        "year": 2023,
+                        "rating": 8.5,
+                        "description": "This is a sample movie. Please set TMDB_API_KEY to fetch real data."
+                      },
+                      {
+                        "id": "2",
+                        "title": "Sample TV Show",
+                        "type_": "TVShow",
+                        "imageUrl": "",
+                        "year": 2024,
+                        "rating": 9.0,
+                        "description": "This is a sample TV show. Please set TMDB_API_KEY to fetch real data."
+                      }
+                    ]
+                  }
+                ]
+              }
+              EOF
+              fi
 
               # Build Elm
               ${pkgs.elmPackages.elm}/bin/elm make ${srcDir}/Main.elm --output=${outputJs} --optimize
@@ -251,11 +377,17 @@
             elmPackages.elm-format
             elmPackages.elm-test
             elmPackages.elm-review
-            elmPackages.elm-live  # NEW: Added elm-live package
+            elmPackages.elm-live
             nodePackages.tailwindcss
             python3  # For the simple HTTP server
             nodejs
             ibm-plex
+            cabal-install
+            ghc
+            haskellPackages.cabal-fmt
+            haskellPackages.hlint
+            buildTmdbFetcher
+            runTmdbFetcher
             buildElmApp
             buildTailwind
             watchTailwind
@@ -263,24 +395,29 @@
             installFonts
             buildAll
             devServer
-            elmLive    # NEW: Added elm-live command
-            devMode    # NEW: Added combined dev mode command
+            elmLive
+            devMode
           ];
 
           shellHook = ''
-            echo "Elm with Tailwind CSS development environment ready!"
+            echo "Elm with Tailwind CSS and Haskell TMDB fetcher development environment ready!"
             echo ""
             echo "Available commands:"
-            echo "  - setup-tailwind : Set up Tailwind CSS configuration files"
-            echo "  - build-elm      : Build the Elm application"
-            echo "  - build-tailwind : Build Tailwind CSS"
-            echo "  - install-fonts  : Install IBM Plex fonts"
-            echo "  - watch-tailwind : Watch for CSS changes and rebuild"
-            echo "  - build-all      : Build both Elm and Tailwind and install fonts"
-            echo "  - dev-server     : Start a simple development server on port 8000"
-            echo "  - elm-live       : Start elm-live with hot reloading on port 8000"
-            echo "  - dev-mode       : Start both elm-live and Tailwind watcher simultaneously"
-            echo "  - elm reactor    : Start Elm's built-in development server"
+            echo "  - setup-tailwind     : Set up Tailwind CSS configuration files"
+            echo "  - build-elm          : Build the Elm application"
+            echo "  - build-tailwind     : Build Tailwind CSS"
+            echo "  - install-fonts      : Install IBM Plex fonts"
+            echo "  - watch-tailwind     : Watch for CSS changes and rebuild"
+            echo "  - build-tmdb-fetcher : Build the Haskell TMDB fetcher"
+            echo "  - run-tmdb-fetcher   : Run the Haskell TMDB fetcher"
+            echo "  - build-all          : Build everything (fetches data, builds Elm and Tailwind, installs fonts)"
+            echo "  - dev-server         : Start a simple development server on port 8000"
+            echo "  - elm-live           : Start elm-live with hot reloading on port 8000"
+            echo "  - dev-mode           : Start both elm-live and Tailwind watcher simultaneously"
+            echo "  - elm reactor        : Start Elm's built-in development server"
+            echo ""
+            echo "For TMDB fetcher, set the API key:"
+            echo "  export TMDB_API_KEY=your_api_key_here"
             echo ""
             echo "First time setup? Run: setup-tailwind && build-all"
             echo "For development with live reloading, run: dev-mode"
@@ -313,14 +450,18 @@
             type = "app";
             program = "${installFonts}/bin/install-fonts";
           };
-          live = {  # NEW: Added elm-live as an app
+          live = {
             type = "app";
             program = "${elmLive}/bin/elm-live";
           };
-          dev = {   # NEW: Added combined dev mode as an app
+          dev = {
             type = "app";
             program = "${devMode}/bin/dev-mode";
           };
+          fetch-tmdb = {
+            type = "app";
+            program = "${runTmdbFetcher}/bin/run-tmdb-fetcher";
+          },
         };
       }
     );

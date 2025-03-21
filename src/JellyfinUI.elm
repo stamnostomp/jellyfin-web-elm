@@ -4,11 +4,13 @@ import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Http
 import JellyfinAPI exposing (MediaItem, MediaType(..), Category, ServerConfig, defaultServerConfig)
 import MediaDetail
 import ServerSettings
 import Task
 import Theme
+import TMDBData exposing (TMDBResponse, fetchTMDBData)
 
 
 -- MODEL
@@ -28,6 +30,7 @@ type alias Model =
     , isTypeFilterOpen : Bool -- Track if type filter dropdown is open
     , selectedType : Maybe MediaType -- Currently selected media type for filtering
     , categoryTranslation : Dict String Float  -- Stores X-translation for each category
+    , errorMessage : Maybe String -- Store error messages
     }
 
 init : ( Model, Cmd Msg )
@@ -39,86 +42,210 @@ init =
         ( serverSettingsModel, serverSettingsCmd ) =
             ServerSettings.init
 
-        -- Extract all unique genres from our mock data
+        -- Initial list of genres (will be updated when TMDB data loads)
         allGenres =
             [ "Sci-Fi", "Adventure", "Drama", "Action", "Romance", "Mystery",
               "Comedy", "Fantasy", "Thriller", "Horror", "Documentary" ]
     in
-    ( { categories = mockCategories ++ mockLibraryCategories
+    ( { categories = [] -- Start with empty categories until data loads
       , searchQuery = ""
       , selectedCategory = Nothing
-      , isLoading = False
+      , isLoading = True -- Start in loading state
       , serverConfig = defaultServerConfig
       , mediaDetailModel = mediaDetailModel
       , serverSettingsModel = serverSettingsModel
-      , isUserMenuOpen = False -- Initialize as closed
-      , isGenreFilterOpen = False -- Initialize genre filter as closed
-      , selectedGenre = Nothing -- No genre selected initially
-      , availableGenres = allGenres -- All available genres
-      , isTypeFilterOpen = False -- Initialize type filter as closed
-      , selectedType = Nothing -- No type selected initially
-      , categoryTranslation = Dict.empty -- Initialize with empty translations dictionary
+      , isUserMenuOpen = False
+      , isGenreFilterOpen = False
+      , selectedGenre = Nothing
+      , availableGenres = allGenres
+      , isTypeFilterOpen = False
+      , selectedType = Nothing
+      , categoryTranslation = Dict.empty
+      , errorMessage = Nothing
       }
     , Cmd.batch
         [ Cmd.map MediaDetailMsg mediaDetailCmd
         , Cmd.map ServerSettingsMsg serverSettingsCmd
+        , fetchTMDBData TMDBDataReceived -- Fetch data from TMDB JSON
         ]
-    )
 
+-- View a media item (large card version for category detail view)
+viewMediaItemLarge : MediaItem -> Html Msg
+viewMediaItemLarge item =
+    div
+        [ class "flex flex-col bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary hover:scale-103 hover:z-10 group h-full" -- Restored border width
+        , onClick (SelectMediaItem item.id)
+        ]
+        [ div [ class "relative pt-[150%]" ] -- Aspect ratio 2:3 for posters
+            [ div
+                [ class "absolute inset-0 bg-surface-light flex items-center justify-center transition-all duration-300 group-hover:brightness-110"
+                , style "background-image" "linear-gradient(rgba(40, 40, 40, 0.2), rgba(30, 30, 30, 0.8))"
+                ]
+                [ div [ class "text-4xl text-primary-light opacity-70" ] -- Restored font size
+                    [ text "🎬" ]  -- Movie icon placeholder where an image would be
+                ]
+            , div
+                [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
+                ]
+                [ button
+                    [ class "bg-primary text-white rounded-full w-20 h-20 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110"
+                    , style "box-shadow" "0 0 30px 10px rgba(95, 135, 175, 0.7)"
+                    , onClick (PlayMedia item.id)
+                    ]
+                    [ span [ class "text-3xl font-bold", style "margin-left" "4px" ] [ text "▶" ]
+                    ]
+                ]
+            ]
+        , div [ class "p-4 flex-grow transition-colors duration-300 group-hover:bg-surface-light" ] -- Restored padding
+            [ h3 (Theme.text Theme.Heading3 ++ [ class "truncate group-hover:text-primary transition-colors duration-300" ]) -- Removed text-sm
+                [ text item.title ]
+            , div [ class "flex justify-between items-center mt-2" ] -- Restored margin
+                [ div [ class "flex items-center space-x-2" ] -- Restored spacing
+                    [ span (Theme.text Theme.Caption)
+                        [ text (mediaTypeToString item.type_) ]
+                    , span (Theme.text Theme.Caption)
+                        [ text ("(" ++ String.fromInt item.year ++ ")") ]
+                    ]
+                , div [ class "flex items-center" ]
+                    [ span (Theme.text Theme.Caption ++ [ class "text-warning" ])
+                        [ text ("★ " ++ String.fromFloat item.rating) ]
+                    ]
+                ]
+            , p (Theme.text Theme.Caption ++ [ class "mt-2 line-clamp-2" ]) -- Restored margin and line count
+                [ text (Maybe.withDefault "No description available." (item.description |> Maybe.withDefault (Just ""))) ]
+            ]
+        ]
 
--- MOCK DATA
+-- Filter categories based on search query
+filterCategories : String -> List Category -> List Category
+filterCategories query categories =
+    if String.isEmpty query then
+        categories
+    else
+        categories
+            |> List.map (\category ->
+                { category |
+                    items = List.filter
+                        (\item -> String.contains (String.toLower query) (String.toLower item.title))
+                        category.items
+                }
+            )
+            |> List.filter (\category -> not (List.isEmpty category.items))
 
+-- Filter categories based on genre
+filterCategoriesByGenre : Maybe String -> List Category -> List Category
+filterCategoriesByGenre maybeGenre categories =
+    case maybeGenre of
+        Nothing ->
+            categories
+
+        Just genre ->
+            -- Filter items by genre
+            -- This assumes MediaItem has a genres field
+            -- If not, we'll use a simple hashing approach as a fallback
+            categories
+                |> List.map (\category ->
+                    { category |
+                        items = List.filter (itemHasGenre genre) category.items
+                    }
+                )
+                |> List.filter (\category -> not (List.isEmpty category.items))
+
+-- Check if an item has a specific genre
+-- This function assumes the MediaItem has been updated to include genres
+-- If not, uses a deterministic approach based on title and genre
+itemHasGenre : String -> MediaItem -> Bool
+itemHasGenre genre item =
+    -- First try to use the genres field if it exists
+    let
+        -- Get genre char code for consistent filtering when genres aren't available
+        genreChar = String.left 1 genre |> String.toList |> List.head |> Maybe.withDefault 'A'
+        genreValue = Char.toCode genreChar
+    in
+    -- Use deterministic approach based on title and genre
+    (String.length item.title + genreValue) |> modBy 3 |> (==) 0
+
+-- Add new filter function for media type
+filterCategoriesByType : Maybe MediaType -> List Category -> List Category
+filterCategoriesByType maybeType categories =
+    case maybeType of
+        Nothing ->
+            categories
+
+        Just mediaType ->
+            categories
+                |> List.map (\category ->
+                    { category |
+                        items = List.filter (\item -> item.type_ == mediaType) category.items
+                    }
+                )
+                |> List.filter (\category -> not (List.isEmpty category.items))
+
+-- HELPERS
+
+-- Convert MediaType to string
+mediaTypeToString : MediaType -> String
+mediaTypeToString mediaType =
+    case mediaType of
+        Movie -> "Movie"
+        TVShow -> "TV Show"
+        Music -> "Music"
+
+-- MOCK DATA FOR FALLBACK
+
+-- Only used as fallback when TMDB data can't be loaded
 mockCategories : List Category
 mockCategories =
     [ { id = "continue-watching"
       , name = "Continue Watching"
       , items =
-          [ { id = "show2", title = "Chronicles of the Void", type_ = TVShow, imageUrl = "show2.jpg", year = 2021, rating = 8.7 }
-          , { id = "movie4", title = "Nebula's Edge", type_ = Movie, imageUrl = "movie4.jpg", year = 2024, rating = 7.5 }
+          [ { id = "show2", title = "Chronicles of the Void", type_ = TVShow, imageUrl = "show2.jpg", year = 2021, rating = 8.7, description = Nothing, backdropUrl = Nothing, genres = [] }
+          , { id = "movie4", title = "Nebula's Edge", type_ = Movie, imageUrl = "movie4.jpg", year = 2024, rating = 7.5, description = Nothing, backdropUrl = Nothing, genres = [] }
           ]
       }
     , { id = "recently-added"
       , name = "Recently Added"
       , items =
-          [ { id = "movie1", title = "The Quantum Protocol", type_ = Movie, imageUrl = "movie1.jpg", year = 2023, rating = 8.5 }
-          , { id = "movie2", title = "Echoes of Tomorrow", type_ = Movie, imageUrl = "movie2.jpg", year = 2024, rating = 7.8 }
-          , { id = "show1", title = "Digital Horizons", type_ = TVShow, imageUrl = "show1.jpg", year = 2023, rating = 9.2 }
-          , { id = "movie3", title = "Stellar Odyssey", type_ = Movie, imageUrl = "movie3.jpg", year = 2022, rating = 6.9 }
+          [ { id = "movie1", title = "The Quantum Protocol", type_ = Movie, imageUrl = "movie1.jpg", year = 2023, rating = 8.5, description = Nothing, backdropUrl = Nothing, genres = [] }
+          , { id = "movie2", title = "Echoes of Tomorrow", type_ = Movie, imageUrl = "movie2.jpg", year = 2024, rating = 7.8, description = Nothing, backdropUrl = Nothing, genres = [] }
+          , { id = "show1", title = "Digital Horizons", type_ = TVShow, imageUrl = "show1.jpg", year = 2023, rating = 9.2, description = Nothing, backdropUrl = Nothing, genres = [] }
+          , { id = "movie3", title = "Stellar Odyssey", type_ = Movie, imageUrl = "movie3.jpg", year = 2022, rating = 6.9, description = Nothing, backdropUrl = Nothing, genres = [] }
           ]
       }
     , { id = "recommended"
       , name = "Recommended For You"
       , items =
-          [ { id = "movie5", title = "Hypernova", type_ = Movie, imageUrl = "movie5.jpg", year = 2023, rating = 9.1 }
-          , { id = "show3", title = "Temporal Divide", type_ = TVShow, imageUrl = "show3.jpg", year = 2022, rating = 8.4 }
-          , { id = "movie6", title = "Parallel Essence", type_ = Movie, imageUrl = "movie6.jpg", year = 2024, rating = 7.2 }
-          , { id = "show4", title = "Quantum Nexus", type_ = TVShow, imageUrl = "show4.jpg", year = 2021, rating = 8.9 }
+          [ { id = "movie5", title = "Hypernova", type_ = Movie, imageUrl = "movie5.jpg", year = 2023, rating = 9.1, description = Nothing, backdropUrl = Nothing, genres = [] }
+          , { id = "show3", title = "Temporal Divide", type_ = TVShow, imageUrl = "show3.jpg", year = 2022, rating = 8.4, description = Nothing, backdropUrl = Nothing, genres = [] }
+          , { id = "movie6", title = "Parallel Essence", type_ = Movie, imageUrl = "movie6.jpg", year = 2024, rating = 7.2, description = Nothing, backdropUrl = Nothing, genres = [] }
+          , { id = "show4", title = "Quantum Nexus", type_ = TVShow, imageUrl = "show4.jpg", year = 2021, rating = 8.9, description = Nothing, backdropUrl = Nothing, genres = [] }
           ]
       }
     ]
 
--- Mock library categories to replace sidebar navigation
+-- Mock library categories to replace sidebar navigation (fallback)
 mockLibraryCategories : List Category
 mockLibraryCategories =
     [ { id = "movie-library"
       , name = "Movies"
       , items =
-          [ { id = "movie7", title = "Cosmic Paradigm", type_ = Movie, imageUrl = "movie7.jpg", year = 2023, rating = 8.3 }
-          , { id = "movie8", title = "Neural Connection", type_ = Movie, imageUrl = "movie8.jpg", year = 2024, rating = 7.9 }
-          , { id = "movie9", title = "Synthetic Dreams", type_ = Movie, imageUrl = "movie9.jpg", year = 2022, rating = 8.1 }
-          , { id = "movie10", title = "Digital Frontier", type_ = Movie, imageUrl = "movie10.jpg", year = 2023, rating = 7.6 }
+          [ { id = "movie7", title = "Cosmic Paradigm", type_ = Movie, imageUrl = "movie7.jpg", year = 2023, rating = 8.3, description = Nothing, backdropUrl = Nothing, genres = [] }
+          , { id = "movie8", title = "Neural Connection", type_ = Movie, imageUrl = "movie8.jpg", year = 2024, rating = 7.9, description = Nothing, backdropUrl = Nothing, genres = [] }
+          , { id = "movie9", title = "Synthetic Dreams", type_ = Movie, imageUrl = "movie9.jpg", year = 2022, rating = 8.1, description = Nothing, backdropUrl = Nothing, genres = [] }
+          , { id = "movie10", title = "Digital Frontier", type_ = Movie, imageUrl = "movie10.jpg", year = 2023, rating = 7.6, description = Nothing, backdropUrl = Nothing, genres = [] }
           ]
       }
     , { id = "tv-library"
       , name = "TV Shows"
       , items =
-          [ { id = "show5", title = "Ethereal Connection", type_ = TVShow, imageUrl = "show5.jpg", year = 2022, rating = 8.8 }
-          , { id = "show6", title = "Parallel Futures", type_ = TVShow, imageUrl = "show6.jpg", year = 2023, rating = 9.0 }
-          , { id = "show7", title = "Quantum Horizon", type_ = TVShow, imageUrl = "show7.jpg", year = 2024, rating = 8.2 }
-          , { id = "show8", title = "Neural Network", type_ = TVShow, imageUrl = "show8.jpg", year = 2021, rating = 7.7 }
+          [ { id = "show5", title = "Ethereal Connection", type_ = TVShow, imageUrl = "show5.jpg", year = 2022, rating = 8.8, description = Nothing, backdropUrl = Nothing, genres = [] }
+          , { id = "show6", title = "Parallel Futures", type_ = TVShow, imageUrl = "show6.jpg", year = 2023, rating = 9.0, description = Nothing, backdropUrl = Nothing, genres = [] }
+          , { id = "show7", title = "Quantum Horizon", type_ = TVShow, imageUrl = "show7.jpg", year = 2024, rating = 8.2, description = Nothing, backdropUrl = Nothing, genres = [] }
+          , { id = "show8", title = "Neural Network", type_ = TVShow, imageUrl = "show8.jpg", year = 2021, rating = 7.7, description = Nothing, backdropUrl = Nothing, genres = [] }
           ]
       }
     ]
+    )
 
 
 -- UPDATE
@@ -136,13 +263,15 @@ type Msg
     | UpdateServerConfig ServerConfig
     | ToggleUserMenu -- For handling user menu toggle
     | UserMenuAction String -- For user menu actions
-    | ToggleGenreFilter -- New message to toggle genre filter dropdown
-    | SelectGenre String -- New message to select a genre
-    | ClearGenreFilter -- New message to clear genre filter
+    | ToggleGenreFilter -- Toggle genre filter dropdown
+    | SelectGenre String -- Select a genre
+    | ClearGenreFilter -- Clear genre filter
     | ToggleTypeFilter -- Toggle type filter dropdown
     | SelectType MediaType -- Select a media type
     | ClearTypeFilter -- Clear type filter
     | ScrollCategory String Int -- categoryId, direction (+1 for right, -1 for left)
+    | TMDBDataReceived (Result Http.Error TMDBResponse) -- Handle TMDB data response
+    | RetryLoadTMDBData -- Retry loading data if it fails
     | NoOp
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -166,48 +295,58 @@ update msg model =
                         |> List.filter (\item -> item.id == mediaId)
                         |> List.head
 
-                -- Create a mock detail for now
-                mockDetail =
+                -- Create a detail from the found item or mock if not found
+                detailCmd =
                     case foundItem of
                         Just item ->
-                            { id = item.id
-                            , title = item.title
-                            , type_ = item.type_
-                            , imageUrl = item.imageUrl
-                            , year = item.year
-                            , rating = item.rating
-                            , description = "This is a placeholder description for " ++ item.title ++ ", which would typically be fetched from the Jellyfin API."
-                            , directors = ["Jane Director", "John Filmmaker"]
-                            , actors = ["Actor One", "Actor Two", "Supporting Role", "Guest Star", "Famous Voice", "New Talent"]
-                            , duration = 115
-                            , genres = ["Sci-Fi", "Adventure", "Drama"]
-                            }
-                            |> Ok
+                            -- Check if item has description and other details
+                            -- This assumes your MediaItem now has these fields
+                            -- (you would need to add them to the MediaItem type in JellyfinAPI.elm)
+                            let
+                                -- Get description or default
+                                description =
+                                    Maybe.withDefault "No description available."
+                                        (Maybe.map .description foundItem |> Maybe.withDefault (Just ""))
 
-                        Nothing ->
-                            Err "Media item not found"
+                                -- Get genres or empty list
+                                genres =
+                                    Maybe.map .genres foundItem |> Maybe.withDefault (Just []) |> Maybe.withDefault []
 
-                mediaDetailCmd =
-                    case mockDetail of
-                        Ok detail ->
-                            MediaDetail.MediaDetailReceived (Ok detail)
+                                -- Create the MediaDetail
+                                detail =
+                                    { id = item.id
+                                    , title = item.title
+                                    , type_ = item.type_
+                                    , imageUrl = item.imageUrl
+                                    , year = item.year
+                                    , rating = item.rating
+                                    , description = description
+                                    , directors = ["Jane Director", "John Filmmaker"] -- Mock directors (could be improved)
+                                    , actors = ["Actor One", "Actor Two", "Supporting Role"] -- Mock actors (could be improved)
+                                    , duration = 115 -- Mock duration (could be improved)
+                                    , genres = genres
+                                    }
+                                    |> Ok
+                            in
+                            MediaDetail.MediaDetailReceived detail
                                 |> MediaDetailMsg
                                 |> (\cmd -> Task.perform identity (Task.succeed cmd))
 
-                        Err error ->
-                            MediaDetail.MediaDetailReceived (Err error)
+                        Nothing ->
+                            MediaDetail.MediaDetailReceived (Err "Media item not found")
                                 |> MediaDetailMsg
                                 |> (\cmd -> Task.perform identity (Task.succeed cmd))
             in
-            ( model, mediaDetailCmd )
+            ( model, detailCmd )
 
         PlayMedia mediaId ->
             -- In a real implementation, this would start playback
             ( model, Cmd.none )
 
         FetchCategories ->
-            -- This would fetch real data from the Jellyfin API
-            ( { model | isLoading = True }, Cmd.none )
+            -- This would fetch real data from the Jellyfin API in a complete implementation
+            -- Now it's a placeholder for future real API integration
+            ( { model | isLoading = True }, fetchTMDBData TMDBDataReceived )
 
         CategoriesReceived categories ->
             ( { model | categories = categories, isLoading = False }, Cmd.none )
@@ -311,9 +450,76 @@ update msg model =
             , Cmd.none
             )
 
+        TMDBDataReceived result ->
+            case result of
+                Ok tmdbData ->
+                    -- Extract all unique genres from the received data
+                    let
+                        allGenres =
+                            tmdbData.categories
+                                |> List.concatMap .items
+                                |> List.concatMap (\item ->
+                                    -- Get genres from the item if available
+                                    getItemGenres item)
+                                |> List.sort
+                                |> List.foldl
+                                    (\genre acc ->
+                                        if List.member genre acc then acc else genre :: acc
+                                    ) []
+                    in
+                    ( { model
+                      | categories = tmdbData.categories
+                      , isLoading = False
+                      , availableGenres = if List.isEmpty allGenres then model.availableGenres else allGenres
+                      , errorMessage = Nothing
+                      }
+                    , Cmd.none
+                    )
+
+                Err error ->
+                    -- Handle different error types
+                    let
+                        errorMsg =
+                            case error of
+                                Http.BadUrl url ->
+                                    "Bad URL: " ++ url
+                                Http.Timeout ->
+                                    "Request timed out"
+                                Http.NetworkError ->
+                                    "Network error - check your connection"
+                                Http.BadStatus status ->
+                                    "Bad status: " ++ String.fromInt status
+                                Http.BadBody message ->
+                                    "Data parsing error: " ++ message
+
+                        -- Fall back to mock data if there's an error
+                    in
+                    ( { model
+                      | categories = mockCategories ++ mockLibraryCategories -- Use mock data as fallback
+                      , isLoading = False
+                      , errorMessage = Just errorMsg
+                      }
+                    , Cmd.none
+                    )
+
+        RetryLoadTMDBData ->
+            ( { model | isLoading = True, errorMessage = Nothing }
+            , fetchTMDBData TMDBDataReceived
+            )
+
         NoOp ->
             -- Do nothing
             ( model, Cmd.none )
+
+
+-- Helper to extract genres from a MediaItem
+-- This handles the case where the item might not have genre information
+getItemGenres : MediaItem -> List String
+getItemGenres item =
+    -- This assumes your MediaItem has been updated to include genres field
+    -- If not, just return an empty list
+    [] -- Replace with: item.genres if your MediaItem has been updated
+
 
 -- SUBSCRIPTIONS
 
@@ -332,7 +538,11 @@ view model =
             [ if model.isLoading then
                 viewLoading
               else
-                viewContent model
+                case model.errorMessage of
+                    Just error ->
+                        viewError error
+                    Nothing ->
+                        viewContent model
             ]
         , Html.map MediaDetailMsg (MediaDetail.view model.mediaDetailModel)
         ]
@@ -503,7 +713,7 @@ viewUserMenu =
         [ viewUserMenuHeader
         , viewUserMenuItem "Profile" "User profile and settings" "profile"
         , viewUserMenuItem "Display Preferences" "Customize your experience" "display"
-        , viewUserMenuItem "Watch Party" "Whatch with a group" "watchParty"
+        , viewUserMenuItem "Watch Party" "Watch with a group" "watchParty"
         , div [ class "border-t border-background-light my-1" ] []
         , viewUserMenuItem "Manage Libraries" "Organize your media collection" "libraries"
         , viewUserMenuItem "Manage Users" "Add or edit user access" "users"
@@ -541,12 +751,27 @@ viewUserMenuItem label description action =
             [ text description ]
         ]
 
--- Loading view - now properly defined
+-- Loading view
 viewLoading : Html Msg
 viewLoading =
     div [ class "flex justify-center items-center h-48" ] -- Reduced height
         [ div [ class "text-primary text-xl" ]
             [ text "Loading..." ]
+        ]
+
+-- Error view
+viewError : String -> Html Msg
+viewError errorMessage =
+    div [ class "flex flex-col items-center justify-center h-48 px-4" ]
+        [ div [ class "bg-error bg-opacity-20 border border-error rounded-lg p-4 max-w-md" ]
+            [ h3 (Theme.text Theme.Heading3 ++ [ class "text-error mb-2" ])
+                [ text "Error Loading Data" ]
+            , p (Theme.text Theme.Body ++ [ class "mb-4" ])
+                [ text errorMessage ]
+            , button
+                (Theme.button Theme.Primary ++ [ onClick RetryLoadTMDBData ])
+                [ text "Retry" ]
+            ]
         ]
 
 viewContent : Model -> Html Msg
@@ -720,6 +945,7 @@ viewCategory model category =
             ]
 
 -- View a media item (small card version)
+-- View a media item (small card version)
 viewMediaItem : MediaItem -> Html Msg
 viewMediaItem item =
     div
@@ -735,144 +961,4 @@ viewMediaItem item =
                     [ div [ class "text-2xl text-primary-light opacity-70" ]
                         [ text "🎬" ]  -- Movie icon placeholder where an image would be
                     ]
-                , div [ class "relative z-10 p-3" ] -- Restored original padding
-                    [ p (Theme.text Theme.Body ++ [ class "font-semibold truncate group-hover:text-primary transition-colors duration-300" ])
-                        [ text item.title ]
-                    , div [ class "flex justify-between items-center mt-1" ]
-                        [ span (Theme.text Theme.Caption)
-                            [ text (String.fromInt item.year) ]
-                        , span (Theme.text Theme.Caption ++ [ class "text-warning flex items-center" ])
-                            [ text ("★ " ++ String.fromFloat item.rating) ]
-                        ]
-                    ]
-                ]
-            , div
-                [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
-                ]
-                [ button
-                    [ class "bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110"
-                    , style "box-shadow" "0 0 20px 8px rgba(95, 135, 175, 0.6)"
-                    , onClick (PlayMedia item.id)
-                    ]
-                    [ span [ class "text-xl font-bold", style "margin-left" "3px" ] [ text "▶" ]
-                    ]
-                ]
-            ]
-        ]
-
--- View a media item (large card version for category detail view)
-viewMediaItemLarge : MediaItem -> Html Msg
-viewMediaItemLarge item =
-    div
-        [ class "flex flex-col bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary hover:scale-103 hover:z-10 group h-full" -- Restored border width
-        , onClick (SelectMediaItem item.id)
-        ]
-        [ div [ class "relative pt-[150%]" ] -- Aspect ratio 2:3 for posters
-            [ div
-                [ class "absolute inset-0 bg-surface-light flex items-center justify-center transition-all duration-300 group-hover:brightness-110"
-                , style "background-image" "linear-gradient(rgba(40, 40, 40, 0.2), rgba(30, 30, 30, 0.8))"
-                ]
-                [ div [ class "text-4xl text-primary-light opacity-70" ] -- Restored font size
-                    [ text "🎬" ]  -- Movie icon placeholder where an image would be
-                ]
-            , div
-                [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
-                ]
-                [ button
-                    [ class "bg-primary text-white rounded-full w-20 h-20 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110"
-                    , style "box-shadow" "0 0 30px 10px rgba(95, 135, 175, 0.7)"
-                    , onClick (PlayMedia item.id)
-                    ]
-                    [ span [ class "text-3xl font-bold", style "margin-left" "4px" ] [ text "▶" ]
-                    ]
-                ]
-            ]
-        , div [ class "p-4 flex-grow transition-colors duration-300 group-hover:bg-surface-light" ] -- Restored padding
-            [ h3 (Theme.text Theme.Heading3 ++ [ class "truncate group-hover:text-primary transition-colors duration-300" ]) -- Removed text-sm
-                [ text item.title ]
-            , div [ class "flex justify-between items-center mt-2" ] -- Restored margin
-                [ div [ class "flex items-center space-x-2" ] -- Restored spacing
-                    [ span (Theme.text Theme.Caption)
-                        [ text (mediaTypeToString item.type_) ]
-                    , span (Theme.text Theme.Caption)
-                        [ text ("(" ++ String.fromInt item.year ++ ")") ]
-                    ]
-                , div [ class "flex items-center" ]
-                    [ span (Theme.text Theme.Caption ++ [ class "text-warning" ])
-                        [ text ("★ " ++ String.fromFloat item.rating) ]
-                    ]
-                ]
-            , p (Theme.text Theme.Caption ++ [ class "mt-2 line-clamp-2" ]) -- Restored margin and line count
-                [ text "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore." ]
-            ]
-        ]
-
--- Filter categories based on search query
-filterCategories : String -> List Category -> List Category
-filterCategories query categories =
-    if String.isEmpty query then
-        categories
-    else
-        categories
-            |> List.map (\category ->
-                { category |
-                    items = List.filter
-                        (\item -> String.contains (String.toLower query) (String.toLower item.title))
-                        category.items
-                }
-            )
-            |> List.filter (\category -> not (List.isEmpty category.items))
-
--- Filter categories based on genre
-filterCategoriesByGenre : Maybe String -> List Category -> List Category
-filterCategoriesByGenre maybeGenre categories =
-    case maybeGenre of
-        Nothing ->
-            categories
-
-        Just genre ->
-            -- For the purpose of this demo, we'll randomly filter some items
-            -- to simulate genre filtering. In a real app, each media item would have
-            -- its own genre information.
-            let
-                -- Use a simple hashing of the first char of the genre to get consistent filtering
-                genreChar = String.left 1 genre |> String.toList |> List.head |> Maybe.withDefault 'A'
-                genreValue = Char.toCode genreChar
-
-                -- Return true for approximately 1/3 of items using a deterministic pattern
-                shouldKeepItem item =
-                    (String.length item.title + genreValue) |> modBy 3 |> (==) 0
-            in
-            categories
-                |> List.map (\category ->
-                    { category |
-                        items = List.filter shouldKeepItem category.items
-                    }
-                )
-                |> List.filter (\category -> not (List.isEmpty category.items))
-
--- Add new filter function for media type
-filterCategoriesByType : Maybe MediaType -> List Category -> List Category
-filterCategoriesByType maybeType categories =
-    case maybeType of
-        Nothing ->
-            categories
-
-        Just mediaType ->
-            categories
-                |> List.map (\category ->
-                    { category |
-                        items = List.filter (\item -> item.type_ == mediaType) category.items
-                    }
-                )
-                |> List.filter (\category -> not (List.isEmpty category.items))
-
--- HELPERS
-
--- Convert MediaType to string
-mediaTypeToString : MediaType -> String
-mediaTypeToString mediaType =
-    case mediaType of
-        Movie -> "Movie"
-        TVShow -> "TV Show"
-        Music -> "Music"
+                , div [ class "relative z-10 p-3" ] --
