@@ -6,7 +6,7 @@ A modern, responsive web client for Jellyfin media server built with Elm and sty
 
 **[✨ Live Demo ✨](https://stamnostomp.github.io/jellyfin-web-elm/)**
 
-![Jellyfin Web Elm Screenshot](https://i.imgur.com/64TCq42.png)
+![Jellyfin Web Elm Screenshot](preView.png)
 
 ## Features
 
