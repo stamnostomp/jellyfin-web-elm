@@ -8616,7 +8616,7 @@ var $author$project$JellyfinUI$viewMediaItem = function (item) {
 								$elm$html$Html$button,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110 bg-transparent relative z-40'),
+										$elm$html$Html$Attributes$class('flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-105 relative z-40'),
 										$elm$html$Html$Events$onClick(
 										$author$project$JellyfinUI$PlayMedia(item.E)),
 										A2($elm$html$Html$Attributes$attribute, 'data-testid', 'play-button')
@@ -8624,17 +8624,27 @@ var $author$project$JellyfinUI$viewMediaItem = function (item) {
 								_List_fromArray(
 									[
 										A2(
-										$elm$html$Html$span,
+										$elm$html$Html$div,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$class('text-2xl font-bold text-white'),
-												A2($elm$html$Html$Attributes$style, 'filter', 'drop-shadow(0 0 10px rgba(127, 168, 204, 1)) drop-shadow(0 0 20px rgba(95, 135, 175, 0.9)) drop-shadow(0 0 30px rgba(95, 135, 175, 0.7))'),
+												$elm$html$Html$Attributes$class('bg-primary bg-opacity-90 w-8 h-8 flex items-center justify-center rounded-md shadow-lg'),
+												A2($elm$html$Html$Attributes$style, 'box-shadow', '0 0 10px 3px rgba(95, 135, 175, 0.8)'),
 												A2($elm$html$Html$Attributes$style, 'position', 'relative'),
 												A2($elm$html$Html$Attributes$style, 'z-index', '50')
 											]),
 										_List_fromArray(
 											[
-												$elm$html$Html$text('▶')
+												A2(
+												$elm$html$Html$span,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('text-sm font-bold text-white'),
+														A2($elm$html$Html$Attributes$style, 'margin-left', '1px')
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('▶')
+													]))
 											]))
 									]))
 							])),
