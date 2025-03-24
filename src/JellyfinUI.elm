@@ -879,20 +879,25 @@ viewMediaItem item =
 
             -- Add play button overlay that appears on hover
             , div
-                [ class "absolute inset-0 flex items-center justify-center z-30"  -- Increased z-index
+                [ class "absolute inset-0 flex items-center justify-center z-30"
                 ]
                 [ button
-                    [ class "flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110 bg-transparent relative z-40"  -- Added relative positioning and z-index
+                    [ class "flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-105 relative z-40"
                     , onClick (PlayMedia item.id)
                     , attribute "data-testid" "play-button"
                     ]
-                    [ span
-                        [ class "text-2xl font-bold text-white"
-                        , style "filter" "drop-shadow(0 0 10px rgba(127, 168, 204, 1)) drop-shadow(0 0 20px rgba(95, 135, 175, 0.9)) drop-shadow(0 0 30px rgba(95, 135, 175, 0.7))"
-                        , style "position" "relative"  -- Ensure proper stacking
-                        , style "z-index" "50"  -- Even higher z-index for the play icon
+                    [ div
+                        [ class "bg-primary bg-opacity-90 w-8 h-8 flex items-center justify-center rounded-md shadow-lg"
+                        , style "box-shadow" "0 0 10px 3px rgba(95, 135, 175, 0.8)"
+                        , style "position" "relative"
+                        , style "z-index" "50"
                         ]
-                        [ text "▶" ]
+                        [ span
+                            [ class "text-sm font-bold text-white"
+                            , style "margin-left" "1px" -- Slight offset for visual balance with play icon
+                            ]
+                            [ text "▶" ]
+                        ]
                     ]
                 ]
 
