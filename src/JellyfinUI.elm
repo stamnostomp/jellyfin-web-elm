@@ -14,6 +14,7 @@ import Http
 import JellyfinAPI exposing (CastMember, Category, CrewMember, MediaItem, MediaType(..), ServerConfig, defaultServerConfig)
 import MediaDetail
 import MockData exposing (mockCategories, mockLibraryCategories)
+import Player
 import ServerSettings
 import TMDBData exposing (TMDBResponse, fetchTMDBData)
 import Task
@@ -34,6 +35,7 @@ type alias Model =
     , serverConfig : ServerConfig
     , mediaDetailModel : MediaDetail.Model
     , serverSettingsModel : ServerSettings.Model
+    , playerModel : Player.Model -- ADD THIS LINE
     , isUserMenuOpen : Bool
     , isGenreFilterOpen : Bool
     , selectedGenre : Maybe String
@@ -57,6 +59,10 @@ init =
         ( serverSettingsModel, serverSettingsCmd ) =
             ServerSettings.init
 
+        ( playerModel, playerCmd ) =
+            -- ADD THIS
+            Player.init
+
         -- Initial list of genres
         allGenres =
             [ "Sci-Fi"
@@ -79,6 +85,7 @@ init =
       , serverConfig = defaultServerConfig
       , mediaDetailModel = mediaDetailModel
       , serverSettingsModel = serverSettingsModel
+      , playerModel = playerModel -- ADD THIS LINE
       , isUserMenuOpen = False
       , isGenreFilterOpen = False
       , selectedGenre = Nothing
@@ -92,6 +99,7 @@ init =
     , Cmd.batch
         [ Cmd.map MediaDetailMsg mediaDetailCmd
         , Cmd.map ServerSettingsMsg serverSettingsCmd
+        , Cmd.map PlayerMsg playerCmd -- ADD THIS LINE
         , fetchTMDBData TMDBDataReceived
         , Task.perform
             (\vp -> WindowResized (round vp.viewport.width) (round vp.viewport.height))
@@ -114,6 +122,7 @@ type Msg
     | PlayMedia String
     | FetchCategories
     | CategoriesReceived (List Category)
+    | PlayerMsg Player.Msg
     | MediaDetailMsg MediaDetail.Msg
     | ServerSettingsMsg ServerSettings.Msg
     | UpdateServerConfig ServerConfig
@@ -196,7 +205,33 @@ update msg model =
             ( model, detailCmd )
 
         PlayMedia mediaId ->
-            ( model, Cmd.none )
+            let
+                foundItem =
+                    model.categories
+                        |> List.concatMap .items
+                        |> List.filter (\item -> item.id == mediaId)
+                        |> List.head
+
+                playerCmd =
+                    case foundItem of
+                        Just item ->
+                            Player.LoadMedia item
+                                |> PlayerMsg
+                                |> (\cmd -> Task.perform identity (Task.succeed cmd))
+
+                        Nothing ->
+                            Cmd.none
+            in
+            ( model, playerCmd )
+
+        PlayerMsg subMsg ->
+            let
+                ( updatedPlayerModel, playerCmd ) =
+                    Player.update subMsg model.playerModel
+            in
+            ( { model | playerModel = updatedPlayerModel }
+            , Cmd.map PlayerMsg playerCmd
+            )
 
         FetchCategories ->
             ( { model | isLoading = True }, fetchTMDBData TMDBDataReceived )
@@ -400,6 +435,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Sub.map MediaDetailMsg (MediaDetail.subscriptions model.mediaDetailModel)
+        , Sub.map PlayerMsg (Player.subscriptions model.playerModel) -- ADD THIS LINE
         , Events.onResize WindowResized
         ]
 
@@ -412,22 +448,30 @@ subscriptions model =
 -}
 view : Model -> Html Msg
 view model =
-    div [ class "flex flex-col min-h-screen bg-background overflow-x-hidden" ]
-        [ viewHeader model
-        , div [ class "flex-1 overflow-y-auto pt-10 pb-8 overflow-x-hidden" ]
-            [ if model.isLoading then
-                viewLoading
+    -- Check if player is active first
+    case model.playerModel.currentMedia of
+        Just _ ->
+            -- Show player full screen
+            Html.map PlayerMsg (Player.view model.playerModel)
 
-              else
-                case model.errorMessage of
-                    Just error ->
-                        viewError error
+        Nothing ->
+            -- Show normal UI
+            div [ class "flex flex-col min-h-screen bg-background overflow-x-hidden" ]
+                [ viewHeader model
+                , div [ class "flex-1 overflow-y-auto pt-10 pb-8 overflow-x-hidden" ]
+                    [ if model.isLoading then
+                        viewLoading
 
-                    Nothing ->
-                        viewContent model
-            ]
-        , Html.map MediaDetailMsg (MediaDetail.view model.mediaDetailModel)
-        ]
+                      else
+                        case model.errorMessage of
+                            Just error ->
+                                viewError error
+
+                            Nothing ->
+                                viewContent model
+                    ]
+                , Html.map MediaDetailMsg (MediaDetail.view model.mediaDetailModel)
+                ]
 
 
 {-| View the header with search and filters

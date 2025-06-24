@@ -2,7 +2,7 @@ module Player exposing (Model, Msg(..), init, subscriptions, update, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, onMouseEnter, onMouseLeave)
 import JellyfinAPI exposing (MediaItem, MediaType(..))
 import Theme
 import Time
@@ -182,7 +182,8 @@ view model =
         Just media ->
             div
                 [ class "fixed inset-0 bg-background z-50 flex flex-col"
-                , onMouseOver ShowControls
+                , onMouseEnter ShowControls
+                , onMouseLeave HideControls
                 ]
                 [ viewPlayerArea model media
                 , if model.showControls then
@@ -201,6 +202,7 @@ viewPlayerArea model media =
     div
         [ class "flex-1 relative bg-background-dark flex items-center justify-center"
         , onClick TogglePlayPause
+        , onMouseEnter ShowControls
         ]
         [ -- Video placeholder area
           div
@@ -294,7 +296,9 @@ viewPlayerArea model media =
 viewPlayerControls : Model -> MediaItem -> Html Msg
 viewPlayerControls model media =
     div
-        [ class "bg-surface border-t border-background-light p-4" ]
+        [ class "bg-surface border-t border-background-light p-4"
+        , onMouseEnter ShowControls
+        ]
         [ -- Progress bar
           div [ class "mb-4" ]
             [ div [ class "flex items-center space-x-2 text-text-secondary text-sm mb-2" ]
