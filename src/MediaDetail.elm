@@ -1,13 +1,15 @@
-module MediaDetail exposing (Model, Msg(..), init, update, view, subscriptions)
+module MediaDetail exposing (Model, Msg(..), init, subscriptions, update, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import JellyfinAPI exposing (MediaDetail, MediaType(..), CastMember, CrewMember)
+import JellyfinAPI exposing (CastMember, CrewMember, MediaDetail, MediaType(..))
 import Theme
 
 
+
 -- MODEL
+
 
 type alias Model =
     { mediaDetail : Maybe MediaDetail
@@ -26,7 +28,9 @@ init =
     )
 
 
+
 -- UPDATE
+
 
 type Msg
     = FetchMediaDetail String
@@ -40,7 +44,8 @@ update msg model =
     case msg of
         FetchMediaDetail mediaId ->
             ( { model | isLoading = True, error = Nothing }
-            , Cmd.none -- In a real app, we would fetch the details from the API
+            , Cmd.none
+              -- In a real app, we would fetch the details from the API
             )
 
         MediaDetailReceived result ->
@@ -65,20 +70,25 @@ update msg model =
             ( model, Cmd.none )
 
 
+
 -- SUBSCRIPTIONS
+
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
     Sub.none
 
 
+
 -- VIEW
+
 
 view : Model -> Html Msg
 view model =
     div []
         [ if model.isLoading then
             viewLoading
+
           else
             case model.mediaDetail of
                 Just detail ->
@@ -124,30 +134,43 @@ viewMediaDetail detail =
     div [ class "fixed inset-0 bg-background-dark bg-opacity-80 flex items-center justify-center z-50 p-2 overflow-y-auto" ]
         [ div [ class "bg-surface rounded-lg max-w-4xl w-full shadow-lg relative" ]
             [ button
-                [ class "absolute top-2 right-2 text-text-secondary hover:text-text-primary"
+                [ class "absolute top-2 right-2 text-text-secondary hover:text-text-primary z-10"
                 , onClick CloseDetail
                 ]
                 [ text "✕" ]
             , div [ class "md:flex" ]
                 [ div [ class "md:w-1/3 p-3" ]
-                    [ div [ class "relative pt-[150%] bg-background-light rounded-md" ]
-                        [ div
+                    [ div [ class "relative pt-[150%] bg-background-light rounded-md overflow-hidden" ]
+                        [ img
+                            [ src detail.imageUrl
+                            , alt detail.title
+                            , class "absolute inset-0 w-full h-full object-cover"
+                            , attribute "onerror" "this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                            ]
+                            []
+                        , div
+                            [ class "absolute inset-0 flex items-center justify-center bg-background-light text-primary-light"
+                            , style "display" "none"
+                            ]
+                            [ div [ class "text-6xl" ] [ text "🎬" ] ]
+                        , div
                             [ class "absolute inset-0"
-                            , style "background-image" "linear-gradient(rgba(28, 28, 28, 0.2), rgba(28, 28, 28, 0.8))"
+                            , style "background-image" "linear-gradient(rgba(28, 28, 28, 0.0), rgba(28, 28, 28, 0.3))"
                             ]
                             []
                         ]
                     , button
-                        (Theme.button Theme.Primary ++
-                            [ class "w-full mt-2"
-                            , onClick (PlayMedia detail.id)
-                            ]
+                        (Theme.button Theme.Primary
+                            ++ [ class "w-full mt-2"
+                               , onClick (PlayMedia detail.id)
+                               ]
                         )
                         [ text "Play" ]
                     , if detail.type_ == TVShow then
                         button
                             (Theme.button Theme.Ghost ++ [ class "w-full mt-1" ])
                             [ text "View Episodes" ]
+
                       else
                         text ""
                     ]
@@ -158,11 +181,11 @@ viewMediaDetail detail =
                         [ span (Theme.text Theme.Caption)
                             [ text (String.fromInt detail.year) ]
                         , span (Theme.text Theme.Caption)
-                            [ text ("•") ]
+                            [ text "•" ]
                         , span (Theme.text Theme.Caption)
                             [ text (mediaTypeToString detail.type_) ]
                         , span (Theme.text Theme.Caption)
-                            [ text ("•") ]
+                            [ text "•" ]
                         , span (Theme.text Theme.Caption)
                             [ text (formatDuration detail.duration) ]
                         , span (Theme.text Theme.Caption ++ [ class "text-warning" ])
@@ -204,7 +227,10 @@ viewGenre genre =
         [ text genre ]
 
 
+
 -- Updated to display cast member with character name
+
+
 viewCastMember : CastMember -> Html Msg
 viewCastMember cast =
     div [ class "flex items-center space-x-1" ]
@@ -213,6 +239,7 @@ viewCastMember cast =
             [ case cast.profileUrl of
                 Just url ->
                     img [ src url, alt cast.name, class "w-full h-full object-cover" ] []
+
                 Nothing ->
                     text (String.left 1 cast.name)
             ]
@@ -225,7 +252,10 @@ viewCastMember cast =
         ]
 
 
+
 -- Updated to display crew member with job
+
+
 viewCrewMember : CrewMember -> Html Msg
 viewCrewMember crew =
     div [ class "flex items-center space-x-1" ]
@@ -234,6 +264,7 @@ viewCrewMember crew =
             [ case crew.profileUrl of
                 Just url ->
                     img [ src url, alt crew.name, class "w-full h-full object-cover" ] []
+
                 Nothing ->
                     text (String.left 1 crew.name)
             ]
@@ -246,16 +277,22 @@ viewCrewMember crew =
         ]
 
 
+
 -- HELPERS
+
 
 formatDuration : Int -> String
 formatDuration minutes =
     let
-        hours = minutes // 60
-        mins = modBy 60 minutes
+        hours =
+            minutes // 60
+
+        mins =
+            modBy 60 minutes
     in
     if hours > 0 then
         String.fromInt hours ++ "h " ++ String.fromInt mins ++ "m"
+
     else
         String.fromInt mins ++ "m"
 
@@ -263,6 +300,11 @@ formatDuration minutes =
 mediaTypeToString : MediaType -> String
 mediaTypeToString mediaType =
     case mediaType of
-        Movie -> "Movie"
-        TVShow -> "TV Show"
-        Music -> "Music"
+        Movie ->
+            "Movie"
+
+        TVShow ->
+            "TV Show"
+
+        Music ->
+            "Music"
