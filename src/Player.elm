@@ -246,6 +246,7 @@ viewPlayerArea model media =
                     img
                         [ src backdropUrl
                         , class "absolute inset-0 w-full h-full object-cover opacity-30"
+                        , style "filter" "blur(20px)"
                         , alt media.title
                         ]
                         []

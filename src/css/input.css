@@ -153,6 +153,18 @@
     @apply border-surface;
   }
 
+  /* Custom blur utilities */
+  .blur-strong {
+    filter: blur(20px);
+  }
+
+  .blur-extra-strong {
+    filter: blur(40px);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 2px rgba(208, 208, 208, 0.3);
+  }
   /* New utilities for scrolling */
   .hide-scrollbar {
     -ms-overflow-style: none;  /* IE and Edge */
