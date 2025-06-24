@@ -13,6 +13,84 @@
       var app = Elm.Main.init({
         node: document.getElementById('elm-app')
       });
+
+      // Fullscreen API handling
+      function requestFullscreen() {
+        const element = document.getElementById('player-container') || document.documentElement;
+
+        if (element.requestFullscreen) {
+          element.requestFullscreen();
+        } else if (element.mozRequestFullScreen) { // Firefox
+          element.mozRequestFullScreen();
+        } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
+          element.webkitRequestFullscreen();
+        } else if (element.msRequestFullscreen) { // IE/Edge
+          element.msRequestFullscreen();
+        }
+      }
+
+      function exitFullscreen() {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) { // Firefox
+          document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { // IE/Edge
+          document.msExitFullscreen();
+        }
+      }
+
+      function isFullscreen() {
+        return !!(document.fullscreenElement ||
+                 document.mozFullScreenElement ||
+                 document.webkitFullscreenElement ||
+                 document.msFullscreenElement);
+      }
+
+      // Listen for fullscreen changes
+      function handleFullscreenChange() {
+        const fullscreenState = isFullscreen();
+        app.ports.fullscreenChanged.send(fullscreenState);
+      }
+
+      // Add event listeners for all browser prefixes
+      document.addEventListener('fullscreenchange', handleFullscreenChange);
+      document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+      document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.addEventListener('msfullscreenchange', handleFullscreenChange);
+
+      // Connect Elm ports to JavaScript functions
+      if (app.ports.requestFullscreen) {
+        app.ports.requestFullscreen.subscribe(function() {
+          requestFullscreen();
+        });
+      }
+
+      if (app.ports.exitFullscreen) {
+        app.ports.exitFullscreen.subscribe(function() {
+          exitFullscreen();
+        });
+      }
+
+      // Handle ESC key to exit fullscreen
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && isFullscreen()) {
+          exitFullscreen();
+        }
+      });
+
+      // Handle F11 key for fullscreen toggle
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'F11') {
+          event.preventDefault();
+          if (isFullscreen()) {
+            exitFullscreen();
+          } else {
+            requestFullscreen();
+          }
+        }
+      });
     </script>
   </body>
 </html>
