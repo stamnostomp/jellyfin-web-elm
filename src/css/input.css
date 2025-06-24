@@ -157,4 +157,158 @@
   .brightness-110 {
     filter: brightness(1.1);
   }
+@layer components {
+  /* Syntax highlighting inspired classes */
+  .everbush-keyword {
+    @apply text-primary font-medium;
+  }
+
+  .everbush-string {
+    @apply text-success;
+  }
+
+  .everbush-comment {
+    @apply text-comment italic;
+  }
+
+  .everbush-function {
+    @apply text-info;
+  }
+
+  .everbush-variable {
+    @apply text-text-primary;
+  }
+
+  .everbush-number {
+    @apply text-accent;
+  }
+
+  /* Focus styles that match the theme */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary ring-opacity-70;
+  }
+
+  /* Code block styled after Vim */
+  .code-block {
+    @apply bg-surface p-4 rounded font-mono text-sm overflow-x-auto;
+  }
+
+  /* Terminal-like block */
+  .terminal-block {
+    @apply bg-background border border-surface rounded-md p-4 font-mono text-sm;
+  }
+
+  /* Custom progress bar styling for player */
+  .progress-bar {
+    @apply appearance-none bg-background-light rounded-lg;
+    height: 8px;
+  }
+
+  .progress-bar::-webkit-slider-thumb {
+    @apply appearance-none rounded-full cursor-pointer;
+    width: 16px;
+    height: 16px;
+    background: #5f87af; /* primary color */
+    box-shadow: 0 0 4px rgba(95, 135, 175, 0.5);
+  }
+
+  .progress-bar::-webkit-slider-thumb:hover {
+    background: #7fa8cc; /* primary-light color */
+    box-shadow: 0 0 8px rgba(95, 135, 175, 0.8);
+  }
+
+  .progress-bar::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #5f87af;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 4px rgba(95, 135, 175, 0.5);
+  }
+
+  .progress-bar::-moz-range-thumb:hover {
+    background: #7fa8cc;
+    box-shadow: 0 0 8px rgba(95, 135, 175, 0.8);
+  }
+
+  .progress-bar::-webkit-slider-track {
+    @apply bg-background-light rounded-lg;
+    height: 8px;
+  }
+
+  .progress-bar::-moz-range-track {
+    @apply bg-background-light rounded-lg;
+    height: 8px;
+    border: none;
+  }
+
+  /* Volume slider styling */
+  input[type="range"] {
+    @apply appearance-none bg-background-light rounded-lg;
+    height: 6px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    @apply appearance-none rounded-full cursor-pointer;
+    width: 14px;
+    height: 14px;
+    background: #5f87af;
+    box-shadow: 0 0 2px rgba(95, 135, 175, 0.3);
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    background: #7fa8cc;
+    box-shadow: 0 0 4px rgba(95, 135, 175, 0.6);
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: #5f87af;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 2px rgba(95, 135, 175, 0.3);
+  }
+
+  input[type="range"]::-moz-range-thumb:hover {
+    background: #7fa8cc;
+    box-shadow: 0 0 4px rgba(95, 135, 175, 0.6);
+  }
+
+  input[type="range"]::-webkit-slider-track {
+    @apply bg-background-light rounded-lg;
+    height: 6px;
+  }
+
+  input[type="range"]::-moz-range-track {
+    @apply bg-background-light rounded-lg;
+    height: 6px;
+    border: none;
+  }
+
+  /* Player control buttons */
+  .player-button {
+    @apply transition-all duration-200 hover:scale-105;
+  }
+
+  .player-button:hover {
+    filter: brightness(1.1);
+  }
+
+  /* Custom select styling */
+  select {
+    @apply appearance-none cursor-pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+  }
+
+  select:focus {
+    @apply ring-2 ring-primary ring-opacity-50;
+  }
+}
 }
