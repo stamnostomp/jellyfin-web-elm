@@ -7766,6 +7766,15 @@ var $author$project$Theme$Label = 5;
 var $author$project$MediaDetail$PlayMedia = function (a) {
 	return {$: 3, a: a};
 };
+var $elm$html$Html$Attributes$alt = $elm$html$Html$Attributes$stringProperty('alt');
+var $elm$virtual_dom$VirtualDom$attribute = F2(
+	function (key, value) {
+		return A2(
+			_VirtualDom_attribute,
+			_VirtualDom_noOnOrFormAction(key),
+			_VirtualDom_noJavaScriptOrHtmlUri(value));
+	});
+var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
 var $elm$core$Basics$modBy = _Basics_modBy;
 var $author$project$MediaDetail$formatDuration = function (minutes) {
 	var mins = A2($elm$core$Basics$modBy, 60, minutes);
@@ -7775,6 +7784,7 @@ var $author$project$MediaDetail$formatDuration = function (minutes) {
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$h3 = _VirtualDom_node('h3');
+var $elm$html$Html$img = _VirtualDom_node('img');
 var $author$project$MediaDetail$mediaTypeToString = function (mediaType) {
 	switch (mediaType) {
 		case 0:
@@ -7786,6 +7796,12 @@ var $author$project$MediaDetail$mediaTypeToString = function (mediaType) {
 	}
 };
 var $elm$html$Html$span = _VirtualDom_node('span');
+var $elm$html$Html$Attributes$src = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'src',
+		_VirtualDom_noJavaScriptOrHtmlUri(url));
+};
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$core$List$takeReverse = F3(
@@ -7914,14 +7930,6 @@ var $elm$core$List$take = F2(
 	function (n, list) {
 		return A3($elm$core$List$takeFast, 0, n, list);
 	});
-var $elm$html$Html$Attributes$alt = $elm$html$Html$Attributes$stringProperty('alt');
-var $elm$html$Html$img = _VirtualDom_node('img');
-var $elm$html$Html$Attributes$src = function (url) {
-	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'src',
-		_VirtualDom_noJavaScriptOrHtmlUri(url));
-};
 var $author$project$MediaDetail$viewCastMember = function (cast) {
 	return A2(
 		$elm$html$Html$div,
@@ -8097,7 +8105,7 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 						$elm$html$Html$button,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('absolute top-2 right-2 text-text-secondary hover:text-text-primary'),
+								$elm$html$Html$Attributes$class('absolute top-2 right-2 text-text-secondary hover:text-text-primary z-10'),
 								$elm$html$Html$Events$onClick($author$project$MediaDetail$CloseDetail)
 							]),
 						_List_fromArray(
@@ -8124,16 +8132,46 @@ var $author$project$MediaDetail$viewMediaDetail = function (detail) {
 										$elm$html$Html$div,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$class('relative pt-[150%] bg-background-light rounded-md')
+												$elm$html$Html$Attributes$class('relative pt-[150%] bg-background-light rounded-md overflow-hidden')
 											]),
 										_List_fromArray(
 											[
+												A2(
+												$elm$html$Html$img,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$src(detail.aG),
+														$elm$html$Html$Attributes$alt(detail.aP),
+														$elm$html$Html$Attributes$class('absolute inset-0 w-full h-full object-cover'),
+														A2($elm$html$Html$Attributes$attribute, 'onerror', 'this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';')
+													]),
+												_List_Nil),
+												A2(
+												$elm$html$Html$div,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('absolute inset-0 flex items-center justify-center bg-background-light text-primary-light'),
+														A2($elm$html$Html$Attributes$style, 'display', 'none')
+													]),
+												_List_fromArray(
+													[
+														A2(
+														$elm$html$Html$div,
+														_List_fromArray(
+															[
+																$elm$html$Html$Attributes$class('text-6xl')
+															]),
+														_List_fromArray(
+															[
+																$elm$html$Html$text('🎬')
+															]))
+													])),
 												A2(
 												$elm$html$Html$div,
 												_List_fromArray(
 													[
 														$elm$html$Html$Attributes$class('absolute inset-0'),
-														A2($elm$html$Html$Attributes$style, 'background-image', 'linear-gradient(rgba(28, 28, 28, 0.2), rgba(28, 28, 28, 0.8))')
+														A2($elm$html$Html$Attributes$style, 'background-image', 'linear-gradient(rgba(28, 28, 28, 0.0), rgba(28, 28, 28, 0.3))')
 													]),
 												_List_Nil)
 											])),
@@ -8554,14 +8592,6 @@ var $author$project$JellyfinUI$PlayMedia = function (a) {
 var $author$project$JellyfinUI$SelectMediaItem = function (a) {
 	return {$: 3, a: a};
 };
-var $elm$virtual_dom$VirtualDom$attribute = F2(
-	function (key, value) {
-		return A2(
-			_VirtualDom_attribute,
-			_VirtualDom_noOnOrFormAction(key),
-			_VirtualDom_noJavaScriptOrHtmlUri(value));
-	});
-var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
 var $author$project$JellyfinUI$viewMediaItem = function (item) {
 	return A2(
 		$elm$html$Html$div,
