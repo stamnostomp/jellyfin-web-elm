@@ -8778,7 +8778,7 @@ var $author$project$JellyfinUI$viewCategory = F2(
 				_List_fromArray(
 					[
 						$elm$html$Html$Events$onClick(
-						A2($author$project$JellyfinUI$ScrollCategory, category.E, -1)),
+						A2($author$project$JellyfinUI$ScrollCategory, category.E, 1)),
 						$elm$html$Html$Attributes$class('flex items-center justify-center w-6 h-6')
 					]));
 			var isAtStart = currentTranslation >= 0.0;
@@ -8793,7 +8793,7 @@ var $author$project$JellyfinUI$viewCategory = F2(
 				_List_fromArray(
 					[
 						$elm$html$Html$Events$onClick(
-						A2($author$project$JellyfinUI$ScrollCategory, category.E, 1)),
+						A2($author$project$JellyfinUI$ScrollCategory, category.E, -1)),
 						$elm$html$Html$Attributes$class('flex items-center justify-center w-6 h-6')
 					]));
 			return A2(
