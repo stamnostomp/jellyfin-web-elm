@@ -8887,6 +8887,7 @@ var $author$project$Player$viewPlayerArea = F2(
 										[
 											$elm$html$Html$Attributes$src(backdropUrl),
 											$elm$html$Html$Attributes$class('absolute inset-0 w-full h-full object-cover opacity-30'),
+											A2($elm$html$Html$Attributes$style, 'filter', 'blur(20px)'),
 											$elm$html$Html$Attributes$alt(media.aX)
 										]),
 									_List_Nil);
