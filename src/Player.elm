@@ -1,4 +1,4 @@
-module Player exposing (Model, Msg(..), init, subscriptions, update, view)
+port module Player exposing (Model, Msg(..), init, subscriptions, update, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -6,6 +6,19 @@ import Html.Events exposing (onClick, onInput, onMouseEnter, onMouseLeave)
 import JellyfinAPI exposing (MediaItem, MediaType(..))
 import Theme
 import Time
+
+
+
+-- PORTS for JavaScript interop
+
+
+port requestFullscreen : () -> Cmd msg
+
+
+port exitFullscreen : () -> Cmd msg
+
+
+port fullscreenChanged : (Bool -> msg) -> Sub msg
 
 
 
@@ -52,6 +65,7 @@ type Msg
     | SetVolume Float
     | ToggleMute
     | ToggleFullscreen
+    | FullscreenChanged Bool
     | SetPlaybackRate Float
     | UpdateTime Float
     | ShowControls
@@ -113,7 +127,14 @@ update msg model =
             )
 
         ToggleFullscreen ->
-            ( { model | isFullscreen = not model.isFullscreen }
+            if model.isFullscreen then
+                ( model, exitFullscreen () )
+
+            else
+                ( model, requestFullscreen () )
+
+        FullscreenChanged isFullscreen ->
+            ( { model | isFullscreen = isFullscreen }
             , Cmd.none
             )
 
@@ -146,8 +167,16 @@ update msg model =
             )
 
         ExitPlayer ->
+            let
+                exitCmd =
+                    if model.isFullscreen then
+                        exitFullscreen ()
+
+                    else
+                        Cmd.none
+            in
             ( { model | currentMedia = Nothing, isPlaying = False, currentTime = 0.0 }
-            , Cmd.none
+            , exitCmd
             )
 
         NextEpisode ->
@@ -165,11 +194,14 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    if model.isPlaying then
-        Time.every 1000 (\_ -> UpdateTime 1.0)
+    Sub.batch
+        [ if model.isPlaying then
+            Time.every 1000 (\_ -> UpdateTime 1.0)
 
-    else
-        Sub.none
+          else
+            Sub.none
+        , fullscreenChanged FullscreenChanged
+        ]
 
 
 
@@ -184,6 +216,7 @@ view model =
                 [ class "fixed inset-0 bg-background z-50 flex flex-col"
                 , onMouseEnter ShowControls
                 , onMouseLeave HideControls
+                , id "player-container" -- Add ID for JavaScript targeting
                 ]
                 [ viewPlayerArea model media
                 , if model.showControls then
@@ -296,7 +329,14 @@ viewPlayerArea model media =
 viewPlayerControls : Model -> MediaItem -> Html Msg
 viewPlayerControls model media =
     div
-        [ class "bg-surface border-t border-background-light p-4"
+        [ class <|
+            "bg-surface border-t border-background-light p-4"
+                ++ (if model.isFullscreen then
+                        " bg-opacity-90"
+
+                    else
+                        ""
+                   )
         , onMouseEnter ShowControls
         ]
         [ -- Progress bar

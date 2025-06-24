@@ -117,6 +117,33 @@
 
 @layer utilities {
   /* Subtle text glow for emphasis */
+
+    /* Fullscreen specific styles */
+  .fullscreen-player {
+    width: 100vw !important;
+    height: 100vh !important;
+  }
+
+  /* Hide cursor after a few seconds in fullscreen */
+  .cursor-none {
+    cursor: none;
+  }
+
+  /* Smooth transitions for fullscreen */
+  .fullscreen-transition {
+    transition: all 0.3s ease-in-out;
+  }
+
+  /* Better control visibility in fullscreen */
+  .fullscreen-controls {
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    backdrop-filter: blur(2px);
+  }
+
+  /* Ensure proper z-index for fullscreen elements */
+  .fullscreen-overlay {
+    z-index: 9999;
+  }
   .text-glow {
     text-shadow: 0 0 2px rgba(208, 208, 208, 0.3);
   }
@@ -310,5 +337,28 @@
   select:focus {
     @apply ring-2 ring-primary ring-opacity-50;
   }
+
+/* Webkit fullscreen styles */
+:-webkit-full-screen {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Mozilla fullscreen styles */
+:-moz-full-screen {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Standard fullscreen styles */
+:fullscreen {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Hide scrollbars in fullscreen */
+:fullscreen {
+  overflow: hidden;
+}
 }
 }

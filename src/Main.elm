@@ -7,6 +7,7 @@ import JellyfinUI
 import Theme
 
 
+
 -- MAIN
 
 
@@ -18,6 +19,7 @@ main =
         , subscriptions = subscriptions
         , view = view
         }
+
 
 
 -- MODEL
@@ -39,6 +41,7 @@ init _ =
     )
 
 
+
 -- UPDATE
 
 
@@ -57,12 +60,14 @@ update msg model =
             ( { model | jellyfinModel = updatedJellyfinModel }, Cmd.map JellyfinMsg jellyfinCmd )
 
 
+
 -- SUBSCRIPTIONS
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.map JellyfinMsg (JellyfinUI.subscriptions model.jellyfinModel)
+
 
 
 -- VIEW
