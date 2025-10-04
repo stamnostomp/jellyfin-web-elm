@@ -2,8 +2,10 @@ port module Player exposing (Model, Msg(..), init, subscriptions, update, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput, onMouseEnter, onMouseLeave)
+import Html.Events exposing (on, onClick, onInput, onMouseEnter, onMouseLeave)
+import Icon
 import JellyfinAPI exposing (MediaItem, MediaType(..))
+import Json.Decode as Decode
 import Theme
 import Time
 
@@ -35,6 +37,7 @@ type alias Model =
     , isFullscreen : Bool
     , showControls : Bool
     , playbackRate : Float
+    , hoverTime : Maybe Float -- Time at hover position
     }
 
 
@@ -49,6 +52,7 @@ init =
       , isFullscreen = False
       , showControls = True
       , playbackRate = 1.0
+      , hoverTime = Nothing
       }
     , Cmd.none
     )
@@ -70,9 +74,12 @@ type Msg
     | UpdateTime Float
     | ShowControls
     | HideControls
+    | AutoHideControls
     | ExitPlayer
     | NextEpisode
     | PreviousEpisode
+    | HoverProgress Float Float -- offsetX, width
+    | LeaveProgress
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -166,6 +173,16 @@ update msg model =
             , Cmd.none
             )
 
+        AutoHideControls ->
+            -- Auto-hide only if playing
+            if model.isPlaying then
+                ( { model | showControls = False }
+                , Cmd.none
+                )
+
+            else
+                ( model, Cmd.none )
+
         ExitPlayer ->
             let
                 exitCmd =
@@ -187,6 +204,20 @@ update msg model =
             -- In a real app, this would load the previous episode
             ( model, Cmd.none )
 
+        HoverProgress offsetX width ->
+            let
+                -- Calculate the time based on mouse position
+                percentage =
+                    offsetX / width
+
+                time =
+                    percentage * model.duration
+            in
+            ( { model | hoverTime = Just time }, Cmd.none )
+
+        LeaveProgress ->
+            ( { model | hoverTime = Nothing }, Cmd.none )
+
 
 
 -- SUBSCRIPTIONS
@@ -201,6 +232,11 @@ subscriptions model =
           else
             Sub.none
         , fullscreenChanged FullscreenChanged
+        , if model.showControls && model.isPlaying then
+            Time.every 3000 (\_ -> AutoHideControls)
+
+          else
+            Sub.none
         ]
 
 
@@ -213,9 +249,8 @@ view model =
     case model.currentMedia of
         Just media ->
             div
-                [ class "fixed inset-0 bg-background z-50 flex flex-col"
-                , onMouseEnter ShowControls
-                , onMouseLeave HideControls
+                [ class "fixed inset-0 bg-background z-50"
+                , on "mousemove" (Decode.succeed ShowControls)
                 , id "player-container" -- Add ID for JavaScript targeting
                 ]
                 [ viewPlayerArea model media
@@ -233,7 +268,7 @@ view model =
 viewPlayerArea : Model -> MediaItem -> Html Msg
 viewPlayerArea model media =
     div
-        [ class "flex-1 relative bg-background-dark flex items-center justify-center"
+        [ class "w-full h-full bg-background-dark flex items-center justify-center relative"
         , onClick TogglePlayPause
         , onMouseEnter ShowControls
         ]
@@ -257,16 +292,16 @@ viewPlayerArea model media =
             -- Play/pause overlay
             , if model.showControls then
                 div
-                    [ class "absolute inset-0 flex items-center justify-center" ]
+                    [ class "absolute inset-0 flex items-center justify-center z-10" ]
                     [ button
-                        [ class "bg-background-dark bg-opacity-70 rounded-full w-20 h-20 flex items-center justify-center text-primary hover:bg-opacity-90 transition-all duration-300"
+                        [ class "bg-background-dark bg-opacity-70 rounded-2xl w-32 h-32 flex items-center justify-center text-primary hover:bg-opacity-90 transition-all duration-300"
                         , onClick TogglePlayPause
                         ]
                         [ if model.isPlaying then
-                            span [ class "text-3xl" ] [ text "⏸" ]
+                            Icon.view [ class "text-6xl" ] Icon.pauseSimple
 
                           else
-                            span [ class "text-3xl ml-1" ] [ text "▶" ]
+                            Icon.view [ class "text-6xl" ] Icon.playArrow
                         ]
                     ]
 
@@ -275,7 +310,7 @@ viewPlayerArea model media =
 
             -- Media info overlay
             , div
-                [ class "absolute top-4 left-4 right-4" ]
+                [ class "absolute top-4 left-4 right-4 z-10" ]
                 [ if model.showControls then
                     div
                         [ class "flex justify-between items-start" ]
@@ -302,10 +337,12 @@ viewPlayerArea model media =
                         , button
                             (Theme.button Theme.Ghost
                                 ++ [ onClick ExitPlayer
-                                   , class "text-white hover:text-error"
+                                   , class "text-white hover:text-error flex items-center space-x-2"
                                    ]
                             )
-                            [ text "✕ Exit" ]
+                            [ Icon.view [ class "text-2xl" ] Icon.close
+                            , text "Exit"
+                            ]
                         ]
 
                   else
@@ -331,111 +368,138 @@ viewPlayerControls : Model -> MediaItem -> Html Msg
 viewPlayerControls model media =
     div
         [ class <|
-            "bg-surface border-t border-background-light p-4"
+            "absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/95 to-transparent py-4 pb-6 z-10"
                 ++ (if model.isFullscreen then
-                        " bg-opacity-90"
+                        ""
 
                     else
                         ""
                    )
         , onMouseEnter ShowControls
         ]
-        [ -- Progress bar
-          div [ class "mb-4" ]
-            [ div [ class "flex items-center space-x-2 text-text-secondary text-sm mb-2" ]
-                [ span [] [ text (formatTime model.currentTime) ]
-                , div [ class "flex-1" ]
+        [ -- Progress bar - full width
+          div [ class "mb-4 px-8" ]
+            [ div [ class "flex items-center space-x-3" ]
+                [ span [ class "text-white/80 text-xs font-medium min-w-[45px] text-right" ]
+                    [ text (formatTime model.currentTime) ]
+                , div [ class "flex-1 group relative" ]
                     [ input
                         [ type_ "range"
                         , value (String.fromFloat model.currentTime)
                         , Html.Attributes.min "0"
                         , Html.Attributes.max (String.fromFloat model.duration)
                         , step "1"
-                        , class "w-full h-2 bg-background-light rounded-lg appearance-none cursor-pointer progress-bar"
+                        , class "w-full h-1 bg-white/20 rounded-full appearance-none cursor-pointer hover:h-1.5 transition-all duration-200"
+                        , style "background" ("linear-gradient(to right, rgb(95, 135, 175) 0%, rgb(95, 135, 175) " ++ String.fromFloat ((model.currentTime / model.duration) * 100) ++ "%, rgba(255,255,255,0.2) " ++ String.fromFloat ((model.currentTime / model.duration) * 100) ++ "%, rgba(255,255,255,0.2) 100%)")
                         , onInput (String.toFloat >> Maybe.withDefault 0.0 >> Seek)
+                        , onProgressHover
+                        , onMouseLeave LeaveProgress
                         ]
                         []
+                    -- Hover tooltip bubble
+                    , case model.hoverTime of
+                        Just time ->
+                            let
+                                -- Position tooltip based on hover percentage
+                                percentage =
+                                    (time / model.duration) * 100
+                            in
+                            div
+                                [ class "absolute -top-10 pointer-events-none whitespace-nowrap"
+                                , style "left" (String.fromFloat percentage ++ "%")
+                                , style "transform" "translateX(-50%)"
+                                ]
+                                [ -- Bubble
+                                  div
+                                    [ class "bg-black text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-lg" ]
+                                    [ text (formatTime time) ]
+                                -- Arrow pointing down
+                                , div
+                                    [ class "w-0 h-0 mx-auto"
+                                    , style "border-left" "4px solid transparent"
+                                    , style "border-right" "4px solid transparent"
+                                    , style "border-top" "4px solid black"
+                                    ]
+                                    []
+                                ]
+
+                        Nothing ->
+                            text ""
                     ]
-                , span [] [ text (formatTime model.duration) ]
+                , span [ class "text-white/80 text-xs font-medium min-w-[45px]" ]
+                    [ text (formatTime model.duration) ]
                 ]
             ]
 
-        -- Control buttons
-        , div [ class "flex items-center justify-between" ]
-            [ -- Left controls
+        -- Control buttons - constrained width
+        , div [ class "flex items-center justify-between px-16" ]
+            [ -- Left controls - playback
               div [ class "flex items-center space-x-4" ]
-                [ -- Previous episode (for TV shows)
-                  if media.type_ == TVShow then
-                    button
-                        (Theme.button Theme.Ghost ++ [ onClick PreviousEpisode ])
-                        [ text "⏮" ]
+                [ -- Rewind
+                  button
+                    [ class "w-8 h-8 rounded-lg text-white/70 hover:text-white hover:bg-white/10 flex items-center justify-center transition-all duration-200"
+                    , onClick (Seek (model.currentTime - 10))
+                    ]
+                    [ Icon.view [ class "text-lg" ] Icon.fastRewind
+                    ]
 
-                  else
-                    text ""
-
-                -- Rewind
+                -- Play/Pause - larger and more prominent
                 , button
-                    (Theme.button Theme.Ghost ++ [ onClick (Seek (model.currentTime - 30)) ])
-                    [ text "↶ 30s" ]
-
-                -- Play/Pause
-                , button
-                    (Theme.button Theme.Primary ++ [ onClick TogglePlayPause, class "w-12 h-12" ])
+                    [ class "w-12 h-12 rounded-lg bg-white/15 hover:bg-white/25 flex items-center justify-center text-white transition-all duration-200 backdrop-blur-sm hover:scale-105"
+                    , onClick TogglePlayPause
+                    ]
                     [ if model.isPlaying then
-                        text "⏸"
-
+                        Icon.view [ class "text-2xl" ] Icon.pauseSimple
                       else
-                        text "▶"
+                        Icon.view [ class "text-2xl" ] Icon.playArrow
                     ]
 
                 -- Fast forward
                 , button
-                    (Theme.button Theme.Ghost ++ [ onClick (Seek (model.currentTime + 30)) ])
-                    [ text "30s ↷" ]
+                    [ class "w-8 h-8 rounded-lg text-white/70 hover:text-white hover:bg-white/10 flex items-center justify-center transition-all duration-200"
+                    , onClick (Seek (model.currentTime + 10))
+                    ]
+                    [ Icon.view [ class "text-lg" ] Icon.fastForward
+                    ]
 
                 -- Next episode (for TV shows)
                 , if media.type_ == TVShow then
                     button
-                        (Theme.button Theme.Ghost ++ [ onClick NextEpisode ])
-                        [ text "⏭" ]
-
+                        [ class "w-8 h-8 rounded-lg text-white/70 hover:text-white hover:bg-white/10 flex items-center justify-center transition-all duration-200"
+                        , onClick NextEpisode
+                        ]
+                        [ Icon.view [ class "text-lg" ] Icon.skipForward ]
                   else
                     text ""
                 ]
 
-            -- Center info
-            , div [ class "flex items-center space-x-4" ]
-                [ -- Playback rate
-                  div [ class "flex items-center space-x-2" ]
-                    [ span (Theme.text Theme.Label) [ text "Speed:" ]
-                    , select
-                        [ class "bg-background border border-background-light rounded py-1 px-2 text-text-primary"
-                        , onInput (String.toFloat >> Maybe.withDefault 1.0 >> SetPlaybackRate)
-                        ]
-                        [ option [ value "0.5", selected (model.playbackRate == 0.5) ] [ text "0.5x" ]
-                        , option [ value "0.75", selected (model.playbackRate == 0.75) ] [ text "0.75x" ]
-                        , option [ value "1.0", selected (model.playbackRate == 1.0) ] [ text "1.0x" ]
-                        , option [ value "1.25", selected (model.playbackRate == 1.25) ] [ text "1.25x" ]
-                        , option [ value "1.5", selected (model.playbackRate == 1.5) ] [ text "1.5x" ]
-                        , option [ value "2.0", selected (model.playbackRate == 2.0) ] [ text "2.0x" ]
-                        ]
+            -- Right controls - settings
+            , div [ class "flex items-center space-x-3" ]
+                [ -- Playback rate - minimal dropdown
+                  select
+                    [ class "bg-white/10 hover:bg-white/20 backdrop-blur-sm border-0 rounded-lg px-2 py-1 text-white text-xs font-medium cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    , onInput (String.toFloat >> Maybe.withDefault 1.0 >> SetPlaybackRate)
                     ]
-                ]
+                    [ option [ value "0.5", selected (model.playbackRate == 0.5) ] [ text "0.5×" ]
+                    , option [ value "0.75", selected (model.playbackRate == 0.75) ] [ text "0.75×" ]
+                    , option [ value "1.0", selected (model.playbackRate == 1.0) ] [ text "1×" ]
+                    , option [ value "1.25", selected (model.playbackRate == 1.25) ] [ text "1.25×" ]
+                    , option [ value "1.5", selected (model.playbackRate == 1.5) ] [ text "1.5×" ]
+                    , option [ value "2.0", selected (model.playbackRate == 2.0) ] [ text "2×" ]
+                    ]
 
-            -- Right controls
-            , div [ class "flex items-center space-x-4" ]
-                [ -- Volume control
-                  div [ class "flex items-center space-x-2" ]
+                -- Volume control - cleaner
+                , div [ class "flex items-center space-x-2 group" ]
                     [ button
-                        (Theme.button Theme.Ghost ++ [ onClick ToggleMute ])
+                        [ class "w-8 h-8 rounded-lg text-white/80 hover:text-white hover:bg-white/10 flex items-center justify-center transition-all duration-200"
+                        , onClick ToggleMute
+                        ]
                         [ if model.isMuted || model.volume == 0 then
-                            text "🔇"
-
+                            Icon.view [ class "text-lg" ] Icon.volumeOff
                           else if model.volume < 0.5 then
-                            text "🔉"
-
+                            Icon.view [ class "text-lg" ] Icon.volumeDown
                           else
-                            text "🔊"
+                            Icon.view [ class "text-lg" ] Icon.volumeUp
                         ]
                     , input
                         [ type_ "range"
@@ -443,15 +507,15 @@ viewPlayerControls model media =
                             (String.fromFloat
                                 (if model.isMuted then
                                     0
-
                                  else
                                     model.volume
                                 )
                             )
                         , Html.Attributes.min "0"
                         , Html.Attributes.max "1"
-                        , step "0.1"
-                        , class "w-20 h-2 bg-background-light rounded-lg appearance-none cursor-pointer"
+                        , step "0.05"
+                        , class "w-20 h-1 bg-white/20 rounded-full appearance-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                        , style "background" ("linear-gradient(to right, white 0%, white " ++ String.fromFloat (model.volume * 100) ++ "%, rgba(255,255,255,0.2) " ++ String.fromFloat (model.volume * 100) ++ "%, rgba(255,255,255,0.2) 100%)")
                         , onInput (String.toFloat >> Maybe.withDefault 0.0 >> SetVolume)
                         ]
                         []
@@ -459,12 +523,13 @@ viewPlayerControls model media =
 
                 -- Fullscreen toggle
                 , button
-                    (Theme.button Theme.Ghost ++ [ onClick ToggleFullscreen ])
+                    [ class "w-8 h-8 rounded-lg text-white/80 hover:text-white hover:bg-white/10 flex items-center justify-center transition-all duration-200"
+                    , onClick ToggleFullscreen
+                    ]
                     [ if model.isFullscreen then
-                        text "⛶"
-
+                        Icon.view [ class "text-lg" ] Icon.fullscreenExit
                       else
-                        text "⛶"
+                        Icon.view [ class "text-lg" ] Icon.fullscreen
                     ]
                 ]
             ]
@@ -473,6 +538,17 @@ viewPlayerControls model media =
 
 
 -- HELPERS
+
+
+{-| Decode mouse move events to get offsetX and target width
+-}
+onProgressHover : Attribute Msg
+onProgressHover =
+    on "mousemove"
+        (Decode.map2 HoverProgress
+            (Decode.at [ "offsetX" ] Decode.float)
+            (Decode.at [ "target", "offsetWidth" ] Decode.float)
+        )
 
 
 formatTime : Float -> String

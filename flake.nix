@@ -81,12 +81,28 @@
           echo "Elm application built successfully!"
         '';
 
-        # Helper function to install IBM Plex fonts
+        # Create a fonts directory with symlinks (just IBM Plex, icons are from Phosphor CDN)
+        fontsPackage = pkgs.runCommand "jellyfin-fonts" {} ''
+          mkdir -p $out
+          ln -s ${pkgs.ibm-plex}/share/fonts/opentype/* $out/
+        '';
+
+        # Helper function to setup fonts symlink
         installFonts = pkgs.writeShellScriptBin "install-fonts" ''
           set -e
-          mkdir -p ${fontsDir}
-          cp -r ${pkgs.ibm-plex}/share/fonts/opentype/* ${fontsDir}/
-          echo "IBM Plex fonts installed successfully!"
+
+          # Remove old fonts directory if it exists
+          if [ -e ${fontsDir} ]; then
+            rm -rf ${fontsDir}
+          fi
+
+          # Create symlink to fonts package
+          ln -sf ${fontsPackage} ${fontsDir}
+
+          echo "Fonts symlinked successfully!"
+          echo "Font files:"
+          ls -lh ${fontsDir}/ | grep -E "\.(woff2|otf)$" | head -5
+          echo "..."
         '';
 
         # Helper function to setup Tailwind CSS
@@ -315,9 +331,9 @@
               # Build Tailwind
               ${pkgs.nodePackages.tailwindcss}/bin/tailwindcss -i ./src/css/input.css -o ${outputCss} --minify
 
-              # Install IBM Plex fonts
+              # Install IBM Plex fonts (icons are from Phosphor CDN)
               mkdir -p ${fontsDir}
-              cp -r ${pkgs.ibm-plex}/share/fonts/opentype/* ${fontsDir}/
+              ln -sf ${pkgs.ibm-plex}/share/fonts/opentype/* ${fontsDir}/
             '';
             installPhase = ''
               mkdir -p $out/public
@@ -377,6 +393,15 @@
           ];
 
           shellHook = ''
+            # Auto-setup fonts on shell entry
+            if [ ! -e ${fontsDir} ] || [ ! -L ${fontsDir} ]; then
+              echo "Setting up fonts..."
+              if [ -e ${fontsDir} ]; then
+                rm -rf ${fontsDir}
+              fi
+              ln -sf ${fontsPackage} ${fontsDir}
+            fi
+
             echo "Elm with Tailwind CSS development environment ready!"
             echo ""
             echo "Available commands:"

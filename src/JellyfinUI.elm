@@ -11,6 +11,7 @@ import Html exposing (..)
 import Html.Attributes exposing (alt, attribute, class, disabled, placeholder, src, style, value)
 import Html.Events exposing (onClick, onInput)
 import Http
+import Icon
 import JellyfinAPI exposing (CastMember, Category, CrewMember, MediaItem, MediaType(..), ServerConfig, defaultServerConfig)
 import MediaDetail
 import MockData exposing (mockCategories, mockLibraryCategories)
@@ -774,10 +775,10 @@ viewActiveFilter maybeGenre =
                 [ span (Theme.text Theme.Body)
                     [ text genre ]
                 , button
-                    [ class "ml-1 text-primary hover:text-primary-dark"
+                    [ class "ml-1 text-primary hover:text-primary-dark flex items-center"
                     , onClick ClearGenreFilter
                     ]
-                    [ text "×" ]
+                    [ Icon.view [ class "text-sm" ] Icon.close ]
                 ]
 
         Nothing ->
@@ -794,10 +795,10 @@ viewActiveTypeFilter maybeType =
                 [ span (Theme.text Theme.Body)
                     [ text (mediaTypeToString mediaType) ]
                 , button
-                    [ class "ml-1 text-secondary hover:text-secondary-dark"
+                    [ class "ml-1 text-secondary hover:text-secondary-dark flex items-center"
                     , onClick ClearTypeFilter
                     ]
-                    [ text "×" ]
+                    [ Icon.view [ class "text-sm" ] Icon.close ]
                 ]
 
         Nothing ->
@@ -818,12 +819,12 @@ viewCategoryDetail model categoryId =
     case findCategory categoryId filteredCategories of
         Just category ->
             div []
-                [ div [ class "flex items-center mb-3 mt-1" ]
-                    [ button
-                        (Theme.button Theme.Ghost ++ [ onClick ClearCategory, class "mr-2" ])
-                        [ text "← Back" ]
-                    , h2 (Theme.text Theme.Heading2 ++ [ class "font-bold text-primary" ])
+                [ div [ class "flex items-center justify-between mb-3 mt-1" ]
+                    [ h2 (Theme.text Theme.Heading2 ++ [ class "font-bold text-primary" ])
                         [ text category.name ]
+                    , button
+                        (Theme.button Theme.Ghost ++ [ onClick ClearCategory, class "flex items-center justify-center" ])
+                        [ Icon.view [ class "text-2xl" ] Icon.close ]
                     ]
                 , div [ class "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 px-4" ]
                     (List.map viewMediaItemLarge category.items)
@@ -944,8 +945,10 @@ viewCategory model category =
                 [ h2 (Theme.text Theme.Heading3 ++ [ class "font-bold text-primary" ])
                     [ text category.name ]
                 , div [ class "flex items-center space-x-1" ]
-                    [ button leftButtonStyle [ text "←" ]
-                    , button rightButtonStyle [ text "→" ]
+                    [ button (leftButtonStyle ++ [ class "flex items-center justify-center" ])
+                        [ Icon.view [ class "text-lg" ] Icon.arrowBack ]
+                    , button (rightButtonStyle ++ [ class "flex items-center justify-center" ])
+                        [ Icon.view [ class "text-lg" ] Icon.arrowForward ]
                     , button
                         (Theme.button Theme.Ghost ++ [ onClick (SelectCategory category.id), class "py-1 px-2" ])
                         [ text "See All" ]
@@ -1004,7 +1007,7 @@ viewMediaItem item =
                 [ class "absolute inset-0 flex items-center justify-center bg-background-light text-primary-light"
                 , style "display" "none"
                 ]
-                [ text "🎬" ]
+                [ Icon.view [ class "text-6xl opacity-50" ] Icon.movie ]
 
             -- Fallback if image fails to load
             -- Add play button overlay that appears on hover
@@ -1024,9 +1027,79 @@ viewMediaItem item =
                         ]
                         [ span
                             [ class "text-sm font-bold text-white"
-                            , style "margin-left" "1px" -- Slight offset for visual balance with play icon
                             ]
-                            [ text "▶" ]
+                            [ Icon.view [ class "text-base" ] Icon.playArrow ]
+                        ]
+                    ]
+                ]
+            , div
+                [ class "absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-90 text-text-primary p-3 transition-all duration-300"
+                ]
+                [ h3 (Theme.text Theme.Heading3 ++ [ class "truncate text-white" ])
+                    [ text item.title ]
+                , div [ class "flex justify-between items-center mt-1" ]
+                    [ span (Theme.text Theme.Caption)
+                        [ text (String.fromInt item.year) ]
+                    , span (Theme.text Theme.Caption ++ [ class "text-warning flex items-center" ])
+                        [ Icon.view [ class "text-xs mr-0.5" ] Icon.star
+                        , text (String.fromFloat item.rating)
+                        ]
+                    ]
+                , if List.length item.genres > 0 then
+                    div [ class "flex flex-wrap gap-1 mt-1" ]
+                        (List.take 2 item.genres
+                            |> List.map
+                                (\genre ->
+                                    span [ class "bg-background-light bg-opacity-50 px-1 py-0.5 rounded text-white text-xs" ]
+                                        [ text genre ]
+                                )
+                        )
+
+                  else
+                    text ""
+                ]
+            ]
+        ]
+
+
+{-| View a media item card (large version for detailed view)
+-}
+viewMediaItemLarge : MediaItem -> Html Msg
+viewMediaItemLarge item =
+    div
+        [ class "bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary cursor-pointer h-full group transform hover:scale-105"
+        , style "transition" "all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1.0)"
+        , style "will-change" "transform, box-shadow, border-color"
+        , onClick (SelectMediaItem item.id)
+        ]
+        [ div [ class "relative pt-[150%]" ]
+            [ img
+                [ src item.imageUrl
+                , class "absolute inset-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-110"
+                , alt item.title
+                , attribute "onerror" "this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                ]
+                []
+            , div
+                [ class "absolute inset-0 flex items-center justify-center bg-background-light text-primary-light"
+                , style "display" "none"
+                ]
+                [ Icon.view [ class "text-6xl opacity-50" ] Icon.movie ]
+            , div
+                [ class "absolute inset-0 flex items-center justify-center z-30"
+                ]
+                [ button
+                    [ class "flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-105 relative z-40"
+                    , onClick (PlayMedia item.id)
+                    , attribute "data-testid" "play-button"
+                    ]
+                    [ div
+                        [ class "bg-primary bg-opacity-90 w-12 h-12 flex items-center justify-center rounded-md shadow-lg"
+                        , style "box-shadow" "0 0 15px 5px rgba(95, 135, 175, 0.8)"
+                        , style "position" "relative"
+                        , style "z-index" "50"
+                        ]
+                        [ Icon.view [ class "text-2xl text-white" ] Icon.playArrow
                         ]
                     ]
                 ]
@@ -1054,58 +1127,6 @@ viewMediaItem item =
                   else
                     text ""
                 ]
-            ]
-        ]
-
-
-{-| View a media item card (large version for detailed view)
--}
-viewMediaItemLarge : MediaItem -> Html Msg
-viewMediaItemLarge item =
-    div
-        [ class "flex flex-col bg-surface border-2 border-background-light rounded-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary group h-full"
-        , onClick (SelectMediaItem item.id)
-        ]
-        [ div [ class "relative pt-[150%]" ]
-            -- Aspect ratio 2:3 for posters
-            [ div
-                [ class "absolute inset-0 bg-surface-light flex items-center justify-center transition-all duration-300 group-hover:brightness-110"
-                , style "background-image" "linear-gradient(rgba(40, 40, 40, 0.2), rgba(30, 30, 30, 0.8))"
-                ]
-                [ div [ class "text-4xl text-primary-light opacity-70" ]
-                    [ text "🎬" ]
-
-                -- Movie icon placeholder where an image would be
-                ]
-            , div
-                [ class "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
-                ]
-                [ button
-                    [ class "bg-primary text-white rounded-full w-20 h-20 flex items-center justify-center opacity-0 group-hover:opacity-90 hover:opacity-100 transition-all duration-300 cursor-pointer hover:scale-110"
-                    , style "box-shadow" "0 0 30px 10px rgba(95, 135, 175, 0.7)"
-                    , onClick (PlayMedia item.id)
-                    ]
-                    [ span [ class "text-3xl font-bold", style "margin-left" "4px" ] [ text "▶" ]
-                    ]
-                ]
-            ]
-        , div [ class "p-4 flex-grow transition-colors duration-300 group-hover:bg-surface-light" ]
-            [ h3 (Theme.text Theme.Heading3 ++ [ class "truncate group-hover:text-primary transition-colors duration-300" ])
-                [ text item.title ]
-            , div [ class "flex justify-between items-center mt-2" ]
-                [ div [ class "flex items-center space-x-2" ]
-                    [ span (Theme.text Theme.Caption)
-                        [ text (mediaTypeToString item.type_) ]
-                    , span (Theme.text Theme.Caption)
-                        [ text ("(" ++ String.fromInt item.year ++ ")") ]
-                    ]
-                , div [ class "flex items-center" ]
-                    [ span (Theme.text Theme.Caption ++ [ class "text-warning" ])
-                        [ text ("★ " ++ String.fromFloat item.rating) ]
-                    ]
-                ]
-            , p (Theme.text Theme.Caption ++ [ class "mt-2 line-clamp-2" ])
-                [ text (Maybe.withDefault "No description available." item.description) ]
             ]
         ]
 
