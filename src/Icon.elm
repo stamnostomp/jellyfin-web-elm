@@ -11,6 +11,8 @@ module Icon exposing
     , arrowPath
     , arrowUturnLeft
     , arrowUturnRight
+    , chevronLeft
+    , chevronRight
     , volumeUp
     , volumeDown
     , volumeOff
@@ -136,6 +138,16 @@ arrowUturnLeft =
 arrowUturnRight : Icon
 arrowUturnRight =
     Icon "M14.47 2.47a.75.75 0 0 1 1.06 0l6 6a.75.75 0 0 1 0 1.06l-6 6a.75.75 0 1 1-1.06-1.06l4.72-4.72H9a5.25 5.25 0 1 0 0 10.5h3a.75.75 0 0 1 0 1.5H9a6.75 6.75 0 0 1 0-13.5h10.19l-4.72-4.72a.75.75 0 0 1 0-1.06Z"
+
+
+chevronLeft : Icon
+chevronLeft =
+    Icon "M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z"
+
+
+chevronRight : Icon
+chevronRight =
+    Icon "M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z"
 
 
 

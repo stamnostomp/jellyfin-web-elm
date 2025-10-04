@@ -39,10 +39,10 @@ type alias Model =
     , playerModel : Player.Model -- ADD THIS LINE
     , isUserMenuOpen : Bool
     , isGenreFilterOpen : Bool
-    , selectedGenre : Maybe String
+    , selectedGenres : List String
     , availableGenres : List String
     , isTypeFilterOpen : Bool
-    , selectedType : Maybe MediaType
+    , selectedTypes : List MediaType
     , categoryTranslation : Dict String Float
     , errorMessage : Maybe String
     , windowWidth : Int
@@ -89,10 +89,10 @@ init =
       , playerModel = playerModel -- ADD THIS LINE
       , isUserMenuOpen = False
       , isGenreFilterOpen = False
-      , selectedGenre = Nothing
+      , selectedGenres = []
       , availableGenres = allGenres
       , isTypeFilterOpen = False
-      , selectedType = Nothing
+      , selectedTypes = []
       , categoryTranslation = Dict.empty
       , errorMessage = Nothing
       , windowWidth = 1200
@@ -268,19 +268,33 @@ update msg model =
             ( { model | isGenreFilterOpen = not model.isGenreFilterOpen, isUserMenuOpen = False, isTypeFilterOpen = False }, Cmd.none )
 
         SelectGenre genre ->
-            ( { model | selectedGenre = Just genre, isGenreFilterOpen = False }, Cmd.none )
+            let
+                newGenres =
+                    if List.member genre model.selectedGenres then
+                        List.filter (\g -> g /= genre) model.selectedGenres
+                    else
+                        genre :: model.selectedGenres
+            in
+            ( { model | selectedGenres = newGenres }, Cmd.none )
 
         ClearGenreFilter ->
-            ( { model | selectedGenre = Nothing }, Cmd.none )
+            ( { model | selectedGenres = [] }, Cmd.none )
 
         ToggleTypeFilter ->
             ( { model | isTypeFilterOpen = not model.isTypeFilterOpen, isUserMenuOpen = False, isGenreFilterOpen = False }, Cmd.none )
 
         SelectType mediaType ->
-            ( { model | selectedType = Just mediaType, isTypeFilterOpen = False }, Cmd.none )
+            let
+                newTypes =
+                    if List.member mediaType model.selectedTypes then
+                        List.filter (\t -> t /= mediaType) model.selectedTypes
+                    else
+                        mediaType :: model.selectedTypes
+            in
+            ( { model | selectedTypes = newTypes }, Cmd.none )
 
         ClearTypeFilter ->
-            ( { model | selectedType = Nothing }, Cmd.none )
+            ( { model | selectedTypes = [] }, Cmd.none )
 
         UserMenuAction action ->
             ( { model | isUserMenuOpen = False }, Cmd.none )
@@ -480,7 +494,7 @@ view model =
 viewHeader : Model -> Html Msg
 viewHeader model =
     header [ class "bg-surface border-b border-background-light py-2 px-3" ]
-        [ div [ class "px-1 md:px-2 max-w-screen-2xl mx-auto flex items-center justify-between" ]
+        [ div [ class "px-16 mx-auto flex items-center justify-between" ]
             [ div [ class "flex items-center space-x-3" ]
                 [ h1 (Theme.text Theme.Heading2)
                     [ text "Jellyfin" ]
@@ -521,14 +535,14 @@ viewTypeFilter model =
                    ]
             )
             [ text
-                (case model.selectedType of
-                    Just mediaType ->
-                        "Type: " ++ mediaTypeToString mediaType
-
-                    Nothing ->
-                        "Filter by Type"
+                (if List.isEmpty model.selectedTypes then
+                    "Filter by Type"
+                 else if List.length model.selectedTypes == 1 then
+                    "Type: " ++ (List.head model.selectedTypes |> Maybe.map mediaTypeToString |> Maybe.withDefault "")
+                 else
+                    "Type (" ++ String.fromInt (List.length model.selectedTypes) ++ ")"
                 )
-            , if model.selectedType /= Nothing then
+            , if not (List.isEmpty model.selectedTypes) then
                 button
                     [ class "ml-1 text-text-secondary hover:text-error"
                     , onClick ClearTypeFilter
@@ -539,7 +553,7 @@ viewTypeFilter model =
                 text ""
             ]
         , if model.isTypeFilterOpen then
-            viewTypeDropdown
+            viewTypeDropdown model.selectedTypes
 
           else
             text ""
@@ -548,8 +562,8 @@ viewTypeFilter model =
 
 {-| View the type options dropdown
 -}
-viewTypeDropdown : Html Msg
-viewTypeDropdown =
+viewTypeDropdown : List MediaType -> Html Msg
+viewTypeDropdown selectedTypes =
     div
         [ class "absolute right-0 mt-1 w-48 bg-surface rounded-md shadow-lg z-50 border border-background-light" ]
         [ div
@@ -559,18 +573,27 @@ viewTypeDropdown =
             ]
         , div
             [ class "py-1" ]
-            [ viewTypeOption Movie
-            , viewTypeOption TVShow
+            [ viewTypeOption selectedTypes Movie
+            , viewTypeOption selectedTypes TVShow
             ]
         ]
 
 
 {-| View a single type option
 -}
-viewTypeOption : MediaType -> Html Msg
-viewTypeOption mediaType =
+viewTypeOption : List MediaType -> MediaType -> Html Msg
+viewTypeOption selectedTypes mediaType =
+    let
+        isSelected =
+            List.member mediaType selectedTypes
+    in
     div
-        [ class "px-3 py-1 hover:bg-background-light cursor-pointer text-text-primary"
+        [ class
+            (if isSelected then
+                "px-3 py-1 hover:bg-background-light cursor-pointer text-primary font-semibold"
+             else
+                "px-3 py-1 hover:bg-background-light cursor-pointer text-text-primary"
+            )
         , onClick (SelectType mediaType)
         ]
         [ text (mediaTypeToString mediaType) ]
@@ -588,14 +611,14 @@ viewGenreFilter model =
                    ]
             )
             [ text
-                (case model.selectedGenre of
-                    Just genre ->
-                        "Genre: " ++ genre
-
-                    Nothing ->
-                        "Filter by Genre"
+                (if List.isEmpty model.selectedGenres then
+                    "Filter by Genre"
+                 else if List.length model.selectedGenres == 1 then
+                    "Genre: " ++ (List.head model.selectedGenres |> Maybe.withDefault "")
+                 else
+                    "Genre (" ++ String.fromInt (List.length model.selectedGenres) ++ ")"
                 )
-            , if model.selectedGenre /= Nothing then
+            , if not (List.isEmpty model.selectedGenres) then
                 button
                     [ class "ml-1 text-text-secondary hover:text-error"
                     , onClick ClearGenreFilter
@@ -606,7 +629,7 @@ viewGenreFilter model =
                 text ""
             ]
         , if model.isGenreFilterOpen then
-            viewGenreDropdown model.availableGenres
+            viewGenreDropdown model.availableGenres model.selectedGenres
 
           else
             text ""
@@ -615,8 +638,8 @@ viewGenreFilter model =
 
 {-| View the genre options dropdown
 -}
-viewGenreDropdown : List String -> Html Msg
-viewGenreDropdown genres =
+viewGenreDropdown : List String -> List String -> Html Msg
+viewGenreDropdown genres selectedGenres =
     div
         [ class "absolute right-0 mt-1 w-48 bg-surface rounded-md shadow-lg z-50 border border-background-light" ]
         [ div
@@ -626,16 +649,25 @@ viewGenreDropdown genres =
             ]
         , div
             [ class "max-h-64 overflow-y-auto py-1" ]
-            (List.map viewGenreOption genres)
+            (List.map (viewGenreOption selectedGenres) genres)
         ]
 
 
 {-| View a single genre option
 -}
-viewGenreOption : String -> Html Msg
-viewGenreOption genre =
+viewGenreOption : List String -> String -> Html Msg
+viewGenreOption selectedGenres genre =
+    let
+        isSelected =
+            List.member genre selectedGenres
+    in
     div
-        [ class "px-3 py-1 hover:bg-background-light cursor-pointer text-text-primary"
+        [ class
+            (if isSelected then
+                "px-3 py-1 hover:bg-background-light cursor-pointer text-primary font-semibold"
+             else
+                "px-3 py-1 hover:bg-background-light cursor-pointer text-text-primary"
+            )
         , onClick (SelectGenre genre)
         ]
         [ text genre ]
@@ -742,15 +774,16 @@ viewError errorMessage =
 -}
 viewContent : Model -> Html Msg
 viewContent model =
-    div [ class "px-4 max-w-screen-2xl mx-auto space-y-4 mb-4" ]
+    div [ class "px-16 mx-auto space-y-4 mb-4" ]
         [ -- Show active filters if any
-          if model.selectedGenre /= Nothing || model.selectedType /= Nothing then
+          if not (List.isEmpty model.selectedGenres) || not (List.isEmpty model.selectedTypes) then
             div [ class "flex items-center py-1 space-x-2 flex-wrap" ]
-                [ span (Theme.text Theme.Label)
+                ([ span (Theme.text Theme.Label)
                     [ text "Active filters:" ]
-                , viewActiveFilter model.selectedGenre
-                , viewActiveTypeFilter model.selectedType
-                ]
+                 ]
+                    ++ List.map viewActiveGenreFilter model.selectedGenres
+                    ++ List.map viewActiveTypeFilter model.selectedTypes
+                )
 
           else
             text ""
@@ -765,44 +798,34 @@ viewContent model =
         ]
 
 
-{-| View active filter badge
+{-| View active genre filter badge
 -}
-viewActiveFilter : Maybe String -> Html Msg
-viewActiveFilter maybeGenre =
-    case maybeGenre of
-        Just genre ->
-            div [ class "flex items-center bg-primary bg-opacity-20 border border-primary rounded-full px-2 py-0.5" ]
-                [ span (Theme.text Theme.Body)
-                    [ text genre ]
-                , button
-                    [ class "ml-1 text-primary hover:text-primary-dark flex items-center"
-                    , onClick ClearGenreFilter
-                    ]
-                    [ Icon.view [ class "text-sm" ] Icon.close ]
-                ]
-
-        Nothing ->
-            text ""
+viewActiveGenreFilter : String -> Html Msg
+viewActiveGenreFilter genre =
+    div [ class "flex items-center bg-primary bg-opacity-20 border border-primary rounded-full px-2 py-0.5" ]
+        [ span (Theme.text Theme.Body)
+            [ text genre ]
+        , button
+            [ class "ml-1 text-primary hover:text-primary-dark flex items-center"
+            , onClick (SelectGenre genre)
+            ]
+            [ Icon.view [ class "text-sm" ] Icon.close ]
+        ]
 
 
 {-| View active type filter badge
 -}
-viewActiveTypeFilter : Maybe MediaType -> Html Msg
-viewActiveTypeFilter maybeType =
-    case maybeType of
-        Just mediaType ->
-            div [ class "flex items-center bg-secondary bg-opacity-20 border border-secondary rounded-full px-2 py-0.5" ]
-                [ span (Theme.text Theme.Body)
-                    [ text (mediaTypeToString mediaType) ]
-                , button
-                    [ class "ml-1 text-secondary hover:text-secondary-dark flex items-center"
-                    , onClick ClearTypeFilter
-                    ]
-                    [ Icon.view [ class "text-sm" ] Icon.close ]
-                ]
-
-        Nothing ->
-            text ""
+viewActiveTypeFilter : MediaType -> Html Msg
+viewActiveTypeFilter mediaType =
+    div [ class "flex items-center bg-secondary bg-opacity-20 border border-secondary rounded-full px-2 py-0.5" ]
+        [ span (Theme.text Theme.Body)
+            [ text (mediaTypeToString mediaType) ]
+        , button
+            [ class "ml-1 text-secondary hover:text-secondary-dark flex items-center"
+            , onClick (SelectType mediaType)
+            ]
+            [ Icon.view [ class "text-sm" ] Icon.close ]
+        ]
 
 
 {-| View a specific category detail page
@@ -811,8 +834,8 @@ viewCategoryDetail : Model -> String -> Html Msg
 viewCategoryDetail model categoryId =
     let
         filteredCategories =
-            filterCategoriesByType model.selectedType
-                (filterCategoriesByGenre model.selectedGenre
+            filterCategoriesByType model.selectedTypes
+                (filterCategoriesByGenre model.selectedGenres
                     (filterCategories model.searchQuery model.categories)
                 )
     in
@@ -840,8 +863,8 @@ viewAllCategories : Model -> Html Msg
 viewAllCategories model =
     let
         filteredCategories =
-            filterCategoriesByType model.selectedType
-                (filterCategoriesByGenre model.selectedGenre
+            filterCategoriesByType model.selectedTypes
+                (filterCategoriesByGenre model.selectedGenres
                     (filterCategories model.searchQuery model.categories)
                 )
     in
@@ -946,9 +969,9 @@ viewCategory model category =
                     [ text category.name ]
                 , div [ class "flex items-center space-x-1" ]
                     [ button (leftButtonStyle ++ [ class "flex items-center justify-center" ])
-                        [ Icon.view [ class "text-lg" ] Icon.arrowBack ]
+                        [ Icon.view [ class "text-lg" ] Icon.chevronLeft ]
                     , button (rightButtonStyle ++ [ class "flex items-center justify-center" ])
-                        [ Icon.view [ class "text-lg" ] Icon.arrowForward ]
+                        [ Icon.view [ class "text-lg" ] Icon.chevronRight ]
                     , button
                         (Theme.button Theme.Ghost ++ [ onClick (SelectCategory category.id), class "py-1 px-2" ])
                         [ text "See All" ]
@@ -1180,37 +1203,39 @@ filterCategories query categories =
 
 {-| Filter categories based on genre
 -}
-filterCategoriesByGenre : Maybe String -> List Category -> List Category
-filterCategoriesByGenre maybeGenre categories =
-    case maybeGenre of
-        Nothing ->
-            categories
-
-        Just genre ->
-            categories
-                |> List.map
-                    (\category ->
-                        { category
-                            | items = List.filter (itemHasGenre genre) category.items
-                        }
-                    )
-                |> List.filter (\category -> not (List.isEmpty category.items))
+filterCategoriesByGenre : List String -> List Category -> List Category
+filterCategoriesByGenre genres categories =
+    if List.isEmpty genres then
+        categories
+    else
+        categories
+            |> List.map
+                (\category ->
+                    { category
+                        | items =
+                            List.filter
+                                (\item -> List.all (\genre -> itemHasGenre genre item) genres)
+                                category.items
+                    }
+                )
+            |> List.filter (\category -> not (List.isEmpty category.items))
 
 
 {-| Filter categories based on media type
 -}
-filterCategoriesByType : Maybe MediaType -> List Category -> List Category
-filterCategoriesByType maybeType categories =
-    case maybeType of
-        Nothing ->
-            categories
-
-        Just mediaType ->
-            categories
-                |> List.map
-                    (\category ->
-                        { category
-                            | items = List.filter (\item -> item.type_ == mediaType) category.items
-                        }
-                    )
-                |> List.filter (\category -> not (List.isEmpty category.items))
+filterCategoriesByType : List MediaType -> List Category -> List Category
+filterCategoriesByType types categories =
+    if List.isEmpty types then
+        categories
+    else
+        categories
+            |> List.map
+                (\category ->
+                    { category
+                        | items =
+                            List.filter
+                                (\item -> List.all (\mediaType -> item.type_ == mediaType) types)
+                                category.items
+                    }
+                )
+            |> List.filter (\category -> not (List.isEmpty category.items))
