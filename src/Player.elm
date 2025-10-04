@@ -432,15 +432,15 @@ viewPlayerControls model media =
             ]
 
         -- Control buttons - constrained width
-        , div [ class "flex items-center justify-between px-16" ]
+        , div [ class "flex items-center justify-between px-16 pr-20" ]
             [ -- Left controls - playback
               div [ class "flex items-center space-x-4" ]
-                [ -- Rewind
+                [ -- Rewind -10s
                   button
                     [ class "w-8 h-8 rounded-lg text-white/70 hover:text-white hover:bg-white/10 flex items-center justify-center transition-all duration-200"
                     , onClick (Seek (model.currentTime - 10))
                     ]
-                    [ Icon.view [ class "text-lg" ] Icon.fastRewind
+                    [ Icon.view [ class "text-lg" ] Icon.arrowUturnLeft
                     ]
 
                 -- Play/Pause - larger and more prominent
@@ -454,12 +454,12 @@ viewPlayerControls model media =
                         Icon.view [ class "text-2xl" ] Icon.playArrow
                     ]
 
-                -- Fast forward
+                -- Fast forward +10s
                 , button
                     [ class "w-8 h-8 rounded-lg text-white/70 hover:text-white hover:bg-white/10 flex items-center justify-center transition-all duration-200"
                     , onClick (Seek (model.currentTime + 10))
                     ]
-                    [ Icon.view [ class "text-lg" ] Icon.fastForward
+                    [ Icon.view [ class "text-lg" ] Icon.arrowUturnRight
                     ]
 
                 -- Next episode (for TV shows)
@@ -488,8 +488,8 @@ viewPlayerControls model media =
                     , option [ value "2.0", selected (model.playbackRate == 2.0) ] [ text "2×" ]
                     ]
 
-                -- Volume control - cleaner
-                , div [ class "flex items-center space-x-2 group" ]
+                -- Volume control - slider slides out to the right
+                , div [ class "flex items-center group" ]
                     [ button
                         [ class "w-8 h-8 rounded-lg text-white/80 hover:text-white hover:bg-white/10 flex items-center justify-center transition-all duration-200"
                         , onClick ToggleMute
@@ -501,24 +501,29 @@ viewPlayerControls model media =
                           else
                             Icon.view [ class "text-lg" ] Icon.volumeUp
                         ]
-                    , input
-                        [ type_ "range"
-                        , value
-                            (String.fromFloat
-                                (if model.isMuted then
-                                    0
-                                 else
-                                    model.volume
-                                )
-                            )
-                        , Html.Attributes.min "0"
-                        , Html.Attributes.max "1"
-                        , step "0.05"
-                        , class "w-20 h-1 bg-white/20 rounded-full appearance-none cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                        , style "background" ("linear-gradient(to right, white 0%, white " ++ String.fromFloat (model.volume * 100) ++ "%, rgba(255,255,255,0.2) " ++ String.fromFloat (model.volume * 100) ++ "%, rgba(255,255,255,0.2) 100%)")
-                        , onInput (String.toFloat >> Maybe.withDefault 0.0 >> SetVolume)
+                    -- Slider expands to the right
+                    , div [ class "w-0 group-hover:w-28 transition-all duration-300" ]
+                        [ div [ class "overflow-hidden group-hover:overflow-visible" ]
+                            [ input
+                                [ type_ "range"
+                                , value
+                                    (String.fromFloat
+                                        (if model.isMuted then
+                                            0
+                                         else
+                                            model.volume
+                                        )
+                                    )
+                                , Html.Attributes.min "0"
+                                , Html.Attributes.max "1"
+                                , step "0.05"
+                                , class "w-24 h-1 bg-white/20 rounded-full appearance-none cursor-pointer ml-3 mr-1"
+                                , style "background" ("linear-gradient(to right, white 0%, white " ++ String.fromFloat (model.volume * 100) ++ "%, rgba(255,255,255,0.2) " ++ String.fromFloat (model.volume * 100) ++ "%, rgba(255,255,255,0.2) 100%)")
+                                , onInput (String.toFloat >> Maybe.withDefault 0.0 >> SetVolume)
+                                ]
+                                []
+                            ]
                         ]
-                        []
                     ]
 
                 -- Fullscreen toggle
