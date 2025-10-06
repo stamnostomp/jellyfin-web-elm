@@ -16,11 +16,13 @@ import JellyfinAPI exposing (CastMember, Category, CrewMember, MediaItem, MediaT
 import MediaDetail
 import MockData exposing (mockCategories, mockLibraryCategories)
 import Player
+import ServerDashboard
 import ServerSettings
 import TMDBData exposing (TMDBResponse, fetchTMDBData)
 import Task
 import Theme
 import UserSettings
+import WatchParty
 
 
 
@@ -39,6 +41,8 @@ type alias Model =
     , serverSettingsModel : ServerSettings.Model
     , playerModel : Player.Model
     , userSettingsModel : UserSettings.Model
+    , watchPartyModel : WatchParty.Model
+    , serverDashboardModel : ServerDashboard.Model
     , isUserMenuOpen : Bool
     , isGenreFilterOpen : Bool
     , selectedGenres : List String
@@ -49,6 +53,7 @@ type alias Model =
     , errorMessage : Maybe String
     , windowWidth : Int
     , showUserSettings : Bool
+    , showDashboard : Bool
     }
 
 
@@ -68,6 +73,12 @@ init =
 
         ( userSettingsModel, userSettingsCmd ) =
             UserSettings.init
+
+        ( watchPartyModel, watchPartyCmd ) =
+            WatchParty.init
+
+        ( serverDashboardModel, serverDashboardCmd ) =
+            ServerDashboard.init
 
         -- Initial list of genres
         allGenres =
@@ -93,6 +104,8 @@ init =
       , serverSettingsModel = serverSettingsModel
       , playerModel = playerModel
       , userSettingsModel = userSettingsModel
+      , watchPartyModel = watchPartyModel
+      , serverDashboardModel = serverDashboardModel
       , isUserMenuOpen = False
       , isGenreFilterOpen = False
       , selectedGenres = []
@@ -103,12 +116,15 @@ init =
       , errorMessage = Nothing
       , windowWidth = 1200
       , showUserSettings = False
+      , showDashboard = False
       }
     , Cmd.batch
         [ Cmd.map MediaDetailMsg mediaDetailCmd
         , Cmd.map ServerSettingsMsg serverSettingsCmd
         , Cmd.map PlayerMsg playerCmd
         , Cmd.map UserSettingsMsg userSettingsCmd
+        , Cmd.map WatchPartyMsg watchPartyCmd
+        , Cmd.map ServerDashboardMsg serverDashboardCmd
         , fetchTMDBData TMDBDataReceived
         , Task.perform
             (\vp -> WindowResized (round vp.viewport.width) (round vp.viewport.height))
@@ -135,11 +151,15 @@ type Msg
     | MediaDetailMsg MediaDetail.Msg
     | ServerSettingsMsg ServerSettings.Msg
     | UserSettingsMsg UserSettings.Msg
+    | WatchPartyMsg WatchParty.Msg
+    | ServerDashboardMsg ServerDashboard.Msg
     | UpdateServerConfig ServerConfig
     | ToggleUserMenu
     | UserMenuAction String
     | OpenUserSettings
     | CloseUserSettings
+    | OpenDashboard
+    | CloseDashboard
     | ToggleGenreFilter
     | SelectGenre String
     | ClearGenreFilter
@@ -285,6 +305,31 @@ update msg model =
                     , Cmd.map UserSettingsMsg userSettingsCmd
                     )
 
+        WatchPartyMsg subMsg ->
+            let
+                ( updatedWatchPartyModel, watchPartyCmd ) =
+                    WatchParty.update subMsg model.watchPartyModel
+            in
+            ( { model | watchPartyModel = updatedWatchPartyModel }
+            , Cmd.map WatchPartyMsg watchPartyCmd
+            )
+
+        ServerDashboardMsg subMsg ->
+            let
+                ( updatedServerDashboardModel, serverDashboardCmd ) =
+                    ServerDashboard.update subMsg model.serverDashboardModel
+            in
+            case subMsg of
+                ServerDashboard.CloseDashboard ->
+                    ( { model | showDashboard = False, serverDashboardModel = updatedServerDashboardModel }
+                    , Cmd.map ServerDashboardMsg serverDashboardCmd
+                    )
+
+                _ ->
+                    ( { model | serverDashboardModel = updatedServerDashboardModel }
+                    , Cmd.map ServerDashboardMsg serverDashboardCmd
+                    )
+
         UpdateServerConfig newConfig ->
             ( { model | serverConfig = newConfig }, Cmd.none )
 
@@ -293,6 +338,12 @@ update msg model =
 
         CloseUserSettings ->
             ( { model | showUserSettings = False }, Cmd.none )
+
+        OpenDashboard ->
+            ( { model | showDashboard = True, isUserMenuOpen = False }, Cmd.none )
+
+        CloseDashboard ->
+            ( { model | showDashboard = False }, Cmd.none )
 
         ToggleUserMenu ->
             ( { model | isUserMenuOpen = not model.isUserMenuOpen, isGenreFilterOpen = False, isTypeFilterOpen = False }, Cmd.none )
@@ -333,6 +384,18 @@ update msg model =
             case action of
                 "profile" ->
                     ( { model | isUserMenuOpen = False, showUserSettings = True }, Cmd.none )
+
+                "watchParty" ->
+                    let
+                        ( updatedWatchPartyModel, watchPartyCmd ) =
+                            WatchParty.update WatchParty.OpenDialog model.watchPartyModel
+                    in
+                    ( { model | isUserMenuOpen = False, watchPartyModel = updatedWatchPartyModel }
+                    , Cmd.map WatchPartyMsg watchPartyCmd
+                    )
+
+                "dashboard" ->
+                    ( { model | isUserMenuOpen = False, showDashboard = True }, Cmd.none )
 
                 _ ->
                     ( { model | isUserMenuOpen = False }, Cmd.none )
@@ -490,6 +553,8 @@ subscriptions model =
         [ Sub.map MediaDetailMsg (MediaDetail.subscriptions model.mediaDetailModel)
         , Sub.map PlayerMsg (Player.subscriptions model.playerModel)
         , Sub.map UserSettingsMsg (UserSettings.subscriptions model.userSettingsModel)
+        , Sub.map WatchPartyMsg (WatchParty.subscriptions model.watchPartyModel)
+        , Sub.map ServerDashboardMsg (ServerDashboard.subscriptions model.serverDashboardModel)
         , Events.onResize WindowResized
         ]
 
@@ -530,6 +595,13 @@ view model =
 
                   else
                     text ""
+                , if model.showDashboard then
+                    Html.map ServerDashboardMsg (ServerDashboard.view model.serverDashboardModel)
+
+                  else
+                    text ""
+                , Html.map WatchPartyMsg (WatchParty.view model.watchPartyModel)
+                , Html.map WatchPartyMsg (WatchParty.viewIndicator model.watchPartyModel)
                 ]
 
 
@@ -561,6 +633,16 @@ viewHeader model =
             , div [ class "flex items-center space-x-2" ]
                 [ viewTypeFilter model
                 , viewGenreFilter model
+                , case model.watchPartyModel.currentParty of
+                    Just party ->
+                        div [ class "flex items-center space-x-2 bg-primary bg-opacity-20 border border-primary rounded-full px-3 py-1" ]
+                            [ div [ class "w-2 h-2 bg-success rounded-full animate-pulse" ] []
+                            , span (Theme.text Theme.Caption ++ [ class "text-primary font-medium" ])
+                                [ text ("In party: " ++ party.partyName) ]
+                            ]
+
+                    Nothing ->
+                        text ""
                 , viewUserProfile model
                 ]
             ]
