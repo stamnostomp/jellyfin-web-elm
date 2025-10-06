@@ -2,7 +2,8 @@ module MediaDetail exposing (Model, Msg(..), init, subscriptions, update, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, stopPropagationOn)
+import Json.Decode as Decode
 import JellyfinAPI exposing (CastMember, CrewMember, MediaDetail, MediaType(..))
 import Theme
 
@@ -37,6 +38,7 @@ type Msg
     | MediaDetailReceived (Result String MediaDetail)
     | CloseDetail
     | PlayMedia String
+    | NoOp
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -67,6 +69,9 @@ update msg model =
 
         PlayMedia _ ->
             -- In a real app, this would trigger the playback
+            ( model, Cmd.none )
+
+        NoOp ->
             ( model, Cmd.none )
 
 
@@ -131,8 +136,8 @@ viewError errorMsg =
 
 viewMediaDetail : MediaDetail -> Html Msg
 viewMediaDetail detail =
-    div [ class "fixed inset-0 bg-background-dark bg-opacity-80 flex items-center justify-center z-50 p-2 overflow-y-auto" ]
-        [ div [ class "bg-surface rounded-lg max-w-4xl w-full shadow-lg relative" ]
+    div [ class "fixed inset-0 bg-background-dark bg-opacity-80 flex items-center justify-center z-50 p-2 overflow-y-auto", onClick CloseDetail ]
+        [ div [ class "bg-surface rounded-lg max-w-4xl w-full shadow-lg relative", stopPropagationOn "click" (Decode.succeed ( NoOp, True )) ]
             [ button
                 [ class "absolute top-2 right-2 text-text-secondary hover:text-text-primary z-10"
                 , onClick CloseDetail

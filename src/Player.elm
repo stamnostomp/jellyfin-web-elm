@@ -502,7 +502,7 @@ viewPlayerControls model media =
                             Icon.view [ class "text-lg" ] Icon.volumeUp
                         ]
                     -- Slider expands to the right
-                    , div [ class "w-0 group-hover:w-28 transition-all duration-300" ]
+                    , div [ class "w-0 group-hover:w-28 opacity-0 group-hover:opacity-100 transition-all duration-300" ]
                         [ div [ class "overflow-hidden group-hover:overflow-visible" ]
                             [ input
                                 [ type_ "range"
