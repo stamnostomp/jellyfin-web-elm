@@ -20,6 +20,7 @@ import ServerSettings
 import TMDBData exposing (TMDBResponse, fetchTMDBData)
 import Task
 import Theme
+import UserSettings
 
 
 
@@ -36,7 +37,8 @@ type alias Model =
     , serverConfig : ServerConfig
     , mediaDetailModel : MediaDetail.Model
     , serverSettingsModel : ServerSettings.Model
-    , playerModel : Player.Model -- ADD THIS LINE
+    , playerModel : Player.Model
+    , userSettingsModel : UserSettings.Model
     , isUserMenuOpen : Bool
     , isGenreFilterOpen : Bool
     , selectedGenres : List String
@@ -46,6 +48,7 @@ type alias Model =
     , categoryTranslation : Dict String Float
     , errorMessage : Maybe String
     , windowWidth : Int
+    , showUserSettings : Bool
     }
 
 
@@ -61,8 +64,10 @@ init =
             ServerSettings.init
 
         ( playerModel, playerCmd ) =
-            -- ADD THIS
             Player.init
+
+        ( userSettingsModel, userSettingsCmd ) =
+            UserSettings.init
 
         -- Initial list of genres
         allGenres =
@@ -86,7 +91,8 @@ init =
       , serverConfig = defaultServerConfig
       , mediaDetailModel = mediaDetailModel
       , serverSettingsModel = serverSettingsModel
-      , playerModel = playerModel -- ADD THIS LINE
+      , playerModel = playerModel
+      , userSettingsModel = userSettingsModel
       , isUserMenuOpen = False
       , isGenreFilterOpen = False
       , selectedGenres = []
@@ -96,11 +102,13 @@ init =
       , categoryTranslation = Dict.empty
       , errorMessage = Nothing
       , windowWidth = 1200
+      , showUserSettings = False
       }
     , Cmd.batch
         [ Cmd.map MediaDetailMsg mediaDetailCmd
         , Cmd.map ServerSettingsMsg serverSettingsCmd
-        , Cmd.map PlayerMsg playerCmd -- ADD THIS LINE
+        , Cmd.map PlayerMsg playerCmd
+        , Cmd.map UserSettingsMsg userSettingsCmd
         , fetchTMDBData TMDBDataReceived
         , Task.perform
             (\vp -> WindowResized (round vp.viewport.width) (round vp.viewport.height))
@@ -126,9 +134,12 @@ type Msg
     | PlayerMsg Player.Msg
     | MediaDetailMsg MediaDetail.Msg
     | ServerSettingsMsg ServerSettings.Msg
+    | UserSettingsMsg UserSettings.Msg
     | UpdateServerConfig ServerConfig
     | ToggleUserMenu
     | UserMenuAction String
+    | OpenUserSettings
+    | CloseUserSettings
     | ToggleGenreFilter
     | SelectGenre String
     | ClearGenreFilter
@@ -258,8 +269,30 @@ update msg model =
             , Cmd.map ServerSettingsMsg serverSettingsCmd
             )
 
+        UserSettingsMsg subMsg ->
+            let
+                ( updatedUserSettingsModel, userSettingsCmd ) =
+                    UserSettings.update subMsg model.userSettingsModel
+            in
+            case subMsg of
+                UserSettings.CloseSettings ->
+                    ( { model | showUserSettings = False, userSettingsModel = updatedUserSettingsModel }
+                    , Cmd.map UserSettingsMsg userSettingsCmd
+                    )
+
+                _ ->
+                    ( { model | userSettingsModel = updatedUserSettingsModel }
+                    , Cmd.map UserSettingsMsg userSettingsCmd
+                    )
+
         UpdateServerConfig newConfig ->
             ( { model | serverConfig = newConfig }, Cmd.none )
+
+        OpenUserSettings ->
+            ( { model | showUserSettings = True, isUserMenuOpen = False }, Cmd.none )
+
+        CloseUserSettings ->
+            ( { model | showUserSettings = False }, Cmd.none )
 
         ToggleUserMenu ->
             ( { model | isUserMenuOpen = not model.isUserMenuOpen, isGenreFilterOpen = False, isTypeFilterOpen = False }, Cmd.none )
@@ -297,7 +330,12 @@ update msg model =
             ( { model | selectedTypes = [] }, Cmd.none )
 
         UserMenuAction action ->
-            ( { model | isUserMenuOpen = False }, Cmd.none )
+            case action of
+                "profile" ->
+                    ( { model | isUserMenuOpen = False, showUserSettings = True }, Cmd.none )
+
+                _ ->
+                    ( { model | isUserMenuOpen = False }, Cmd.none )
 
         ScrollCategory categoryId direction ->
             let
@@ -450,7 +488,8 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Sub.map MediaDetailMsg (MediaDetail.subscriptions model.mediaDetailModel)
-        , Sub.map PlayerMsg (Player.subscriptions model.playerModel) -- ADD THIS LINE
+        , Sub.map PlayerMsg (Player.subscriptions model.playerModel)
+        , Sub.map UserSettingsMsg (UserSettings.subscriptions model.userSettingsModel)
         , Events.onResize WindowResized
         ]
 
@@ -486,6 +525,11 @@ view model =
                                 viewContent model
                     ]
                 , Html.map MediaDetailMsg (MediaDetail.view model.mediaDetailModel)
+                , if model.showUserSettings then
+                    Html.map UserSettingsMsg (UserSettings.view model.userSettingsModel)
+
+                  else
+                    text ""
                 ]
 
 
